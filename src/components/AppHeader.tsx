@@ -1,20 +1,31 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { LogOut, Medal, Rocket, Trophy, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { getLeaderboardService } from "@/core";
 import { clearPerfil, type Perfil } from "@/lib/perfil";
 
-const demoScores = [
-  { name: "Sofi_matea", points: 1240, medal: "🥇" },
-  { name: "ElProfeJuancho", points: 1105, medal: "🥈" },
-  { name: "DaniLaAventurera", points: 980, medal: "🥉" },
-  { name: "MateoRex", points: 870, medal: "4" },
-  { name: "ValentinaG", points: 760, medal: "5" },
-];
+const LEADERBOARD_SIZE = 5;
+
+// Medal emoji for the top 3 ranks, plain rank number otherwise.
+function medalFor(rank: number): string {
+  if (rank === 1) return "🥇";
+  if (rank === 2) return "🥈";
+  if (rank === 3) return "🥉";
+  return String(rank);
+}
 
 export function AppHeader({ perfil }: { perfil: Perfil }) {
   const [showBoard, setShowBoard] = useState(false);
+
+  // Solo se pide al backend cuando el jugador abre el modal.
+  const { data: entries, isLoading } = useQuery({
+    queryKey: ["leaderboard", "global"],
+    queryFn: () => getLeaderboardService().getGlobalLeaderboard(LEADERBOARD_SIZE),
+    enabled: showBoard,
+  });
 
   const logout = () => {
     toast.success("¡Hasta pronto! 👋");
@@ -79,21 +90,33 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
                 <X className="size-5" />
               </button>
             </div>
-            <ul className="space-y-2">
-              {demoScores.map((s) => (
-                <li
-                  key={s.name}
-                  className="flex items-center gap-3 rounded-2xl bg-muted/60 px-4 py-3"
-                >
-                  <span className="flex size-9 items-center justify-center text-xl font-bold">
-                    {s.medal}
-                  </span>
-                  <Medal className="size-4 text-game-yellow" />
-                  <span className="flex-1 font-semibold">{s.name}</span>
-                  <span className="font-bold text-game-yellow">{s.points} pts</span>
-                </li>
-              ))}
-            </ul>
+            {isLoading && (
+              <p className="py-6 text-center text-sm text-muted-foreground">Cargando...</p>
+            )}
+            {!isLoading && entries?.length === 0 && (
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                ¡Todavía no hay puntajes! Sé el primero en jugar 🎮
+              </p>
+            )}
+            {!isLoading && entries && entries.length > 0 && (
+              <ul className="space-y-2">
+                {entries.map((entry) => (
+                  <li
+                    key={entry.userId}
+                    className="flex items-center gap-3 rounded-2xl bg-muted/60 px-4 py-3"
+                  >
+                    <span className="flex size-9 items-center justify-center text-xl font-bold">
+                      {medalFor(entry.rank)}
+                    </span>
+                    <Medal className="size-4 text-game-yellow" />
+                    <span className="flex-1 font-semibold">
+                      {entry.emoji} {entry.name}
+                    </span>
+                    <span className="font-bold text-game-yellow">{entry.points} pts</span>
+                  </li>
+                ))}
+              </ul>
+            )}
             <p className="mt-4 text-center text-sm text-muted-foreground">
               ¡Sigue jugando para subir de puesto!
             </p>

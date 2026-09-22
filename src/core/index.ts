@@ -4,7 +4,10 @@
 // flow, the post-game score submission, the leaderboard modal) is a separate,
 // later step — not part of this change.
 export type { GameId } from "@/core/domain/entities/game";
-export type { LeaderboardEntry } from "@/core/domain/entities/leaderboard-entry";
+export type {
+  GlobalLeaderboardEntry,
+  LeaderboardEntry,
+} from "@/core/domain/entities/leaderboard-entry";
 export type { Score } from "@/core/domain/entities/score";
 export type { User } from "@/core/domain/entities/user";
 export type { SubmitScoreInput } from "@/core/domain/repositories/score.repository";
