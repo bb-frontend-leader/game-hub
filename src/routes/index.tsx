@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { Play } from "lucide-react";
-import triviaImg from "@/assets/juego-trivia.png";
+import { useEffect, useState } from "react";
+
 import memoriaImg from "@/assets/juego-memoria.png";
+import triviaImg from "@/assets/juego-trivia.png";
 import { AppHeader } from "@/components/AppHeader";
 import { UsernameGate } from "@/components/UsernameGate";
 import { getPerfil, type Perfil } from "@/lib/perfil";
@@ -106,7 +107,10 @@ function Index() {
           <h1 className="animate-pop text-center text-4xl font-bold drop-shadow-[0_4px_0_oklch(0.2_0.12_295)] sm:text-6xl">
             ¡Hola, {perfil.name}! Elige tu juego
           </h1>
-          <p className="animate-pop mt-3 text-center text-lg font-medium text-muted-foreground sm:text-xl" style={{ animationDelay: "0.15s" }}>
+          <p
+            className="animate-pop mt-3 text-center text-lg font-medium text-muted-foreground sm:text-xl"
+            style={{ animationDelay: "0.15s" }}
+          >
             Dos aventuras te esperan. ¿Con cuál empiezas? 👇
           </p>
 

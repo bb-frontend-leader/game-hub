@@ -1,6 +1,7 @@
-import { useState } from "react";
 import { Dices, Play, Sparkles } from "lucide-react";
-import { randomUsername, type Perfil } from "@/lib/perfil";
+import { useState } from "react";
+
+import { type Perfil, randomUsername } from "@/lib/perfil";
 
 const confetti = [
   { emoji: "⭐", top: "10%", left: "8%", size: "text-4xl", delay: "0s" },

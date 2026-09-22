@@ -1,11 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  Outlet,
-  Link,
   createRootRouteWithContext,
-  useRouter,
   HeadContent,
+  Link,
+  Outlet,
   Scripts,
+  useRouter,
 } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 import { Toaster } from "sonner";
@@ -77,7 +77,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "¡Juegolandia!" },
       { name: "description", content: "Juegos divertidos, coloridos y llenos de animación." },
       { property: "og:title", content: "¡Juegolandia!" },
-      { property: "og:description", content: "Juegos divertidos, coloridos y llenos de animación." },
+      {
+        property: "og:description",
+        content: "Juegos divertidos, coloridos y llenos de animación.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

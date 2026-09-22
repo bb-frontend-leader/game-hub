@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Zap } from "lucide-react";
+
 import { AppHeader } from "@/components/AppHeader";
 
 export const Route = createFileRoute("/juego-trivia")({
@@ -33,8 +34,8 @@ function TriviaPage() {
             Trivia Relámpago
           </h1>
           <p className="mt-3 text-lg font-medium text-muted-foreground">
-            ¡Este juego se está preparando! Muy pronto podrás responder preguntas
-            contra el reloj. ⏱️
+            ¡Este juego se está preparando! Muy pronto podrás responder preguntas contra el reloj.
+            ⏱️
           </p>
           <Link
             to="/"

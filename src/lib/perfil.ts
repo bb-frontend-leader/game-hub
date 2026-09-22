@@ -6,13 +6,38 @@ const STORAGE_KEY = "juegolandia-perfil";
 export type Perfil = { name: string; emoji: string };
 
 const ADJETIVOS = [
-  "Tigre", "Cometa", "Dragon", "Panda", "Lobo", "Zorro", "Tornado",
-  "Cohete", "Rayo", "Galaxia", "Dino", "Tiburon", "Fenix", "Pantera", "Volcan",
+  "Tigre",
+  "Cometa",
+  "Dragon",
+  "Panda",
+  "Lobo",
+  "Zorro",
+  "Tornado",
+  "Cohete",
+  "Rayo",
+  "Galaxia",
+  "Dino",
+  "Tiburon",
+  "Fenix",
+  "Pantera",
+  "Volcan",
 ];
 
 const NOMBRES = [
-  "Saltarin", "Veloz", "Loco", "Feliz", "Trueno", "Brillante", "Feroz",
-  "Risueno", "Cosmico", "Salvaje", "Relampago", "Explosivo", "Ninja", "Turbo",
+  "Saltarin",
+  "Veloz",
+  "Loco",
+  "Feliz",
+  "Trueno",
+  "Brillante",
+  "Feroz",
+  "Risueno",
+  "Cosmico",
+  "Salvaje",
+  "Relampago",
+  "Explosivo",
+  "Ninja",
+  "Turbo",
 ];
 
 export const EMOJIS = ["😎", "🦊", "🐼", "🚀", "🐲", "🦁", "🐙", "🦄", "🐸", "⚡", "🌟", "🐯"];

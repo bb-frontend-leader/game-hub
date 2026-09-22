@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Brain } from "lucide-react";
+
 import { AppHeader } from "@/components/AppHeader";
 
 export const Route = createFileRoute("/juego-memoria")({

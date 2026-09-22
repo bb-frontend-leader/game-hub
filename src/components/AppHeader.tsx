@@ -1,7 +1,8 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { LogOut, Medal, Rocket, Trophy, X } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Trophy, LogOut, Rocket, X, Medal } from "lucide-react";
+
 import { clearPerfil, type Perfil } from "@/lib/perfil";
 
 const demoScores = [
@@ -22,6 +23,15 @@ export function AppHeader({ perfil }: { perfil?: Perfil }) {
 
   return (
     <header className="relative z-20 flex items-center justify-between gap-3 px-5 py-4 sm:px-8">
+      {/* Right: logo */}
+      <Link
+        to="/"
+        className="flex items-center gap-2 text-2xl font-bold tracking-tight drop-shadow-[0_3px_0_oklch(0.2_0.12_295)] sm:text-3xl"
+      >
+        <Rocket className="size-8 text-game-yellow animate-wiggle" strokeWidth={2.5} />
+        ¡Juegolandia!
+      </Link>
+
       {/* Left: leaderboard, avatar, logout */}
       <div className="flex items-center gap-2 sm:gap-3">
         <button
@@ -32,14 +42,10 @@ export function AppHeader({ perfil }: { perfil?: Perfil }) {
           <span className="hidden sm:inline">Clasificación</span>
         </button>
 
-        <button
-          onClick={() => toast(`¡Hola, ${perfil?.name ?? "jugador"}! 😎`)}
-          title={perfil ? `Mi perfil: ${perfil.name}` : "Mi perfil"}
-          className="flex h-11 max-w-[9rem] items-center gap-1.5 overflow-hidden rounded-full border-4 border-white/30 bg-party-pink px-2 text-lg transition-transform duration-150 hover:scale-105"
-        >
+        <div className="flex h-11 max-w-[9rem] items-center gap-1.5 overflow-hidden rounded-sm border-4 border-white/30 bg-party-pink px-2 text-lg">
           <span aria-hidden>{perfil?.emoji ?? "😎"}</span>
           {perfil && <span className="truncate text-sm font-bold">{perfil.name}</span>}
-        </button>
+        </div>
 
         <button
           onClick={logout}
@@ -49,15 +55,6 @@ export function AppHeader({ perfil }: { perfil?: Perfil }) {
           <LogOut className="size-5" strokeWidth={2.5} />
         </button>
       </div>
-
-      {/* Right: logo */}
-      <Link
-        to="/"
-        className="flex items-center gap-2 text-2xl font-bold tracking-tight drop-shadow-[0_3px_0_oklch(0.2_0.12_295)] sm:text-3xl"
-      >
-        <Rocket className="size-8 text-game-yellow animate-wiggle" strokeWidth={2.5} />
-        ¡Juegolandia!
-      </Link>
 
       {/* Leaderboard modal */}
       {showBoard && (
