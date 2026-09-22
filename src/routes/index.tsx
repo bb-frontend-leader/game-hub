@@ -15,12 +15,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Página de juegos llena de color y animación: elige entre Trivia Relámpago y Memoria Animal.",
+          "Página de juegos llena de color y animación: elige entre Temple of Knowledge y Whack a game.",
       },
       { property: "og:title", content: "¡Juegolandia! — Elige tu juego" },
       {
         property: "og:description",
-        content: "Dos juegos, mil risas: trivia a toda velocidad y memoria de animales.",
+        content: "Dos juegos, mil risas: pon a prueba tu conocimiento y golpea rápido para ganar.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -47,8 +47,8 @@ const bubbles = [
 
 const games = [
   {
-    to: "/juego-trivia",
-    name: "Trivia Relámpago",
+    to: "/temple-of-knowledge",
+    name: "Temple of Knowledge",
     tagline: "Responde rápido y suma puntos",
     image: triviaImg,
     card: "bg-game-red",
@@ -56,9 +56,9 @@ const games = [
     delay: "0.1s",
   },
   {
-    to: "/juego-memoria",
-    name: "Memoria Animal",
-    tagline: "Encuentra las parejas de animales",
+    to: "/whack-a-question",
+    name: "Whack a game",
+    tagline: "Golpea rápido y suma puntos",
     image: memoriaImg,
     card: "bg-game-blue",
     shadow: "shadow-[0_18px_0_oklch(0.4_0.17_255)]",

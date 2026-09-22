@@ -10,53 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as JuegoMemoriaRouteImport } from './routes/juego-memoria'
-import { Route as JuegoTriviaRouteImport } from './routes/juego-trivia'
+import { Route as TempleOfKnowledgeRouteImport } from './routes/temple-of-knowledge'
+import { Route as WhackAQuestionRouteImport } from './routes/whack-a-question'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const JuegoMemoriaRoute = JuegoMemoriaRouteImport.update({
-  id: '/juego-memoria',
-  path: '/juego-memoria',
+const TempleOfKnowledgeRoute = TempleOfKnowledgeRouteImport.update({
+  id: '/temple-of-knowledge',
+  path: '/temple-of-knowledge',
   getParentRoute: () => rootRouteImport,
 } as any)
-const JuegoTriviaRoute = JuegoTriviaRouteImport.update({
-  id: '/juego-trivia',
-  path: '/juego-trivia',
+const WhackAQuestionRoute = WhackAQuestionRouteImport.update({
+  id: '/whack-a-question',
+  path: '/whack-a-question',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/juego-memoria': typeof JuegoMemoriaRoute
-  '/juego-trivia': typeof JuegoTriviaRoute
+  '/temple-of-knowledge': typeof TempleOfKnowledgeRoute
+  '/whack-a-question': typeof WhackAQuestionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/juego-memoria': typeof JuegoMemoriaRoute
-  '/juego-trivia': typeof JuegoTriviaRoute
+  '/temple-of-knowledge': typeof TempleOfKnowledgeRoute
+  '/whack-a-question': typeof WhackAQuestionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/juego-memoria': typeof JuegoMemoriaRoute
-  '/juego-trivia': typeof JuegoTriviaRoute
+  '/temple-of-knowledge': typeof TempleOfKnowledgeRoute
+  '/whack-a-question': typeof WhackAQuestionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/juego-memoria' | '/juego-trivia'
+  fullPaths: '/' | '/temple-of-knowledge' | '/whack-a-question'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/juego-memoria' | '/juego-trivia'
-  id: '__root__' | '/' | '/juego-memoria' | '/juego-trivia'
+  to: '/' | '/temple-of-knowledge' | '/whack-a-question'
+  id: '__root__' | '/' | '/temple-of-knowledge' | '/whack-a-question'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  JuegoMemoriaRoute: typeof JuegoMemoriaRoute
-  JuegoTriviaRoute: typeof JuegoTriviaRoute
+  TempleOfKnowledgeRoute: typeof TempleOfKnowledgeRoute
+  WhackAQuestionRoute: typeof WhackAQuestionRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -68,18 +68,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/juego-memoria': {
-      id: '/juego-memoria'
-      path: '/juego-memoria'
-      fullPath: '/juego-memoria'
-      preLoaderRoute: typeof JuegoMemoriaRouteImport
+    '/temple-of-knowledge': {
+      id: '/temple-of-knowledge'
+      path: '/temple-of-knowledge'
+      fullPath: '/temple-of-knowledge'
+      preLoaderRoute: typeof TempleOfKnowledgeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/juego-trivia': {
-      id: '/juego-trivia'
-      path: '/juego-trivia'
-      fullPath: '/juego-trivia'
-      preLoaderRoute: typeof JuegoTriviaRouteImport
+    '/whack-a-question': {
+      id: '/whack-a-question'
+      path: '/whack-a-question'
+      fullPath: '/whack-a-question'
+      preLoaderRoute: typeof WhackAQuestionRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -87,8 +87,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  JuegoMemoriaRoute: JuegoMemoriaRoute,
-  JuegoTriviaRoute: JuegoTriviaRoute,
+  TempleOfKnowledgeRoute: TempleOfKnowledgeRoute,
+  WhackAQuestionRoute: WhackAQuestionRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
