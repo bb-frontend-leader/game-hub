@@ -12,6 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TempleOfKnowledgeRouteImport } from './routes/temple-of-knowledge'
 import { Route as WhackAQuestionRouteImport } from './routes/whack-a-question'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminLeaderboardRouteImport } from './routes/admin/leaderboard'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +32,93 @@ const WhackAQuestionRoute = WhackAQuestionRouteImport.update({
   path: '/whack-a-question',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLeaderboardRoute = AdminLeaderboardRouteImport.update({
+  id: '/admin/leaderboard',
+  path: '/admin/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/temple-of-knowledge': typeof TempleOfKnowledgeRoute
   '/whack-a-question': typeof WhackAQuestionRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/temple-of-knowledge': typeof TempleOfKnowledgeRoute
   '/whack-a-question': typeof WhackAQuestionRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/temple-of-knowledge': typeof TempleOfKnowledgeRoute
   '/whack-a-question': typeof WhackAQuestionRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/temple-of-knowledge' | '/whack-a-question'
+  fullPaths:
+    | '/'
+    | '/temple-of-knowledge'
+    | '/whack-a-question'
+    | '/admin/leaderboard'
+    | '/admin/login'
+    | '/admin/users'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/temple-of-knowledge' | '/whack-a-question'
-  id: '__root__' | '/' | '/temple-of-knowledge' | '/whack-a-question'
+  to:
+    | '/'
+    | '/temple-of-knowledge'
+    | '/whack-a-question'
+    | '/admin/leaderboard'
+    | '/admin/login'
+    | '/admin/users'
+    | '/admin'
+  id:
+    | '__root__'
+    | '/'
+    | '/temple-of-knowledge'
+    | '/whack-a-question'
+    | '/admin/leaderboard'
+    | '/admin/login'
+    | '/admin/users'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   TempleOfKnowledgeRoute: typeof TempleOfKnowledgeRoute
   WhackAQuestionRoute: typeof WhackAQuestionRoute
+  AdminLeaderboardRoute: typeof AdminLeaderboardRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +144,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhackAQuestionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/leaderboard': {
+      id: '/admin/leaderboard'
+      path: '/admin/leaderboard'
+      fullPath: '/admin/leaderboard'
+      preLoaderRoute: typeof AdminLeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +179,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   TempleOfKnowledgeRoute: TempleOfKnowledgeRoute,
   WhackAQuestionRoute: WhackAQuestionRoute,
+  AdminLeaderboardRoute: AdminLeaderboardRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

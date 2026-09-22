@@ -21,6 +21,7 @@ export class ApiError extends Error {
 }
 
 type QueryParams = Record<string, string | number | boolean | undefined>;
+type RequestOptions = { token?: string };
 
 // Joins a base URL and a path segment, tolerant of whatever shape the backend
 // team hands over: trailing slash or not on the base, leading slash or not on
@@ -57,18 +58,24 @@ async function parseBody(response: Response): Promise<unknown> {
 }
 
 async function request<T>(
-  method: "GET" | "POST",
+  method: "GET" | "POST" | "DELETE",
   path: string,
   query: QueryParams | undefined,
   body: unknown,
+  options?: RequestOptions,
 ): Promise<T> {
   const url = joinUrl(getApiBaseUrl(), path) + buildQueryString(query);
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  if (options?.token) headers["Authorization"] = `Bearer ${options.token}`;
 
   let response: Response;
   try {
     response = await fetch(url, {
       method,
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      headers,
       ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
     });
   } catch (cause) {
@@ -91,10 +98,13 @@ async function request<T>(
 // repository goes through this — it is the only place in `src/core` allowed
 // to call the global `fetch`.
 export const fetchApiDataSource = {
-  get<T = unknown>(path: string, query?: QueryParams): Promise<T> {
-    return request<T>("GET", path, query, undefined);
+  get<T = unknown>(path: string, query?: QueryParams, options?: RequestOptions): Promise<T> {
+    return request<T>("GET", path, query, undefined, options);
   },
-  post<T = unknown>(path: string, body?: unknown): Promise<T> {
-    return request<T>("POST", path, undefined, body);
+  post<T = unknown>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
+    return request<T>("POST", path, undefined, body, options);
+  },
+  delete<T = unknown>(path: string, options?: RequestOptions): Promise<T> {
+    return request<T>("DELETE", path, undefined, undefined, options);
   },
 };

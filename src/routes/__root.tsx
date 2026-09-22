@@ -5,6 +5,7 @@ import {
   Link,
   Outlet,
   Scripts,
+  useLocation,
   useRouter,
 } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useState } from "react";
@@ -138,7 +139,11 @@ function RootComponent() {
 // Único "layout" de la app: resuelve el perfil del jugador (localStorage +
 // refresco contra el backend vía el core) y, si hay uno, renderiza el header
 // y las rutas hijas. Sin perfil, pide nombre antes de mostrar cualquier ruta.
+// Las rutas /admin/* quedan fuera de este flujo: tienen su propio login y
+// guard (ver RequireAdminSession), así que el gate del jugador se salta ahí.
 function AppShell() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const queryClient = useQueryClient();
 
@@ -162,12 +167,14 @@ function AppShell() {
   const { data: user } = useQuery({
     queryKey: ["user", perfil?.id],
     queryFn: () => getUserService().getUser(perfil!.id!),
-    enabled: !!perfil?.id,
+    enabled: !isAdminRoute && !!perfil?.id,
   });
 
   useEffect(() => {
     if (user) setPerfil(savePerfil(user));
   }, [user]);
+
+  if (isAdminRoute) return <Outlet />;
 
   if (!perfil) return <UsernameGate onJoin={setPerfil} />;
 

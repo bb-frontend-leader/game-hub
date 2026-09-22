@@ -5,17 +5,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { getLeaderboardService } from "@/core";
+import { medalFor } from "@/lib/medal";
 import { clearPerfil, type Perfil } from "@/lib/perfil";
 
 const LEADERBOARD_SIZE = 5;
-
-// Medal emoji for the top 3 ranks, plain rank number otherwise.
-function medalFor(rank: number): string {
-  if (rank === 1) return "🥇";
-  if (rank === 2) return "🥈";
-  if (rank === 3) return "🥉";
-  return String(rank);
-}
 
 export function AppHeader({ perfil }: { perfil: Perfil }) {
   const [showBoard, setShowBoard] = useState(false);
