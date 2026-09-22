@@ -1,9 +1,12 @@
-// Perfil del jugador guardado en el navegador (sin backend).
+// Perfil del jugador guardado en el navegador. Se intenta registrar en el
+// backend (ver UserService), pero el juego sigue funcionando si eso falla.
 // Math.random() solo se usa dentro de manejadores de eventos, nunca durante el render.
 
 const STORAGE_KEY = "juegolandia-perfil";
 
-export type Perfil = { name: string; emoji: string };
+// `id` lo asigna el backend al crear el usuario (ver UserService.createUser);
+// queda sin definir si el perfil solo se pudo guardar de forma local.
+export type Perfil = { id?: string; name: string; emoji: string };
 
 const ADJETIVOS = [
   "Tigre",
@@ -62,11 +65,11 @@ export function getPerfil(): Perfil | null {
   }
 }
 
-export function setPerfil(name: string): Perfil {
-  const perfil: Perfil = {
-    name,
-    emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)] ?? "😎",
-  };
+export function randomEmoji(): string {
+  return EMOJIS[Math.floor(Math.random() * EMOJIS.length)] ?? "😎";
+}
+
+export function savePerfil(perfil: Perfil): Perfil {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(perfil));
   return perfil;
 }

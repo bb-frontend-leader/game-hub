@@ -1,7 +1,9 @@
 import { Dices, Play, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
-import { type Perfil, randomUsername } from "@/lib/perfil";
+import { getUserService } from "@/core";
+import { type Perfil, randomEmoji, randomUsername, savePerfil } from "@/lib/perfil";
 
 const confetti = [
   { emoji: "⭐", top: "10%", left: "8%", size: "text-4xl", delay: "0s" },
@@ -21,12 +23,25 @@ const bubbles = [
 
 export function UsernameGate({ onJoin }: { onJoin: (perfil: Perfil) => void }) {
   const [name, setName] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
 
-  const join = () => {
+  const join = async () => {
     const clean = name.trim();
-    if (!clean) return;
-    // El emoji se sortea al entrar; import diferido para mantener la pantalla ligera.
-    void import("@/lib/perfil").then(({ setPerfil }) => onJoin(setPerfil(clean)));
+    if (!clean || isJoining) return;
+    setIsJoining(true);
+    const emoji = randomEmoji();
+    try {
+      const user = await getUserService().createUser({ name: clean, emoji });
+      onJoin(savePerfil(user));
+    } catch (error) {
+      // El backend puede no estar disponible todavía (o fallar): seguimos
+      // dejando jugar con un perfil solo local, sin id de servidor.
+      console.error(error);
+      toast.error("No pudimos guardarte en el servidor, ¡pero puedes seguir jugando! 🎮");
+      onJoin(savePerfil({ name: clean, emoji }));
+    } finally {
+      setIsJoining(false);
+    }
   };
 
   const surprise = () => {
@@ -72,7 +87,7 @@ export function UsernameGate({ onJoin }: { onJoin: (perfil: Perfil) => void }) {
           style={{ animationDelay: "0.3s" }}
           onSubmit={(e) => {
             e.preventDefault();
-            join();
+            void join();
           }}
         >
           <input
@@ -95,11 +110,11 @@ export function UsernameGate({ onJoin }: { onJoin: (perfil: Perfil) => void }) {
             </button>
             <button
               type="submit"
-              disabled={!name.trim()}
+              disabled={!name.trim() || isJoining}
               className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-game-green px-4 py-3 font-bold text-primary-foreground shadow-[0_5px_0_oklch(0.45_0.17_150)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
             >
               <Play className="size-5 fill-current" />
-              ¡A jugar!
+              {isJoining ? "Entrando..." : "¡A jugar!"}
             </button>
           </div>
         </form>
