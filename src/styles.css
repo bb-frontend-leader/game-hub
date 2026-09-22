@@ -1,0 +1,177 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system — party arcade (Kahoot-inspired).
+ * Deep purple stage, confetti yellow primary, four game colors.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  --font-display: "Fredoka", "Trebuchet MS", sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-game-red: var(--game-red);
+  --color-game-blue: var(--game-blue);
+  --color-game-green: var(--game-green);
+  --color-game-yellow: var(--game-yellow);
+  --color-party-pink: var(--party-pink);
+  --color-party-orange: var(--party-orange);
+}
+
+:root {
+  --radius: 1.25rem;
+  --background: oklch(0.34 0.16 295);
+  --foreground: oklch(0.98 0.01 300);
+  --card: oklch(0.39 0.16 295);
+  --card-foreground: oklch(0.98 0.01 300);
+  --popover: oklch(0.39 0.16 295);
+  --popover-foreground: oklch(0.98 0.01 300);
+  --primary: oklch(0.87 0.18 95);
+  --primary-foreground: oklch(0.3 0.16 295);
+  --secondary: oklch(0.45 0.17 300);
+  --secondary-foreground: oklch(0.98 0.01 300);
+  --muted: oklch(0.43 0.14 295);
+  --muted-foreground: oklch(0.82 0.05 295);
+  --accent: oklch(0.45 0.17 300);
+  --accent-foreground: oklch(0.98 0.01 300);
+  --destructive: oklch(0.62 0.24 25);
+  --destructive-foreground: oklch(0.98 0.01 300);
+  --border: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 20%);
+  --ring: oklch(0.87 0.18 95);
+
+  --game-red: oklch(0.58 0.24 20);
+  --game-blue: oklch(0.55 0.19 255);
+  --game-green: oklch(0.62 0.19 150);
+  --game-yellow: oklch(0.85 0.18 95);
+  --party-pink: oklch(0.66 0.24 350);
+  --party-orange: oklch(0.72 0.19 55);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-display);
+  }
+}
+
+/* ---------- Party animations ---------- */
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-24px) rotate(8deg);
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes drift {
+  0% {
+    transform: translateX(-12px);
+  }
+  100% {
+    transform: translateX(12px);
+  }
+}
+
+@utility animate-floaty {
+  animation: floaty 7s ease-in-out infinite;
+}
+
+@utility animate-wiggle {
+  animation: wiggle 0.6s ease-in-out infinite;
+}
+
+@utility animate-pop {
+  animation: pop-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@utility animate-bounce-soft {
+  animation: bounce-soft 2s ease-in-out infinite;
+}
+
+@utility animate-spin-slow {
+  animation: spin-slow 14s linear infinite;
+}
+
+@utility animate-drift {
+  animation: drift 5s ease-in-out infinite alternate;
+}
