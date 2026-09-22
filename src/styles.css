@@ -88,6 +88,36 @@
     color: var(--color-foreground);
     font-family: var(--font-display);
   }
+
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-muted-foreground) var(--color-card);
+  }
+}
+
+/* ---------- Scrollbar ---------- */
+
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-card);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted-foreground);
+  border: 3px solid var(--color-card);
+  border-radius: var(--radius-xl);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-foreground);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--color-card);
 }
 
 /* ---------- Party animations ---------- */
