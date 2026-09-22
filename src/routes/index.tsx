@@ -1,12 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Play } from "lucide-react";
-import { useEffect, useState } from "react";
 
 import memoriaImg from "@/assets/juego-memoria.png";
 import triviaImg from "@/assets/juego-trivia.png";
-import { AppHeader } from "@/components/AppHeader";
-import { UsernameGate } from "@/components/UsernameGate";
-import { getPerfil, type Perfil } from "@/lib/perfil";
+import { usePerfil } from "@/lib/perfil-context";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -67,16 +64,7 @@ const games = [
 ];
 
 function Index() {
-  const [perfil, setPerfil] = useState<Perfil | null>(null);
-
-  useEffect(() => {
-    setPerfil(getPerfil());
-    const onLogout = () => setPerfil(null);
-    window.addEventListener("juegolandia:logout", onLogout);
-    return () => window.removeEventListener("juegolandia:logout", onLogout);
-  }, []);
-
-  if (!perfil) return <UsernameGate onJoin={setPerfil} />;
+  const perfil = usePerfil();
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
@@ -101,8 +89,6 @@ function Index() {
       ))}
 
       <div className="relative z-10">
-        <AppHeader perfil={perfil} />
-
         <main className="mx-auto flex max-w-5xl flex-col items-center px-5 pb-16 pt-6 sm:pt-10">
           <h1 className="animate-pop text-center text-4xl font-bold drop-shadow-[0_4px_0_oklch(0.2_0.12_295)] sm:text-6xl">
             ¡Hola, {perfil.name}! Elige tu juego

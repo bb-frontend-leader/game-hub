@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { Dices, Play, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -23,25 +24,24 @@ const bubbles = [
 
 export function UsernameGate({ onJoin }: { onJoin: (perfil: Perfil) => void }) {
   const [name, setName] = useState("");
-  const [isJoining, setIsJoining] = useState(false);
 
-  const join = async () => {
-    const clean = name.trim();
-    if (!clean || isJoining) return;
-    setIsJoining(true);
-    const emoji = randomEmoji();
-    try {
-      const user = await getUserService().createUser({ name: clean, emoji });
-      onJoin(savePerfil(user));
-    } catch (error) {
+  const { mutate: join, isPending: isJoining } = useMutation({
+    mutationFn: ({ name, emoji }: { name: string; emoji: string }) =>
+      getUserService().createUser({ name, emoji }),
+    onSuccess: (user) => onJoin(savePerfil(user)),
+    onError: (error, { name, emoji }) => {
       // El backend puede no estar disponible todavía (o fallar): seguimos
       // dejando jugar con un perfil solo local, sin id de servidor.
       console.error(error);
       toast.error("No pudimos guardarte en el servidor, ¡pero puedes seguir jugando! 🎮");
-      onJoin(savePerfil({ name: clean, emoji }));
-    } finally {
-      setIsJoining(false);
-    }
+      onJoin(savePerfil({ name, emoji }));
+    },
+  });
+
+  const handleJoin = () => {
+    const clean = name.trim();
+    if (!clean || isJoining) return;
+    join({ name: clean, emoji: randomEmoji() });
   };
 
   const surprise = () => {
@@ -87,7 +87,7 @@ export function UsernameGate({ onJoin }: { onJoin: (perfil: Perfil) => void }) {
           style={{ animationDelay: "0.3s" }}
           onSubmit={(e) => {
             e.preventDefault();
-            void join();
+            handleJoin();
           }}
         >
           <input

@@ -17,4 +17,10 @@ export class HttpUserRepository implements UserRepository {
     const dto = await fetchApiDataSource.post<UserDto>(USERS_PATH, body);
     return userFromDto(dto);
   }
+
+  // PLACEHOLDER_API_CONTRACT: GET {base}/users/:id
+  async getById(id: string): Promise<User> {
+    const dto = await fetchApiDataSource.get<UserDto>(`${USERS_PATH}/${id}`);
+    return userFromDto(dto);
+  }
 }

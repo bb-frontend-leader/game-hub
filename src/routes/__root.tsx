@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createRootRouteWithContext,
   HeadContent,
@@ -7,8 +7,14 @@ import {
   Scripts,
   useRouter,
 } from "@tanstack/react-router";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Toaster } from "sonner";
+
+import { AppHeader } from "@/components/AppHeader";
+import { UsernameGate } from "@/components/UsernameGate";
+import { getUserService } from "@/core";
+import { getPerfil, type Perfil, savePerfil } from "@/lib/perfil";
+import { PerfilContext } from "@/lib/perfil-context";
 
 import appCss from "../styles.css?url";
 
@@ -123,9 +129,53 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AppShell />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
+  );
+}
+
+// Único "layout" de la app: resuelve el perfil del jugador (localStorage +
+// refresco contra el backend vía el core) y, si hay uno, renderiza el header
+// y las rutas hijas. Sin perfil, pide nombre antes de mostrar cualquier ruta.
+function AppShell() {
+  const [perfil, setPerfil] = useState<Perfil | null>(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    setPerfil(getPerfil());
+    const onLogout = () => {
+      setPerfil(null);
+      // Cancela cualquier refetch en curso antes de borrar la caché: si no,
+      // una respuesta que llegue tarde podría reescribirla justo después del
+      // logout y "resucitar" al usuario anterior.
+      void queryClient.cancelQueries({ queryKey: ["user"] });
+      queryClient.removeQueries({ queryKey: ["user"] });
+    };
+    window.addEventListener("juegolandia:logout", onLogout);
+    return () => window.removeEventListener("juegolandia:logout", onLogout);
+  }, [queryClient]);
+
+  // Refresca el perfil desde el backend cuando ya tenemos un usuario
+  // registrado (perfil.id). Si falla (sin conexión, backend caído, etc.) no
+  // pasa nada: seguimos usando el perfil local ya cargado.
+  const { data: user } = useQuery({
+    queryKey: ["user", perfil?.id],
+    queryFn: () => getUserService().getUser(perfil!.id!),
+    enabled: !!perfil?.id,
+  });
+
+  useEffect(() => {
+    if (user) setPerfil(savePerfil(user));
+  }, [user]);
+
+  if (!perfil) return <UsernameGate onJoin={setPerfil} />;
+
+  return (
+    <PerfilContext.Provider value={perfil}>
+      <AppHeader perfil={perfil} />
+      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <Outlet />
+    </PerfilContext.Provider>
   );
 }

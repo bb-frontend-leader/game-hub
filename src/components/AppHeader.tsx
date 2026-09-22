@@ -13,7 +13,7 @@ const demoScores = [
   { name: "ValentinaG", points: 760, medal: "5" },
 ];
 
-export function AppHeader({ perfil }: { perfil?: Perfil }) {
+export function AppHeader({ perfil }: { perfil: Perfil }) {
   const [showBoard, setShowBoard] = useState(false);
 
   const logout = () => {
@@ -43,8 +43,8 @@ export function AppHeader({ perfil }: { perfil?: Perfil }) {
         </button>
 
         <div className="flex h-11 max-w-[9rem] items-center gap-1.5 overflow-hidden rounded-sm border-4 border-white/30 bg-party-pink px-2 text-lg">
-          <span aria-hidden>{perfil?.emoji ?? "😎"}</span>
-          {perfil && <span className="truncate text-sm font-bold">{perfil.name}</span>}
+          <span aria-hidden>{perfil.emoji}</span>
+          <span className="truncate text-sm font-bold">{perfil.name}</span>
         </div>
 
         <button
