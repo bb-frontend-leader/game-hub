@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Play } from "lucide-react";
 
-import memoriaImg from "@/assets/juego-memoria.png";
-import triviaImg from "@/assets/juego-trivia.png";
+import kwowledgeGame from "@/assets/knowledge-game.jpg";
+import whackGame from "@/assets/whack-game.jpg";
 import { usePerfil } from "@/lib/perfil-context";
 
 export const Route = createFileRoute("/")({
@@ -47,7 +47,7 @@ const games = [
     to: "/temple-of-knowledge",
     name: "Temple of Knowledge",
     tagline: "Responde rápido y suma puntos",
-    image: triviaImg,
+    image: kwowledgeGame,
     card: "bg-game-red",
     shadow: "shadow-[0_18px_0_oklch(0.42_0.2_20)]",
     delay: "0.1s",
@@ -56,7 +56,7 @@ const games = [
     to: "/whack-a-question",
     name: "Whack a game",
     tagline: "Golpea rápido y suma puntos",
-    image: memoriaImg,
+    image: whackGame,
     card: "bg-game-blue",
     shadow: "shadow-[0_18px_0_oklch(0.4_0.17_255)]",
     delay: "0.25s",
