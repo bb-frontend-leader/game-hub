@@ -8,13 +8,13 @@ import { usePerfil } from "@/lib/perfil-context";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "¡Juegolandia! — Elige tu juego" },
+      { title: "BooksQuest — Elige tu juego" },
       {
         name: "description",
         content:
           "Página de juegos llena de color y animación: elige entre Temple of Knowledge y Whack a game.",
       },
-      { property: "og:title", content: "¡Juegolandia! — Elige tu juego" },
+      { property: "og:title", content: "BooksQuest — Elige tu juego" },
       {
         property: "og:description",
         content: "Dos juegos, mil risas: pon a prueba tu conocimiento y golpea rápido para ganar.",

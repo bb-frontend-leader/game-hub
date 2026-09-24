@@ -7,7 +7,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
-    meta: [{ title: "Panel admin — ¡Juegolandia!" }],
+    meta: [{ title: "Panel admin — BooksQuest" }],
   }),
   component: AdminHome,
 });

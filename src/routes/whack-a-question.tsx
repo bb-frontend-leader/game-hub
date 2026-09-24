@@ -4,12 +4,12 @@ import { ArrowLeft, Brain } from "lucide-react";
 export const Route = createFileRoute("/whack-a-question")({
   head: () => ({
     meta: [
-      { title: "Whack a game — ¡Juegolandia!" },
+      { title: "Whack a game — BooksQuest" },
       {
         name: "description",
         content: "Golpea la respuesta correcta a toda velocidad en Whack a game.",
       },
-      { property: "og:title", content: "Whack a game — ¡Juegolandia!" },
+      { property: "og:title", content: "Whack a game — BooksQuest" },
       { property: "og:description", content: "Golpea rápido y suma puntos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

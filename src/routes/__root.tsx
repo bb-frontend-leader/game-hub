@@ -81,9 +81,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "¡Juegolandia!" },
+      { title: "BooksQuest" },
       { name: "description", content: "Juegos divertidos, coloridos y llenos de animación." },
-      { property: "og:title", content: "¡Juegolandia!" },
+      { property: "og:title", content: "BooksQuest" },
       {
         property: "og:description",
         content: "Juegos divertidos, coloridos y llenos de animación.",
@@ -157,8 +157,8 @@ function AppShell() {
       void queryClient.cancelQueries({ queryKey: ["user"] });
       queryClient.removeQueries({ queryKey: ["user"] });
     };
-    window.addEventListener("juegolandia:logout", onLogout);
-    return () => window.removeEventListener("juegolandia:logout", onLogout);
+    window.addEventListener("booksquest:logout", onLogout);
+    return () => window.removeEventListener("booksquest:logout", onLogout);
   }, [queryClient]);
 
   // Refresca el perfil desde el backend cuando ya tenemos un usuario

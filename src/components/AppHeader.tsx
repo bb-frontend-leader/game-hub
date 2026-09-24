@@ -33,7 +33,7 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
         className="flex items-center gap-2 text-2xl font-bold tracking-tight drop-shadow-[0_3px_0_oklch(0.2_0.12_295)] sm:text-3xl"
       >
         <Rocket className="size-8 text-game-yellow animate-wiggle" strokeWidth={2.5} />
-        ¡Juegolandia!
+        ¡BooksQuest!
       </Link>
 
       {/* Left: leaderboard, avatar, logout */}

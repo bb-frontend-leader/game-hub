@@ -72,7 +72,7 @@ export function UsernameGate({ onJoin }: { onJoin: (perfil: Perfil) => void }) {
           🕹️
         </span>
         <h1 className="animate-pop mt-4 text-center text-4xl font-bold drop-shadow-[0_4px_0_oklch(0.2_0.12_295)] sm:text-6xl">
-          ¡Bienvenido a Juegolandia!
+          ¡Bienvenido a BooksQuest!
         </h1>
         <p
           className="animate-pop mt-3 flex items-center gap-2 text-center text-lg font-medium text-muted-foreground sm:text-xl"

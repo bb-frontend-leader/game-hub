@@ -13,7 +13,7 @@ import { saveAdminSession } from "@/lib/admin-session";
 
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
-    meta: [{ title: "Ingreso admin — ¡Juegolandia!" }],
+    meta: [{ title: "Ingreso admin — BooksQuest" }],
   }),
   component: AdminLogin,
 });

@@ -2,7 +2,7 @@
 // backend (ver UserService), pero el juego sigue funcionando si eso falla.
 // Math.random() solo se usa dentro de manejadores de eventos, nunca durante el render.
 
-const STORAGE_KEY = "juegolandia-perfil";
+const STORAGE_KEY = "booksquest-perfil";
 
 // `id` lo asigna el backend al crear el usuario (ver UserService.createUser);
 // queda sin definir si el perfil solo se pudo guardar de forma local.
@@ -76,5 +76,5 @@ export function savePerfil(perfil: Perfil): Perfil {
 
 export function clearPerfil() {
   window.localStorage.removeItem(STORAGE_KEY);
-  window.dispatchEvent(new Event("juegolandia:logout"));
+  window.dispatchEvent(new Event("booksquest:logout"));
 }

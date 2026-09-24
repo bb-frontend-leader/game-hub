@@ -6,7 +6,7 @@ import type { AdminSession } from "@/core";
 
 export type { AdminSession };
 
-const STORAGE_KEY = "juegolandia-admin-session";
+const STORAGE_KEY = "booksquest-admin-session";
 
 export function getAdminSession(): AdminSession | null {
   if (typeof window === "undefined") return null;
@@ -28,5 +28,5 @@ export function saveAdminSession(session: AdminSession): AdminSession {
 
 export function clearAdminSession() {
   window.localStorage.removeItem(STORAGE_KEY);
-  window.dispatchEvent(new Event("juegolandia:admin-logout"));
+  window.dispatchEvent(new Event("booksquest:admin-logout"));
 }

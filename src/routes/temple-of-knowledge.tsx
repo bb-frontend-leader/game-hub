@@ -4,12 +4,12 @@ import { ArrowLeft, Zap } from "lucide-react";
 export const Route = createFileRoute("/temple-of-knowledge")({
   head: () => ({
     meta: [
-      { title: "Temple of Knowledge — ¡Juegolandia!" },
+      { title: "Temple of Knowledge — BooksQuest" },
       {
         name: "description",
         content: "Responde preguntas a toda velocidad y suma puntos en Temple of Knowledge.",
       },
-      { property: "og:title", content: "Temple of Knowledge — ¡Juegolandia!" },
+      { property: "og:title", content: "Temple of Knowledge — BooksQuest" },
       { property: "og:description", content: "Responde rápido y suma puntos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
