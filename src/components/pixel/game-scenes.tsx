@@ -8,15 +8,12 @@ export function TempleScene() {
   return (
     <div aria-hidden className="px-scene px-scene--temple">
       <div className="px-scene__layer px-scene__bg" />
-      {/* Mago rojo de guardia, con un slime y una planta hostiles. */}
+      {/* Mago rojo de guardia y una planta hostiles. */}
       <div className="px-scene__actor" style={{ left: "4%", bottom: 34 }}>
         <PixelSprite sheet={SHEETS.hero} scale={5} frames={2} fps={2} />
       </div>
       <div className="px-scene__actor" style={{ left: "40%", bottom: 34 }}>
         <PixelSprite sheet={SHEETS.plant} scale={3} frames={4} fps={4} flip />
-      </div>
-      <div className="px-scene__actor" style={{ left: "60%", bottom: 34 }}>
-        <PixelSprite sheet={SHEETS.slime} scale={3} frames={6} fps={5} flip />
       </div>
       <div className="px-scene__layer px-scene__shade" />
     </div>
