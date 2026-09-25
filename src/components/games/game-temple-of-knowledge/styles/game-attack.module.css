@@ -1,23 +1,23 @@
 :global(:root) {
-  /* fallback (Castillo) */
-  --arcane-primary: #6c4ffb;
-  --arcane-dark: #233555;
-  --arcane-glow: #6e64b5;
+  /* fallback (Café) */
+  --arcane-primary: #8b5a2b;
+  --arcane-dark: #3b2b23;
+  --arcane-glow: #b07a4a;
 
   --bg-button: #de9d42;
-  --box-shadow-button: #884b2b;
+  --box-shadow-button: #6d4323;
   --hover-button: #e9bf6e;
-  --text-button: #233555;
+  --text-button: #3b2b23;
 
-  --ui-text: #dbdbdb;
-  --ui-panel: #232855;
+  --ui-text: #f3e9df;
+  --ui-panel: #4a3328;
 
   /* scroll theme */
-  --ui-bg: #0b0f1d;
-  --ui-gradient: linear-gradient(135deg, #6c4ffb 0%, #6e64b5 100%);
-  --scroll-track: #233555;
-  --scroll-thumb: #232855;
-  --scroll-thumb-hover: #3a3f7a;
+  --ui-bg: #1e1510;
+  --ui-gradient: linear-gradient(135deg, #8b5a2b 0%, #b07a4a 100%);
+  --scroll-track: #3b2b23;
+  --scroll-thumb: #6d5648;
+  --scroll-thumb-hover: #8a6e5c;
 
   /* Scroll neutro fijo (no depende del theme) */
   --scroll-track-fixed: rgba(255, 255, 255, 0.1);
