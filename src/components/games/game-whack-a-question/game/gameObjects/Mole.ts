@@ -96,6 +96,20 @@ export class Mole extends Phaser.GameObjects.Container {
     // Actualizar el contenido del elemento HTML
     const element = this.answerText.node as HTMLParagraphElement;
     element.textContent = answerText;
+    this.applyAnswerSizeClass(element, answerText);
+  }
+
+  /**
+   * Ajusta el tamaño de fuente según el largo del texto para que la
+   * etiqueta quepa en 1 línea (máximo 2) sin tapar al topo de abajo
+   */
+  private applyAnswerSizeClass(element: HTMLElement, text: string): void {
+    element.classList.remove("mole-answer-long", "mole-answer-xlong");
+    if (text.length > 28) {
+      element.classList.add("mole-answer-xlong");
+    } else if (text.length > 16) {
+      element.classList.add("mole-answer-long");
+    }
   }
 
   /**
@@ -106,6 +120,7 @@ export class Mole extends Phaser.GameObjects.Container {
     this.correctAnswer = false;
     const element = this.answerText.node as HTMLParagraphElement;
     element.textContent = "";
+    element.classList.remove("mole-answer-long", "mole-answer-xlong");
     this.answerText.setVisible(false);
   }
 
@@ -119,6 +134,7 @@ export class Mole extends Phaser.GameObjects.Container {
     this.correctAnswer = false;
     const element = this.answerText.node as HTMLParagraphElement;
     element.textContent = "";
+    element.classList.remove("mole-answer-long", "mole-answer-xlong");
     this.answerText.setVisible(false);
     this.moleBody.clearTint();
     this.moleBody.setVisible(true);

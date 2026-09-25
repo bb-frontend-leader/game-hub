@@ -224,22 +224,40 @@
   height: 60%;
   padding: 2px 58px 0px 62px;
   text-align: center;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-top: 28px;
   margin-left: 12px;
   display: flex;
-  align-items: center;
   justify-content: center;
   background: #d6c5ae6e;
+  scrollbar-width: thin;
+  scrollbar-color: #7a4a21 #d6c5ae;
+  scrollbar-gutter: stable;
 }
 
+/* Barra custom estilo madera (Chrome / Edge / Safari) */
 .game-whack_question-background::-webkit-scrollbar {
-  display: none;/*  */
+  width: 10px;
+}
+
+.game-whack_question-background::-webkit-scrollbar-track {
+  background: rgba(214, 197, 174, 0.45);
+  border-radius: 6px;
+}
+
+.game-whack_question-background::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #a06a35 0%, #7a4a21 50%, #5c3517 100%);
+  border: 2px solid #3d2410;
+  border-radius: 6px;
+}
+
+.game-whack_question-background::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #b57a40 0%, #8b5527 50%, #6b3f1c 100%);
 }
 
 .game-whack_question-text {
   font-size: 2rem;
-  margin: 0;
+  margin: auto;
   color: #0f0806;
   font-family: "MaidenOrange";
   font-weight: bold;
@@ -300,24 +318,63 @@
   animation: blink 1s infinite;
 }
 
-/* Texto de respuesta en los topos */
+/* Texto de respuesta en los topos: plaquita pixel-art compacta.
+   Siempre debajo de su topo y sin recortar texto (sin overflow). */
 .mole-answer-text {
+  position: relative;
   font-family: "MaidenOrange";
-  font-size: 1rem;
+  font-size: 0.85rem;
+  line-height: 1.2;
   color: var(--theme-text-button);
   text-align: center;
   margin: 0;
-  padding: 2px 6px;
-  background: var(--theme-primary);
-  border-radius: 8px;
+  padding: 2px 8px;
+  background: var(--theme-bg-button);
+  border-radius: 4px;
   border: 2px solid var(--theme-secondary);
-  box-shadow: 0 2px 8px var(--theme-secondary);
-  min-width: 100px;
-  height: 35px;
-  max-width: 120px;
+  box-shadow: 0 4px 0 #4a2511;
+  min-width: 64px;
+  width: max-content;
+  max-width: 160px;
+  height: auto;
+  overflow-wrap: break-word;
   pointer-events: none !important;
   user-select: none;
-  overflow: hidden;
+  
+}
+
+/* Respuestas medianas (17-28 caracteres): caben en 1 línea */
+.mole-answer-text.mole-answer-long {
+  font-size: 0.8rem;
+  left: -2rem;
+}
+
+/* Respuestas muy largas (+28 caracteres): caben en máximo 2 líneas */
+.mole-answer-text.mole-answer-xlong {
+  font-size: 0.7rem;
+  left: -0.5rem;
+}
+
+/* Colita hacia el topo: borde exterior */
+.mole-answer-text::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-bottom-color: var(--theme-secondary);
+}
+
+/* Colita hacia el topo: relleno madera */
+.mole-answer-text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(3px);
+  border: 4px solid transparent;
+  border-bottom-color: #8b4513;
 }
 
 @keyframes blink {
