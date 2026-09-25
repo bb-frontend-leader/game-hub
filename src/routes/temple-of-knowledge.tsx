@@ -28,15 +28,11 @@ function TempleOfKnowledge() {
       <div className="animate-floaty pointer-events-none absolute -right-16 bottom-10 size-72 rounded-full bg-party-orange/30 blur-2xl" />
 
       <div className="relative z-10">
-        <main className="mx-auto flex max-w-2xl flex-col items-center px-5 pb-16 pt-10 text-center">
+        <main className="mx-auto flex max-w-4xl flex-col items-center px-5 pb-16 pt-10 text-center">
           <Zap className="animate-wiggle size-20 text-game-yellow" strokeWidth={2.5} />
           <h1 className="animate-pop mt-4 text-4xl font-bold drop-shadow-[0_4px_0_oklch(0.2_0.12_295)] sm:text-5xl">
             Temple of Knowledge
           </h1>
-          <p className="mt-3 text-lg font-medium text-muted-foreground">
-            ¡Este juego se está preparando! Muy pronto podrás responder preguntas contra el reloj.
-            ⏱️
-          </p>
           <AttackGame questions={TEMPLE_OF_KNOWLEDGE_QUESTIONS} />
           <Link
             to="/"

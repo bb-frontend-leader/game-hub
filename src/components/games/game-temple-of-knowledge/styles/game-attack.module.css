@@ -26,8 +26,8 @@
 }
 
 @font-face {
-  font-family: 'PixelFont';
-  src: url('/assets/game-attack/fonts/VT323-Regular.woff2') format('woff2');
+  font-family: "PixelFont";
+  src: url("/assets/game-attack/fonts/VT323-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -42,7 +42,7 @@
   overflow-y: auto;
 
   /* tipografía estilo retro */
-  font-family: 'PixelFont', Arial, sans-serif; /* si no la tienes, se cae a Arial */
+  font-family: "PixelFont", Arial, sans-serif; /* si no la tienes, se cae a Arial */
   font-size: 1rem;
   font-weight: 600;
 
@@ -103,7 +103,7 @@
   width: 100%;
   height: 100%;
   grid-area: 2;
-  font-family: 'PixelFont', Arial, sans-serif;
+  font-family: "PixelFont", Arial, sans-serif;
   font-size: 0.9rem;
   line-height: normal;
   text-align: center;
@@ -176,13 +176,13 @@
 }
 
 .curtain-msg h1 {
-  font-family: 'PixelFont', Arial, sans-serif;
+  font-family: "PixelFont", Arial, sans-serif;
   font-size: 3rem;
 }
 
 .curtain-msg p {
   font-size: 1.3rem;
-  font-family: 'PixelFont', Arial, sans-serif;
+  font-family: "PixelFont", Arial, sans-serif;
   color: color-mix(in srgb, var(--ui-text) 85%, transparent);
 }
 
@@ -198,7 +198,7 @@
   color: var(--text-button);
   font-weight: 700;
   box-shadow: 0 6px 0 var(--box-shadow-button);
-  font-family: 'PixelFont', Arial, sans-serif;
+  font-family: "PixelFont", Arial, sans-serif;
 }
 
 .curtain-next:hover {
@@ -242,7 +242,7 @@
   /* Fondo igual al de la carta */
   background: color-mix(in srgb, var(--ui-panel) 88%, transparent); /* #253a5e con alpha */
   color: var(--ui-text);
-  font-family: 'PixelFont', Arial, sans-serif;
+  font-family: "PixelFont", Arial, sans-serif;
 
   /* Pixel look */
   image-rendering: pixelated;
@@ -279,7 +279,7 @@
 }
 
 .statRow::after {
-  content: '';
+  content: "";
   display: block;
   clear: both;
 }
@@ -331,13 +331,13 @@
 }
 
 /* colores por barra */
-.statBar[data-name='hp'] .fill {
+.statBar[data-name="hp"] .fill {
   background: rgba(220, 80, 80, 0.6);
 }
-.statBar[data-name='attempts'] .fill {
+.statBar[data-name="attempts"] .fill {
   background: rgba(230, 150, 60, 0.65);
 }
-.statBar[data-name='enemies'] .fill {
+.statBar[data-name="enemies"] .fill {
   background: rgba(70, 160, 120, 0.6);
 }
 
