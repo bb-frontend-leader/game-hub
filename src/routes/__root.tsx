@@ -105,11 +105,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#140d33" },
       { title: "BooksQuest" },
-      { name: "description", content: "Juegos divertidos, coloridos y llenos de animación." },
+      {
+        name: "description",
+        content: "BooksQuest: juegos de preguntas en pixel-art para aprender jugando.",
+      },
       { property: "og:title", content: "BooksQuest" },
       {
         property: "og:description",
-        content: "Juegos divertidos, coloridos y llenos de animación.",
+        content: "BooksQuest: juegos de preguntas en pixel-art para aprender jugando.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

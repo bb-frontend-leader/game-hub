@@ -10,12 +10,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Página de juegos llena de color y animación: elige entre Temple of Knowledge y Whack a game.",
+          "Elige tu juego en BooksQuest: responde preguntas en Temple of Knowledge o golpea la respuesta correcta en Whack a game.",
       },
       { property: "og:title", content: "BooksQuest — Elige tu juego" },
       {
         property: "og:description",
-        content: "Dos juegos, mil risas: pon a prueba tu conocimiento y golpea rápido para ganar.",
+        content:
+          "Dos juegos de preguntas en pixel-art. Elige uno, responde rápido y sube en la tabla de clasificación.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
