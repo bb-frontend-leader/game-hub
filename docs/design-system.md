@@ -12,6 +12,7 @@ Código fuente:
 | Íconos, paleta en TS, cuadrículas de arte                        | [src/components/pixel/pixel-art.ts](../src/components/pixel/pixel-art.ts)                                                            |
 | Componentes pixel (íconos, sprites, cielo, suelo, logo, escenas) | [src/components/pixel/](../src/components/pixel/)                                                                                    |
 | Primitivos shadcn ya adaptados                                   | [src/components/ui/](../src/components/ui/) (button, card, input, label, badge, table, tabs, dialog, alert-dialog, sonner, skeleton) |
+| Favicon e ícono de iOS (generador)                               | [scripts/generate-favicon.mjs](../scripts/generate-favicon.mjs) → `public/favicon.svg`, `favicon.ico`, `apple-touch-icon.png`        |
 
 ## Principios
 
@@ -100,6 +101,26 @@ quedan repartidos.
 - Objetivos táctiles ≥ 44px (`px-btn--sm` = 44px, botones normales = 48px).
 - Sprites, cielo y adornos son `aria-hidden`; las medallas y el 404 llevan `title`.
 - `<html lang="es">`.
+
+## Favicon
+
+El libro del logo dentro de un marco dorado sobre fondo `night-900`, con las esquinas cortadas como
+los demás marcos. El marco dorado da silueta tanto en pestañas claras como oscuras.
+
+| Archivo                       | Uso                                                         |
+| ----------------------------- | ----------------------------------------------------------- |
+| `public/favicon.svg`          | Navegadores modernos (vectorial, nítido a cualquier tamaño) |
+| `public/favicon.ico`          | 16 + 32 + 48 px: navegadores viejos y Safari                |
+| `public/apple-touch-icon.png` | 180 px, fondo opaco (pantalla de inicio de iOS)             |
+
+Se generan desde una sola cuadrícula pixel, sin dependencias (solo módulos internos de Node):
+
+```sh
+node scripts/generate-favicon.mjs
+```
+
+Si cambia el libro del logo (`ICONS.book` en `pixel-art.ts`), actualiza `BOOK` en el script y vuelve
+a correrlo. Los enlaces están en el `head` de `src/routes/__root.tsx`.
 
 ## Fuera de alcance (a propósito)
 
