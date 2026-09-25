@@ -224,22 +224,40 @@
   height: 60%;
   padding: 2px 58px 0px 62px;
   text-align: center;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-top: 28px;
   margin-left: 12px;
   display: flex;
-  align-items: center;
   justify-content: center;
   background: #d6c5ae6e;
+  scrollbar-width: thin;
+  scrollbar-color: #7a4a21 #d6c5ae;
+  scrollbar-gutter: stable;
 }
 
+/* Barra custom estilo madera (Chrome / Edge / Safari) */
 .game-whack_question-background::-webkit-scrollbar {
-  display: none;/*  */
+  width: 10px;
+}
+
+.game-whack_question-background::-webkit-scrollbar-track {
+  background: rgba(214, 197, 174, 0.45);
+  border-radius: 6px;
+}
+
+.game-whack_question-background::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #a06a35 0%, #7a4a21 50%, #5c3517 100%);
+  border: 2px solid #3d2410;
+  border-radius: 6px;
+}
+
+.game-whack_question-background::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #b57a40 0%, #8b5527 50%, #6b3f1c 100%);
 }
 
 .game-whack_question-text {
   font-size: 2rem;
-  margin: 0;
+  margin: auto;
   color: #0f0806;
   font-family: "MaidenOrange";
   font-weight: bold;
