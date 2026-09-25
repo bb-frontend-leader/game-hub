@@ -1,5 +1,7 @@
 import { Scene } from "phaser";
 
+import { assetUrl } from "@/lib/asset-url";
+
 import { Audio, Card } from "../components";
 import { globalState } from "../global-state";
 import css from "../styles/game-attack.module.css";
@@ -68,7 +70,7 @@ export class GameMain extends Scene {
   }
 
   preload() {
-    this.load.setPath("assets/game-attack");
+    this.load.setPath(assetUrl("assets/game-attack"));
 
     // Magic books
     this.load.image("poison1", `images/poisons/Icon1.png`);

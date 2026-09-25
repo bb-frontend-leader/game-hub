@@ -1,6 +1,8 @@
 // src/game/game-assets.ts
 import type { Scene } from "phaser";
 
+import { assetUrl } from "@/lib/asset-url";
+
 import { ThemeType } from "../types/types";
 
 export const ASSETS = {
@@ -73,7 +75,7 @@ export const ASSETS = {
 } as const;
 
 export function preloadAssets(scene: Scene, theme: ThemeType) {
-  scene.load.setPath("assets/game-attack");
+  scene.load.setPath(assetUrl("assets/game-attack"));
 
   // ✅ siempre mismas keys: 'bg' y 'card'
   const bg = theme.assets.images.find((i) => i.name === "bg")?.path;

@@ -2,13 +2,13 @@
   font-family: "MaidenOrange";
   font-style: normal;
   font-weight: 400;
-  src: url("assets/game-whack-a-question/fonts/MaidenOrange-Regular.ttf");
+  src: url("/assets/game-whack-a-question/fonts/MaidenOrange-Regular.ttf");
 }
 @font-face {
   font-family: "Pixel";
   font-style: normal;
   font-weight: 400;
-  src: url("assets/game-whack-a-question/fonts/Jersey10-Regular.ttf");
+  src: url("/assets/game-whack-a-question/fonts/Jersey10-Regular.ttf");
 }
 
 /* Variables CSS para temas - Se aplican dinámicamente desde theme-manager */
@@ -72,11 +72,11 @@
 }
 
 .game-whack-volume-button.sound {
-  background-image: url("assets/game-whack-a-question/images/Speaker-0.png");
+  background-image: url("/assets/game-whack-a-question/images/Speaker-0.png");
 }
 
 .game-whack-volume-button.muted {
-  background-image: url("assets/game-whack-a-question/images/Speaker-Crossed.png");
+  background-image: url("/assets/game-whack-a-question/images/Speaker-Crossed.png");
 }
 
 /* Botón de audio (AudioManager) */
@@ -111,12 +111,12 @@
 }
 
 .game-whack_audio-button.sound {
-  background-image: url("assets/game-whack-a-question/images/Speaker-0.png");
+  background-image: url("/assets/game-whack-a-question/images/Speaker-0.png");
   opacity: 1;
 }
 
 .game-whack_audio-button.muted {
-  background-image: url("assets/game-whack-a-question/images/Speaker-Crossed.png");
+  background-image: url("/assets/game-whack-a-question/images/Speaker-Crossed.png");
   opacity: 0.7;
 }
 
@@ -152,11 +152,11 @@
 }
 
 .game-whack_pause-button.playing {
-  background-image: url("assets/game-whack-a-question/images/Pause.png");
+  background-image: url("/assets/game-whack-a-question/images/Pause.png");
 }
 
 .game-whack_pause-button.paused {
-  background-image: url("assets/game-whack-a-question/images/Play.png");
+  background-image: url("/assets/game-whack-a-question/images/Play.png");
 }
 
 /* Menu */
@@ -213,7 +213,7 @@
   border-image-width: 30px 20px 30px 20px;
   border-image-outset: 0px 0px 0px 0px;
   border-image-repeat: stretch stretch;
-  border-image-source: url("assets/game-whack-a-question/images/cartel-pregunta.png");
+  border-image-source: url("/assets/game-whack-a-question/images/cartel-pregunta.png");
   border-style: solid;
   width: 28.5rem;
   height: 9.5rem;

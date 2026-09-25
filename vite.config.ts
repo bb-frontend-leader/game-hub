@@ -6,6 +6,10 @@ import path from "path";
 import { defineConfig } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 
+// Prefijo público bajo el que nginx monta la app. Debe empezar y terminar con "/"; "./" rompe el
+// SSR (emite "/./assets/..."). Lo reutilizan el router (import.meta.env.BASE_URL) y Nitro.
+const BASE = "/game-hub/";
+
 export default defineConfig({
   plugins: [
     tsConfigPaths({ projects: ["./tsconfig.json"] }),
@@ -15,9 +19,10 @@ export default defineConfig({
       server: { entry: "server" },
     }),
     viteReact(),
-    nitro(),
+    // baseURL hace que Nitro sirva rutas y estáticos bajo el mismo prefijo (nginx no lo recorta).
+    nitro({ baseURL: BASE }),
   ],
-  base: "./",
+  base: BASE,
   resolve: {
     alias: {
       "@/": `${path.resolve(__dirname, "src")}/`,
