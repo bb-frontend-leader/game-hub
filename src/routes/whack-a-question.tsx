@@ -36,10 +36,6 @@ function WhackAQuestion() {
           <div className="mt-4">
             <GameWhackAQuestion data={dataGameWhackAQuestion} />
           </div>
-          <p className="mt-3 text-lg font-medium text-muted-foreground">
-            ¡Casi listo! Muy pronto podrás golpear las respuestas correctas antes de que se escapen.
-            🔨❓
-          </p>
           <Link
             to="/"
             className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-game-yellow px-6 py-3 font-bold text-primary-foreground shadow-[0_5px_0_oklch(0.62_0.15_95)] transition-transform hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
