@@ -24,11 +24,11 @@ export class Audio {
 
   private readonly storageKey: string;
   private readonly cssButtonMusic: string;
-  private readonly cssButtonMusicMuted?: string;
+  private readonly cssButtonMusicMuted?: string | undefined;
   private readonly volume: number;
 
-  private currentMusic?: Phaser.Sound.BaseSound;
-  private currentMusicKey?: string;
+  private currentMusic?: Phaser.Sound.BaseSound | undefined;
+  private currentMusicKey?: string | undefined;
 
   constructor(scene: Phaser.Scene, opts: Options) {
     this.scene = scene;
@@ -156,7 +156,7 @@ export class Audio {
     this.btn.setAttribute("aria-label", label);
     this.btn.setAttribute("title", label);
     this.btn.setAttribute("aria-pressed", String(active));
-    this.btn.dataset.muted = String(this.muted);
+    this.btn.dataset["muted"] = String(this.muted);
 
     this.btn.className = active
       ? this.cssButtonMusic

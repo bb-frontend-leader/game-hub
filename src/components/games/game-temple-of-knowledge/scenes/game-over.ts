@@ -54,8 +54,8 @@ export class GameOver extends Phaser.Scene {
       musicKey: "dungeon", // ✅ música distinta
       x: width - 30,
       y: 36,
-      cssButtonMusic: css["button-music"],
-      cssButtonMusicMuted: css["button-music-muted"],
+      cssButtonMusic: css["button-music"] ?? "",
+      cssButtonMusicMuted: css["button-music-muted"] ?? "",
       volume: 0.1,
       storageKey: "mm_music_muted", // ✅ mismo storageKey para mantener mute entre escenas
     });
@@ -167,37 +167,37 @@ export class GameOver extends Phaser.Scene {
     const enemiesValue = d.enemiesDefeated ?? 0;
 
     const dom = this.add.dom(x, y).setOrigin(0, 0).setDepth(9999).createFromHTML(`
-      <div class="${css.statsPanel}">
-        <div class="${css.statTitle}">Estadísticas</div>
+      <div class="${css["statsPanel"]}">
+        <div class="${css["statTitle"]}">Estadísticas</div>
 
-        <div class="${css.statRow}">
-          <div class="${css.statLabel} ${css.left}">Vidas</div>
-          <div class="${css.statBar}" data-name="hp">
-            <div class="${css.ticks}" data-role="ticks"></div>
-            <div class="${css.fill}" data-role="fill"></div>
-            <div class="${css.thumb}" data-role="thumb"></div>
+        <div class="${css["statRow"]}">
+          <div class="${css["statLabel"]} ${css["left"]}">Vidas</div>
+          <div class="${css["statBar"]}" data-name="hp">
+            <div class="${css["ticks"]}" data-role="ticks"></div>
+            <div class="${css["fill"]}" data-role="fill"></div>
+            <div class="${css["thumb"]}" data-role="thumb"></div>
           </div>
-          <div class="${css.statLabel} ${css.right}">${d.hpLeft}/${d.maxLives}</div>
+          <div class="${css["statLabel"]} ${css["right"]}">${d.hpLeft}/${d.maxLives}</div>
         </div>
 
-        <div class="${css.statRow}">
-          <div class="${css.statLabel} ${css.left}">Intentos</div>
-          <div class="${css.statBar}" data-name="attempts">
-            <div class="${css.ticks}" data-role="ticks"></div>
-            <div class="${css.fill}" data-role="fill"></div>
-            <div class="${css.thumb}" data-role="thumb"></div>
+        <div class="${css["statRow"]}">
+          <div class="${css["statLabel"]} ${css["left"]}">Intentos</div>
+          <div class="${css["statBar"]}" data-name="attempts">
+            <div class="${css["ticks"]}" data-role="ticks"></div>
+            <div class="${css["fill"]}" data-role="fill"></div>
+            <div class="${css["thumb"]}" data-role="thumb"></div>
           </div>
-          <div class="${css.statLabel} ${css.right}">${d.attempts}</div>
+          <div class="${css["statLabel"]} ${css["right"]}">${d.attempts}</div>
         </div>
 
-        <div class="${css.statRow}">
-          <div class="${css.statLabel} ${css.left}">Enemigos</div>
-          <div class="${css.statBar}" data-name="enemies">
-            <div class="${css.ticks}" data-role="ticks"></div>
-            <div class="${css.fill}" data-role="fill"></div>
-            <div class="${css.thumb}" data-role="thumb"></div>
+        <div class="${css["statRow"]}">
+          <div class="${css["statLabel"]} ${css["left"]}">Enemigos</div>
+          <div class="${css["statBar"]}" data-name="enemies">
+            <div class="${css["ticks"]}" data-role="ticks"></div>
+            <div class="${css["fill"]}" data-role="fill"></div>
+            <div class="${css["thumb"]}" data-role="thumb"></div>
           </div>
-          <div class="${css.statLabel} ${css.right}">${d.enemiesDefeated}</div>
+          <div class="${css["statLabel"]} ${css["right"]}">${d.enemiesDefeated}</div>
         </div>
 
         <button id="go-mainmenu" class='${css["curtain-next"]}'>
@@ -215,7 +215,7 @@ export class GameOver extends Phaser.Scene {
 
       const ticks = bar.querySelector('[data-role="ticks"]') as HTMLDivElement;
       ticks.innerHTML = new Array(safeSteps)
-        .fill(0)
+        ["fill"](0)
         .map(() => `<span></span>`)
         .join("");
 
@@ -225,7 +225,7 @@ export class GameOver extends Phaser.Scene {
       const thumb = bar.querySelector('[data-role="thumb"]') as HTMLDivElement;
 
       fill.style.width = `${pct}%`;
-      thumb.style.left = `calc(${pct}% - 5px)`;
+      thumb.style["left"] = `calc(${pct}% - 5px)`;
     };
 
     announce(

@@ -1,6 +1,5 @@
-import { WhackQuestion } from "@games/game-whack-a-question/types/types";
-
 import { Question } from "@games/game-temple-of-knowledge/types/types";
+import { WhackQuestion } from "@games/game-whack-a-question/types/types";
 
 export const TEMPLE_OF_KNOWLEDGE_QUESTIONS: Question[] = [
   {

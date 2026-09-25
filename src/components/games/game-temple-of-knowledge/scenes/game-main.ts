@@ -60,8 +60,8 @@ export class GameMain extends Scene {
   // Estos son los que se animan
   heroDisplayPct = 1;
   plantDisplayPct = 1;
-  heroFillTween?: Phaser.Tweens.Tween;
-  plantFillTween?: Phaser.Tweens.Tween;
+  heroFillTween?: Phaser.Tweens.Tween | undefined;
+  plantFillTween?: Phaser.Tweens.Tween | undefined;
 
   constructor() {
     super("GameMain");
@@ -116,13 +116,12 @@ export class GameMain extends Scene {
     this.createQuestionPanel();
 
     // 2) Audios
-
     this.audio = new Audio(this, {
       musicKey: "initial",
       x: width - 30,
       y: 36,
-      cssButtonMusic: css["button-music"],
-      cssButtonMusicMuted: css["button-music-muted"],
+      cssButtonMusic: css["button-music"] ?? "",
+      cssButtonMusicMuted: css["button-music-muted"] ?? "",
       volume: 0.1,
       storageKey: "mm_music_muted", // importante: mismo key en todas las escenas
     });
@@ -204,7 +203,7 @@ export class GameMain extends Scene {
     });
   }
 
-  update() {
+  override update() {
     this.updateHealthBars();
   }
 
@@ -234,7 +233,7 @@ export class GameMain extends Scene {
     el.style.width = `${width}px`;
     el.style.maxHeight = `${height}px`;
 
-    el.className = css["question-scroll"];
+    el.className = css["question-scroll"] ?? "";
 
     el.addEventListener("wheel", (e) => e.stopPropagation(), { passive: true });
   }
@@ -866,6 +865,7 @@ export class GameMain extends Scene {
   private onResult(opt: Option) {
     const questions = globalState.questions;
     const question = questions[this.qIndex];
+    if (!question) return;
 
     const correctOpt = question?.options.find((o) => o.correct);
     const correctAnswer = correctOpt?.id ?? "";

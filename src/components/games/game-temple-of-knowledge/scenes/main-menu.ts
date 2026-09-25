@@ -56,8 +56,8 @@ export class MainMenu extends Scene {
       musicKey: "initial",
       x: width - 30,
       y: 36,
-      cssButtonMusic: css["button-music"],
-      cssButtonMusicMuted: css["button-music-muted"],
+      cssButtonMusic: css["button-music"] ?? "",
+      cssButtonMusicMuted: css["button-music-muted"] ?? "",
       volume: 0.1,
       storageKey: "mm_music_muted", // importante: mismo key en todas las escenas
     });
