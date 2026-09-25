@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { LogOut, Medal, Rocket, Trophy, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { PixelIcon, PixelLogo, RankBadge } from "@/components/pixel";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { getLeaderboardService } from "@/core";
-import { medalFor } from "@/lib/medal";
 import { clearPerfil, type Perfil } from "@/lib/perfil";
 
 const LEADERBOARD_SIZE = 5;
@@ -21,101 +22,103 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
   });
 
   const logout = () => {
-    toast.success("¡Hasta pronto! 👋");
+    toast.success("¡Hasta pronto!");
     setTimeout(() => clearPerfil(), 400);
   };
 
   return (
-    <header className="relative z-20 flex items-center justify-between gap-3 px-5 py-4 sm:px-8">
-      {/* Right: logo */}
-      <Link
-        to="/"
-        className="flex items-center gap-2 text-2xl font-bold tracking-tight drop-shadow-[0_3px_0_oklch(0.2_0.12_295)] sm:text-3xl"
-      >
-        <Rocket className="size-8 text-game-yellow animate-wiggle" strokeWidth={2.5} />
-        ¡BooksQuest!
-      </Link>
+    <header className="relative z-20 border-b-4 border-ink bg-night-900 shadow-[inset_0_-4px_0_0_var(--px-night-700)]">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-8">
+        <Link to="/" aria-label="BooksQuest — inicio" className="shrink-0">
+          <PixelLogo />
+        </Link>
 
-      {/* Left: leaderboard, avatar, logout */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        <button
-          onClick={() => setShowBoard(true)}
-          className="flex items-center gap-2 rounded-2xl bg-game-yellow px-3 py-2.5 text-sm font-bold text-primary-foreground shadow-[0_5px_0_oklch(0.62_0.15_95)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-1 active:shadow-none sm:px-4"
-        >
-          <Trophy className="size-5" strokeWidth={2.5} />
-          <span className="hidden sm:inline">Clasificación</span>
-        </button>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Button
+            variant="default"
+            onClick={() => setShowBoard(true)}
+            aria-label="Ver clasificación"
+            className="px-btn--icon lg:px-5"
+          >
+            <PixelIcon name="trophy" scale={2} />
+            <span className="hidden lg:inline">Clasificación</span>
+          </Button>
 
-        <div className="flex h-11 max-w-[9rem] items-center gap-1.5 overflow-hidden rounded-sm border-4 border-white/30 bg-party-pink px-2 text-lg">
-          <span aria-hidden>{perfil.emoji}</span>
-          <span className="truncate text-sm font-bold">{perfil.name}</span>
+          <div
+            className="px-frame px-c-night hidden h-12 max-w-[12rem] items-center gap-2 px-2 min-[380px]:flex sm:px-3"
+            title={perfil.name}
+          >
+            <span
+              aria-hidden
+              className="px-frame px-c-well flex size-8 shrink-0 items-center justify-center text-lg leading-none [--px:2px]"
+            >
+              {perfil.emoji}
+            </span>
+            <span className="hidden truncate text-lg font-semibold md:inline">{perfil.name}</span>
+          </div>
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={logout}
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión"
+          >
+            <PixelIcon name="exit" scale={2} />
+          </Button>
         </div>
-
-        <button
-          onClick={logout}
-          title="Cerrar sesión"
-          className="flex size-11 items-center justify-center rounded-2xl bg-secondary text-secondary-foreground shadow-[0_4px_0_oklch(0.3_0.14_300)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none"
-        >
-          <LogOut className="size-5" strokeWidth={2.5} />
-        </button>
       </div>
 
-      {/* Leaderboard modal */}
-      {showBoard && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-          onClick={() => setShowBoard(false)}
-        >
-          <div
-            className="animate-pop w-full max-w-md rounded-3xl border-4 border-white/20 bg-card p-6 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-2xl font-bold">
-                <Trophy className="size-7 text-game-yellow" />
-                Tabla de clasificación
-              </h2>
-              <button
-                onClick={() => setShowBoard(false)}
-                aria-label="Cerrar clasificación"
-                className="flex size-9 items-center justify-center rounded-full bg-muted transition-transform hover:scale-110"
-              >
-                <X className="size-5" />
-              </button>
-            </div>
+      <Dialog open={showBoard} onOpenChange={setShowBoard}>
+        <DialogContent className="max-w-md gap-0 p-0">
+          <div className="px-bar min-h-14 pr-14 [--px-bar-hi:var(--px-gold-hi)] [--px-bar:var(--px-gold)]">
+            <PixelIcon name="trophy" scale={2} />
+            <DialogTitle className="pr-0 text-base leading-snug text-ink">
+              Tabla de clasificación
+            </DialogTitle>
+          </div>
+
+          <div className="space-y-4 p-5">
             {isLoading && (
-              <p className="py-6 text-center text-sm text-muted-foreground">Cargando...</p>
+              <p
+                role="status"
+                className="animate-px-blink py-6 text-center text-xl text-muted-foreground"
+              >
+                Cargando...
+              </p>
             )}
             {!isLoading && entries?.length === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                ¡Todavía no hay puntajes! Sé el primero en jugar 🎮
+              <p className="py-6 text-center text-xl text-muted-foreground">
+                ¡Todavía no hay puntajes! Sé el primero en jugar.
               </p>
             )}
             {!isLoading && entries && entries.length > 0 && (
-              <ul className="space-y-2">
+              <ol className="space-y-3">
                 {entries.map((entry) => (
                   <li
                     key={entry.userId}
-                    className="flex items-center gap-3 rounded-2xl bg-muted/60 px-4 py-3"
+                    className="px-frame px-c-night flex items-center gap-3 px-3 py-2 [--px:2px]"
                   >
-                    <span className="flex size-9 items-center justify-center text-xl font-bold">
-                      {medalFor(entry.rank)}
+                    <RankBadge rank={entry.rank} className="w-9 shrink-0" />
+                    <span aria-hidden className="text-xl leading-none">
+                      {entry.emoji}
                     </span>
-                    <Medal className="size-4 text-game-yellow" />
-                    <span className="flex-1 font-semibold">
-                      {entry.emoji} {entry.name}
+                    <span className="min-w-0 flex-1 truncate text-xl font-semibold">
+                      {entry.name}
                     </span>
-                    <span className="font-bold text-game-yellow">{entry.points} pts</span>
+                    <span className="shrink-0 font-pixel text-base font-bold text-gold">
+                      {entry.points} pts
+                    </span>
                   </li>
                 ))}
-              </ul>
+              </ol>
             )}
-            <p className="mt-4 text-center text-sm text-muted-foreground">
+            <DialogDescription className="text-center text-lg">
               ¡Sigue jugando para subir de puesto!
-            </p>
+            </DialogDescription>
           </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { PixelIcon } from "@/components/pixel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -42,16 +42,18 @@ function AdminLogin() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
-      <Card className="w-full max-w-sm">
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <Card className="animate-px-pop w-full max-w-sm">
         <CardHeader className="items-center text-center">
-          <ShieldCheck className="size-10 text-primary" />
-          <CardTitle className="text-xl">Acceso de administrador</CardTitle>
+          <PixelIcon name="shield" scale={5} className="text-cyan" />
+          <CardTitle role="heading" aria-level={1} className="pt-2 text-lg">
+            Acceso de administrador
+          </CardTitle>
           <CardDescription>Ingresa con tu usuario y contraseña de docente.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-1.5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            <div className="space-y-2">
               <Label htmlFor="admin-username">Usuario</Label>
               <Input
                 id="admin-username"
@@ -61,7 +63,7 @@ function AdminLogin() {
                 required
               />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label htmlFor="admin-password">Contraseña</Label>
               <Input
                 id="admin-password"
@@ -72,7 +74,7 @@ function AdminLogin() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isPending}>
+            <Button type="submit" variant="success" className="w-full" disabled={isPending}>
               {isPending ? "Ingresando..." : "Ingresar"}
             </Button>
           </form>
