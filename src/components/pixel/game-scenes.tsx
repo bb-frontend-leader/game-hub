@@ -9,11 +9,11 @@ export function TempleScene() {
     <div aria-hidden className="px-scene px-scene--temple">
       <div className="px-scene__layer px-scene__bg" />
       {/* Mago rojo de guardia y una planta hostiles. */}
-      <div className="px-scene__actor" style={{ left: "4%", bottom: 34 }}>
-        <PixelSprite sheet={SHEETS.hero} scale={5} frames={2} fps={2} />
+      <div className="px-scene__actor" style={{ left: "4%", bottom: 60 }}>
+        <PixelSprite sheet={SHEETS.hero} scale={3} frames={2} fps={2} />
       </div>
-      <div className="px-scene__actor" style={{ left: "40%", bottom: 34 }}>
-        <PixelSprite sheet={SHEETS.plant} scale={3} frames={4} fps={4} flip />
+      <div className="px-scene__actor" style={{ left: "40%", bottom: 30 }}>
+        <PixelSprite sheet={SHEETS.plant} scale={2} frames={4} fps={4} flip />
       </div>
       <div className="px-scene__layer px-scene__shade" />
     </div>
