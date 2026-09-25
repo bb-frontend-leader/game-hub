@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Brain } from "lucide-react";
 
+import { GameWhackAQuestion } from "@/components/games/game-whack-a-question";
+import { dataGameWhackAQuestion } from "@/data-test";
+
 export const Route = createFileRoute("/whack-a-question")({
   head: () => ({
     meta: [
@@ -30,6 +33,9 @@ function WhackAQuestion() {
           <h1 className="animate-pop mt-4 text-4xl font-bold drop-shadow-[0_4px_0_oklch(0.2_0.12_295)] sm:text-5xl">
             Whack a game
           </h1>
+          <div className="mt-4">
+            <GameWhackAQuestion data={dataGameWhackAQuestion} />
+          </div>
           <p className="mt-3 text-lg font-medium text-muted-foreground">
             ¡Casi listo! Muy pronto podrás golpear las respuestas correctas antes de que se escapen.
             🔨❓

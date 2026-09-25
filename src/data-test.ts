@@ -1,3 +1,5 @@
+import { WhackQuestion } from "@games/game-whack-a-question/types/types";
+
 import { Question } from "@games/game-temple-of-knowledge/types/types";
 
 export const TEMPLE_OF_KNOWLEDGE_QUESTIONS: Question[] = [
@@ -70,5 +72,18 @@ export const TEMPLE_OF_KNOWLEDGE_QUESTIONS: Question[] = [
       { id: "C", text: "Para ejecutar bases de datos", correct: false },
       { id: "D", text: "Para compilar HTML", correct: false },
     ],
+  },
+];
+
+export const dataGameWhackAQuestion: WhackQuestion[] = [
+  {
+    question: "¿Cuál es la capital de Francia?",
+    options: ["a. Paris", "b. Londres", "c. Berlin", "d. Madrid", "e. Roma"],
+    correctAnswer: 0,
+  },
+  {
+    question: "¿Cuánto es 2 + 2?",
+    options: ["3", "4", "5", "6"],
+    correctAnswer: 1,
   },
 ];
