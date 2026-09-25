@@ -1,5 +1,8 @@
+import { AttackGame } from "@games/game-temple-of-knowledge/attack-game";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Zap } from "lucide-react";
+
+import { TEMPLE_OF_KNOWLEDGE_QUESTIONS } from "@/data-test";
 
 export const Route = createFileRoute("/temple-of-knowledge")({
   head: () => ({
@@ -34,6 +37,7 @@ function TempleOfKnowledge() {
             ¡Este juego se está preparando! Muy pronto podrás responder preguntas contra el reloj.
             ⏱️
           </p>
+          <AttackGame questions={TEMPLE_OF_KNOWLEDGE_QUESTIONS} />
           <Link
             to="/"
             className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-game-yellow px-6 py-3 font-bold text-primary-foreground shadow-[0_5px_0_oklch(0.62_0.15_95)] transition-transform hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
