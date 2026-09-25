@@ -81,8 +81,12 @@ export const dataGameWhackAQuestion: WhackQuestion[] = [
     correctAnswer: 0,
   },
   {
-    question: "¿Cuánto es 2 + 2?",
-    options: ["3", "4", "5", "6"],
+    question: "¿Qué significa CSS?",
+    options: [
+      "a. Computer Style Sheets",
+      "b. Cascading Style Sheets",
+      "c. Creative Styling System"
+    ],
     correctAnswer: 1,
   },
 ];
