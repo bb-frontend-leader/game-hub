@@ -1,5 +1,5 @@
 // game-assets.ts - Helper para cargar assets según el tema
-import type Phaser from "phaser";
+import type * as Phaser from "phaser";
 
 import { ThemeType } from "../types/types";
 

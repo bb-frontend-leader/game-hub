@@ -1,5 +1,5 @@
 // src/utils/combat.ts
-import Phaser from "phaser";
+import * as Phaser from "phaser";
 
 export type PlantType = 1 | 2 | 3 | 4 | 5 | 6;
 

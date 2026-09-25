@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { RequireAdminSession } from "@/components/admin/RequireAdminSession";
+import { PixelIcon } from "@/components/pixel";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -69,12 +70,16 @@ function UsersTable({ token }: { token: string }) {
   });
 
   if (isLoading) {
-    return <p className="py-12 text-center text-muted-foreground">Cargando usuarios...</p>;
+    return (
+      <p role="status" className="animate-px-blink py-12 text-center text-xl text-muted-foreground">
+        Cargando usuarios...
+      </p>
+    );
   }
 
   if (!users || users.length === 0) {
     return (
-      <p className="py-12 text-center text-muted-foreground">
+      <p className="py-12 text-center text-xl text-muted-foreground">
         Todavía no hay usuarios registrados.
       </p>
     );
@@ -92,13 +97,15 @@ function UsersTable({ token }: { token: string }) {
       <TableBody>
         {users.map((user: AdminUserSummary) => (
           <TableRow key={user.id}>
-            <TableCell className="font-medium">
+            <TableCell className="text-xl font-semibold">
               <span className="mr-2" aria-hidden>
                 {user.emoji}
               </span>
               {user.name}
             </TableCell>
-            <TableCell className="text-right">{user.totalPoints}</TableCell>
+            <TableCell className="text-right font-pixel text-base font-bold text-gold">
+              {user.totalPoints}
+            </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-2">
                 <Button
@@ -107,13 +114,13 @@ function UsersTable({ token }: { token: string }) {
                   disabled={isResetting}
                   onClick={() => resetScore(user.id)}
                 >
-                  <RotateCcw className="size-4" />
+                  <PixelIcon name="reset" scale={2} />
                   Reiniciar
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" size="sm" disabled={isDeleting}>
-                      <Trash2 className="size-4" />
+                      <PixelIcon name="trash" scale={2} />
                       Eliminar
                     </Button>
                   </AlertDialogTrigger>
@@ -126,7 +133,7 @@ function UsersTable({ token }: { token: string }) {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => deleteUser(user.id)}>
+                      <AlertDialogAction variant="destructive" onClick={() => deleteUser(user.id)}>
                         Eliminar
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -145,13 +152,13 @@ function AdminUsers() {
   return (
     <RequireAdminSession>
       {(session) => (
-        <div className="min-h-screen bg-muted/40">
+        <div className="min-h-screen">
           <AdminHeader username={session.username} />
-          <main className="mx-auto max-w-4xl px-6 py-10">
-            <h1 className="mb-6 text-3xl font-bold">Usuarios registrados</h1>
-            <div className="rounded-xl border bg-card p-4">
+          <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+            <h1 className="px-title mb-8 text-[1.5rem] sm:text-[2rem]">Usuarios registrados</h1>
+            <Card className="p-2 sm:p-4">
               <UsersTable token={session.token} />
-            </div>
+            </Card>
           </main>
         </div>
       )}

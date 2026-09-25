@@ -3,10 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { RequireAdminSession } from "@/components/admin/RequireAdminSession";
+import { RankBadge } from "@/components/pixel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { GlobalLeaderboardEntry, LeaderboardEntry } from "@/core";
 import { getLeaderboardService } from "@/core";
-import { medalFor } from "@/lib/medal";
 
 export const Route = createFileRoute("/admin/leaderboard")({
   head: () => ({
@@ -25,26 +25,43 @@ function BoardTable({
   isLoading: boolean;
 }) {
   if (isLoading) {
-    return <p className="py-12 text-center text-xl text-muted-foreground">Cargando...</p>;
+    return (
+      <p
+        role="status"
+        className="animate-px-blink py-12 text-center text-2xl text-muted-foreground"
+      >
+        Cargando...
+      </p>
+    );
   }
   if (!entries || entries.length === 0) {
     return (
-      <p className="py-12 text-center text-xl text-muted-foreground">Todavía no hay puntajes.</p>
+      <p className="py-12 text-center text-2xl text-muted-foreground">Todavía no hay puntajes.</p>
     );
   }
   return (
-    <ol className="space-y-2">
+    <ol className="space-y-5">
       {entries.map((entry) => (
         <li
           key={entry.userId}
-          className="flex items-center gap-4 rounded-xl border bg-card px-6 py-4"
+          className={`px-frame px-drop flex items-center gap-4 px-4 py-3 sm:gap-5 sm:px-6 ${
+            entry.rank === 1 ? "px-c-gold" : "px-c-deep"
+          }`}
         >
-          <span className="w-14 text-center text-3xl font-bold">{medalFor(entry.rank)}</span>
-          <span className="text-3xl" aria-hidden>
+          <RankBadge rank={entry.rank} scale={4} className="w-12 shrink-0 sm:w-14" />
+          <span className="text-3xl leading-none" aria-hidden>
             {entry.emoji}
           </span>
-          <span className="flex-1 text-2xl font-semibold">{entry.name}</span>
-          <span className="text-2xl font-bold text-primary">{entry.points} pts</span>
+          <span className="min-w-0 flex-1 truncate text-2xl font-semibold sm:text-3xl">
+            {entry.name}
+          </span>
+          <span
+            className={`shrink-0 font-pixel text-lg font-bold sm:text-2xl ${
+              entry.rank === 1 ? "text-ink" : "text-gold"
+            }`}
+          >
+            {entry.points} pts
+          </span>
         </li>
       ))}
     </ol>
@@ -70,21 +87,17 @@ function AdminLeaderboard() {
   return (
     <RequireAdminSession>
       {(session) => (
-        <div className="min-h-screen bg-muted/40">
+        <div className="min-h-screen">
           <AdminHeader username={session.username} />
-          <main className="mx-auto max-w-3xl px-6 py-10">
-            <h1 className="mb-6 text-center text-4xl font-bold">Tabla de clasificación</h1>
+          <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+            <h1 className="px-title mb-8 text-balance text-center text-[1.5rem] sm:text-[2.5rem]">
+              Tabla de clasificación
+            </h1>
             <Tabs defaultValue="global">
-              <TabsList className="mb-6 h-auto w-full flex-wrap justify-center gap-1 bg-transparent p-0">
-                <TabsTrigger value="global" className="text-base">
-                  General
-                </TabsTrigger>
-                <TabsTrigger value="temple-of-knowledge" className="text-base">
-                  Temple of Knowledge
-                </TabsTrigger>
-                <TabsTrigger value="whack-a-question" className="text-base">
-                  Whack a game
-                </TabsTrigger>
+              <TabsList className="mb-6 justify-center">
+                <TabsTrigger value="global">General</TabsTrigger>
+                <TabsTrigger value="temple-of-knowledge">Temple of Knowledge</TabsTrigger>
+                <TabsTrigger value="whack-a-question">Whack a game</TabsTrigger>
               </TabsList>
               <TabsContent value="global">
                 <BoardTable entries={globalEntries} isLoading={isGlobalLoading} />

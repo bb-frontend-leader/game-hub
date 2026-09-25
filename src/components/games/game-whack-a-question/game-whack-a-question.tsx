@@ -1,6 +1,6 @@
 import "./styles/game-whack.css";
 
-import Phaser from "phaser";
+import * as Phaser from "phaser";
 import React, { useEffect, useRef } from "react";
 
 import PhaserGame from "./game/main";

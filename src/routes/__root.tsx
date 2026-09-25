@@ -9,34 +9,58 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useState } from "react";
-import { Toaster } from "sonner";
 
 import { AppHeader } from "@/components/AppHeader";
+import {
+  PixelArt,
+  PixelGround,
+  PixelIcon,
+  PixelSky,
+  PixelSprite,
+  SHEETS,
+} from "@/components/pixel";
+import { CODE_404, PX } from "@/components/pixel/pixel-art";
+import { buttonVariants } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 import { UsernameGate } from "@/components/UsernameGate";
 import { getUserService } from "@/core";
 import { getPerfil, type Perfil, savePerfil } from "@/lib/perfil";
 import { PerfilContext } from "@/lib/perfil-context";
+import { cn } from "@/lib/utils";
 
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <div className="flex min-h-[calc(100dvh-5rem)] flex-col overflow-x-clip">
+      <main className="flex flex-1 flex-col items-center justify-center gap-6 px-4 pb-16 pt-10 text-center">
+        <PixelArt
+          rows={CODE_404}
+          palette={{ x: PX.gold }}
+          scale={14}
+          title="Error 404"
+          className="px-outline animate-px-bob-big"
+        />
+        <h1 className="mt-4 text-xl uppercase leading-relaxed text-star sm:text-2xl">
+          ¡Nivel no encontrado!
+        </h1>
+        <p className="max-w-md text-xl text-muted-foreground">
+          La página que buscas no existe o cambió de lugar.
         </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
+        <Link to="/" className={cn(buttonVariants({ size: "lg" }))}>
+          <PixelIcon name="arrow-left" scale={2} />
+          Volver al menú
+        </Link>
+      </main>
+
+      <PixelGround>
+        <div
+          className="px-ground__actor"
+          style={{ left: "calc(50% - 80px)", bottom: "calc(var(--ground-h, 96px) - 14px)" }}
+        >
+          <PixelSprite sheet={SHEETS.hero} scale={5} frames={2} fps={2} />
         </div>
-      </div>
+      </PixelGround>
     </div>
   );
 }
@@ -46,33 +70,30 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
-        </div>
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 px-4 text-center">
+      <PixelIcon name="alert" scale={6} className="animate-px-bob-big text-red" />
+      <h1 className="text-xl uppercase leading-relaxed text-star sm:text-2xl">
+        Esta página no cargó
+      </h1>
+      <p className="max-w-md text-xl text-muted-foreground">
+        Algo salió mal de nuestro lado. Puedes reintentar o volver al inicio.
+      </p>
+      <div className="flex flex-wrap justify-center gap-4">
+        <button
+          onClick={() => {
+            router.invalidate();
+            reset();
+          }}
+          className={cn(buttonVariants({ size: "lg" }))}
+        >
+          <PixelIcon name="reset" scale={2} />
+          Reintentar
+        </button>
+        <a href="/" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
+          Ir al inicio
+        </a>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -81,6 +102,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "theme-color", content: "#140d33" },
       { title: "BooksQuest" },
       { name: "description", content: "Juegos divertidos, coloridos y llenos de animación." },
       { property: "og:title", content: "BooksQuest" },
@@ -100,9 +122,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Silkscreen:wght@400;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      // Íconos generados con scripts/generate-favicon.mjs. El .ico cubre navegadores viejos y
+      // Safari; los modernos toman el SVG (nítido a cualquier tamaño).
+      { rel: "icon", href: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -113,7 +139,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <HeadContent />
       </head>
@@ -130,8 +156,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppShell />
-      <Toaster position="top-center" richColors />
+      <PixelSky />
+      <div className="relative z-10">
+        <AppShell />
+      </div>
+      <Toaster position="top-center" />
     </QueryClientProvider>
   );
 }
