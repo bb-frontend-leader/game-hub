@@ -1,7 +1,7 @@
-import Phaser, { AUTO } from "phaser";
+import * as Phaser from "phaser";
 
 export const config: Phaser.Types.Core.GameConfig = {
-  type: AUTO,
+  type: Phaser.AUTO,
   width: 768,
   height: 672,
   dom: { createContainer: true },

@@ -1,7 +1,7 @@
 import "../../styles/game-whack.css";
 
 import gsap from "gsap";
-import Phaser from "phaser";
+import * as Phaser from "phaser";
 
 import { AudioManager, themeManager } from "../../utils";
 
