@@ -1,6 +1,6 @@
-import Phaser from 'phaser';
+import Phaser from "phaser";
 
-import { AudioManager } from '../../utils/AudioManager';
+import { AudioManager } from "../../utils/AudioManager";
 
 export interface MoleConfig {
   x: number;
@@ -37,7 +37,7 @@ export class Mole extends Phaser.GameObjects.Container {
 
   // Callback para cuando se hace clic en el mole
   private onClickCallback?: (mole: Mole) => void;
-  
+
   // AudioManager global
   private audioManager?: AudioManager;
 
@@ -45,15 +45,15 @@ export class Mole extends Phaser.GameObjects.Container {
     super(scene, config.x, config.y);
 
     // Obtener AudioManager del registry global
-    this.audioManager = scene.registry.get('audioManager') as AudioManager;
+    this.audioManager = scene.registry.get("audioManager") as AudioManager;
 
     // Añadir el container a la escena
     scene.add.existing(this);
 
     // Usar las keys del tema o fallback a las antiguas
-    const holeKey = config.holeKey || 'hole';
-    const moleKey = config.moleKey || 'mole';
-    const hurtMoleKey = config.hurtMoleKey || 'hurt-mole';
+    const holeKey = config.holeKey || "hole";
+    const moleKey = config.moleKey || "mole";
+    const hurtMoleKey = config.hurtMoleKey || "hurt-mole";
 
     // Crear el sprite del agujero - inicia en vacio
     this.hole = scene.add
@@ -69,8 +69,8 @@ export class Mole extends Phaser.GameObjects.Container {
 
     // Texto encima del topo como elemento HTML (inicialmente oculto)
     this.answerText = scene.add
-      .dom(0, 62, 'p', '', '')
-      .setClassName('mole-answer-text')
+      .dom(0, 62, "p", "", "")
+      .setClassName("mole-answer-text")
       .setOrigin(0.5, 0.5)
       .setVisible(false);
 
@@ -80,10 +80,10 @@ export class Mole extends Phaser.GameObjects.Container {
 
     // Configurar interactividad
     this.moleBody.setInteractive();
-    this.moleBody.on('pointerdown', () => this.handleClick());
+    this.moleBody.on("pointerdown", () => this.handleClick());
 
     this.hurtMole.setInteractive();
-    this.hurtMole.on('pointerdown', () => this.handleClick());
+    this.hurtMole.on("pointerdown", () => this.handleClick());
   }
 
   /**
@@ -105,7 +105,7 @@ export class Mole extends Phaser.GameObjects.Container {
     this.hasAnswer = false;
     this.correctAnswer = false;
     const element = this.answerText.node as HTMLParagraphElement;
-    element.textContent = '';
+    element.textContent = "";
     this.answerText.setVisible(false);
   }
 
@@ -118,13 +118,13 @@ export class Mole extends Phaser.GameObjects.Container {
     this.hasAnswer = false;
     this.correctAnswer = false;
     const element = this.answerText.node as HTMLParagraphElement;
-    element.textContent = '';
+    element.textContent = "";
     this.answerText.setVisible(false);
     this.moleBody.clearTint();
     this.moleBody.setVisible(true);
     this.hurtMole.setVisible(false);
-    this.moleBody.play('mole-idle-down');
-    this.hole.play('hole-idle-down');
+    this.moleBody.play("mole-idle-down");
+    this.hole.play("hole-idle-down");
 
     // Desactivar el glow de selección
     this.setFocus(false);
@@ -147,8 +147,8 @@ export class Mole extends Phaser.GameObjects.Container {
     this.hurtMole.setVisible(false);
 
     this.isVisible = true;
-    this.moleBody.play('mole-up');
-    this.hole.play('hole-up');
+    this.moleBody.play("mole-up");
+    this.hole.play("hole-up");
 
     // Mostrar el texto si el mole tiene una respuesta
     const element = this.answerText.node as HTMLParagraphElement;
@@ -156,9 +156,9 @@ export class Mole extends Phaser.GameObjects.Container {
       this.answerText.setVisible(true);
     }
 
-    this.moleBody.once('animationcomplete', () => {
-      this.moleBody.play('mole-idle-up');
-      this.hole.play('hole-idle-up');
+    this.moleBody.once("animationcomplete", () => {
+      this.moleBody.play("mole-idle-up");
+      this.hole.play("hole-idle-up");
 
       if (onComplete) {
         onComplete();
@@ -173,18 +173,18 @@ export class Mole extends Phaser.GameObjects.Container {
     if (!this.isVisible) return;
 
     this.isVisible = false;
-    this.moleBody.play('mole-down');
-    this.hole.play('hole-down');
+    this.moleBody.play("mole-down");
+    this.hole.play("hole-down");
 
     // Ocultar el texto cuando el mole baja
     this.answerText.setVisible(false);
-    
+
     // Desactivar el glow de selección
     this.setFocus(false);
 
-    this.moleBody.once('animationcomplete', () => {
-      this.moleBody.play('mole-idle-down');
-      this.hole.play('hole-idle-down');
+    this.moleBody.once("animationcomplete", () => {
+      this.moleBody.play("mole-idle-down");
+      this.hole.play("hole-idle-down");
 
       if (onComplete) {
         onComplete();
@@ -200,36 +200,35 @@ export class Mole extends Phaser.GameObjects.Container {
     const wasActive = this.isActive;
     this.isActive = false;
     this.isBeingHit = true; // Marcar que está siendo golpeado
-    
+
     // Reproducir sonido de golpe
-    this.audioManager?.play('hurt_sound', { volume: 0.07 });
+    this.audioManager?.play("hurt_sound", { volume: 0.07 });
     // Desactivar el glow de selección
     this.setFocus(false);
-    
-      // Reemplazar mole normal por mole herido
-      this.moleBody.setVisible(false);
+
+    // Reemplazar mole normal por mole herido
+    this.moleBody.setVisible(false);
     this.hurtMole.setVisible(true);
     this.hurtMole.setFrame(0);
 
     // Ocultar el texto inmediatamente
     this.answerText.setVisible(false);
 
-
     // Mantener el frame inicial del mole herido por 1segs antes de bajar
     this.scene.time.delayedCall(1000, () => {
       // Animar el mole herido bajando
-      this.hurtMole.play('mole-hurt');
-      this.hole.play('hole-down');
+      this.hurtMole.play("mole-hurt");
+      this.hole.play("hole-down");
 
       // Cuando termine la animación, restaurar
-      this.hurtMole.once('animationcomplete', () => {
+      this.hurtMole.once("animationcomplete", () => {
         this.hurtMole.setVisible(false);
         this.moleBody.setVisible(true);
-        this.moleBody.play('mole-idle-down');
-        this.hole.play('hole-idle-down');
+        this.moleBody.play("mole-idle-down");
+        this.hole.play("hole-idle-down");
         this.isVisible = false;
         this.isBeingHit = false; // Marcar que terminó de ser golpeado
-        
+
         // Reactivar el mole solo si estaba activo antes
         if (wasActive) {
           this.isActive = true;
@@ -250,9 +249,9 @@ export class Mole extends Phaser.GameObjects.Container {
     this.answerText.setVisible(false);
     this.moleBody.setVisible(true);
     this.hurtMole.setVisible(false);
-    this.moleBody.play('mole-idle-down');
-    this.hole.play('hole-idle-down');
-    
+    this.moleBody.play("mole-idle-down");
+    this.hole.play("hole-idle-down");
+
     // Desactivar el glow de selección
     this.setFocus(false);
   }
@@ -297,38 +296,38 @@ export class Mole extends Phaser.GameObjects.Container {
    */
   public getAnswerText(): string {
     const element = this.answerText.node as HTMLParagraphElement;
-    return element.textContent || '';
+    return element.textContent || "";
   }
 
- public setFocus(active: boolean): void {
-  // Verificar que el moleBody exista y tenga postFX antes de continuar
-  if (!this.moleBody || !this.moleBody.postFX) {
-    return;
-  }
-  
-  // Si ya está en el estado deseado, no hacemos nada (optimización)
-  if (this.isSelected === active) return; 
-  this.isSelected = active;
-
-  if (active) {
-    if (!this.glowEffect) {
-      this.glowEffect = this.moleBody.postFX.addGlow(0xffff00, 4, 0);
-      this.scene.tweens.add({
-        targets: this.glowEffect,
-        outerStrength: 6,
-        duration: 500,
-        yoyo: true,
-        loop: -1
-      });
+  public setFocus(active: boolean): void {
+    // Verificar que el moleBody exista y tenga postFX antes de continuar
+    if (!this.moleBody || !this.moleBody.postFX) {
+      return;
     }
-  } else {
-    this.moleBody.postFX.clear();
-    this.glowEffect = undefined;
-    this.scene.tweens.killTweensOf(this.glowEffect || {});
-  }
-}
 
-   public triggerWhack(): void {
+    // Si ya está en el estado deseado, no hacemos nada (optimización)
+    if (this.isSelected === active) return;
+    this.isSelected = active;
+
+    if (active) {
+      if (!this.glowEffect) {
+        this.glowEffect = this.moleBody.postFX.addGlow(0xffff00, 4, 0);
+        this.scene.tweens.add({
+          targets: this.glowEffect,
+          outerStrength: 6,
+          duration: 500,
+          yoyo: true,
+          loop: -1,
+        });
+      }
+    } else {
+      this.moleBody.postFX.clear();
+      this.glowEffect = undefined;
+      this.scene.tweens.killTweensOf(this.glowEffect || {});
+    }
+  }
+
+  public triggerWhack(): void {
     this.handleClick();
   }
 
@@ -337,15 +336,15 @@ export class Mole extends Phaser.GameObjects.Container {
    */
   public cleanup(): void {
     this.clearPopTimer();
-    this.moleBody.off('pointerdown');
-    this.hurtMole.off('pointerdown');
+    this.moleBody.off("pointerdown");
+    this.hurtMole.off("pointerdown");
     this.hole.destroy();
   }
 
   /**
    * Destruye el mole y todos sus recursos
    */
-  destroy(fromScene?: boolean): void {
+  override destroy(fromScene?: boolean): void {
     this.cleanup();
     super.destroy(fromScene);
   }

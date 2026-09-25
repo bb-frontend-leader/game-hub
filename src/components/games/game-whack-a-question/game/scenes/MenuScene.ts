@@ -1,9 +1,9 @@
-import gsap from 'gsap';
-import Phaser from 'phaser';
+import "../../styles/game-whack.css";
 
-import { AudioManager, themeManager } from '../../utils';
+import gsap from "gsap";
+import Phaser from "phaser";
 
-import '../../styles/game-whack.css';
+import { AudioManager, themeManager } from "../../utils";
 
 export class Menu extends Phaser.Scene {
   private backgroundImg!: Phaser.GameObjects.Image;
@@ -21,7 +21,7 @@ export class Menu extends Phaser.Scene {
   private instructionsModal!: HTMLElement;
 
   constructor() {
-    super('menuScene');
+    super("menuScene");
   }
 
   preload() {}
@@ -33,90 +33,101 @@ export class Menu extends Phaser.Scene {
     this.cameras.main.fadeIn(600, 0, 0, 0);
 
     // Asegurar que el cursor sea normal en el menú
-    this.input.setDefaultCursor('default');
+    this.input.setDefaultCursor("default");
 
-    this.game.canvas.setAttribute('tabindex', '0');
-    this.cameras.main.setBackgroundColor('#41a9ff');
-    this.backgroundImg = this.add.image(0, 0, 'background-1');
+    this.game.canvas.setAttribute("tabindex", "0");
+    this.cameras.main.setBackgroundColor("#41a9ff");
+    this.backgroundImg = this.add.image(0, 0, "background-1");
     this.backgroundImg.setOrigin(0, 0).setScale(1.8).setDepth(-2);
 
-    this.bgLayer1 = this.add.tileSprite(0, 0, width, height, 'bg-layer-1').setOrigin(0, 0).setDepth(-1).setScale(1.7);
-    this.bgLayer2 = this.add.tileSprite(0, 10, width, height, 'bg-layer-2').setOrigin(0, 0).setDepth(0).setScale(1.7);
-    this.bgLayer3 = this.add.tileSprite(0, 30, width, height, 'bg-layer-3').setOrigin(0, 0).setDepth(1).setScale(1.7);
+    this.bgLayer1 = this.add
+      .tileSprite(0, 0, width, height, "bg-layer-1")
+      .setOrigin(0, 0)
+      .setDepth(-1)
+      .setScale(1.7);
+    this.bgLayer2 = this.add
+      .tileSprite(0, 10, width, height, "bg-layer-2")
+      .setOrigin(0, 0)
+      .setDepth(0)
+      .setScale(1.7);
+    this.bgLayer3 = this.add
+      .tileSprite(0, 30, width, height, "bg-layer-3")
+      .setOrigin(0, 0)
+      .setDepth(1)
+      .setScale(1.7);
 
     // Inicializar AudioManager con la música del tema actual
     const currentTheme = themeManager.getCurrentTheme();
-    const ambienceMusicKey = currentTheme.assets.ambiencesSounds[0]?.name || 'bg_music-normal';
+    const ambienceMusicKey = currentTheme.assets.ambiencesSounds[0]?.name || "bg_music-normal";
 
     this.audioManager = new AudioManager(this, {
       musicKey: ambienceMusicKey,
       x: width - 30,
       y: 40,
       depth: 50,
-      volume: 0.02
+      volume: 0.02,
     });
 
     // Guardar referencia global para otras escenas
-    this.registry.set('audioManager', this.audioManager);
+    this.registry.set("audioManager", this.audioManager);
 
     // animacion hammer
-    if (!this.anims.exists('hammer-swing-anim')) {
+    if (!this.anims.exists("hammer-swing-anim")) {
       this.anims.create({
-        key: 'hammer-swing-anim',
-        frames: this.anims.generateFrameNumbers('hammer-swing', { start: 25, end: 0 }), 
-        frameRate: 18,  
+        key: "hammer-swing-anim",
+        frames: this.anims.generateFrameNumbers("hammer-swing", { start: 25, end: 0 }),
+        frameRate: 18,
         repeat: 0,
-        yoyo: true
+        yoyo: true,
       });
-    
     }
 
     // Crear sprite de animación del martillo (inicialmente oculto)
-    this.hammerSwingSprite = this.add.sprite(width / 2 + 50, height / 2 - 38, 'hammer-swing', 0)
+    this.hammerSwingSprite = this.add
+      .sprite(width / 2 + 50, height / 2 - 38, "hammer-swing", 0)
       .setDepth(100) // Por encima de todo
       .setScale(2.8)
       .setVisible(false); // Oculto hasta que se haga clic en Play
 
-
-
     // Título del juego
-    this.add.image(width / 2, height / 4, 'container-title').setOrigin(0.5);
+    this.add.image(width / 2, height / 4, "container-title").setOrigin(0.5);
 
-    const textTitle = this.add.dom(150, 90, 'h1', null, 'Whack-a-Question').setOrigin(0, 0);
+    const textTitle = this.add.dom(150, 90, "h1", null, "Whack-a-Question").setOrigin(0, 0);
     const titleGame = textTitle.node as HTMLHeadingElement;
-    titleGame.classList.add('game-whack-title');
-    
+    titleGame.classList.add("game-whack-title");
 
     // Botón de inicio
-    this.add.image(width / 2 , height / 2 + 120, 'start-button').setDepth(0).setScale(0.2).setOrigin(0.5);
+    this.add
+      .image(width / 2, height / 2 + 120, "start-button")
+      .setDepth(0)
+      .setScale(0.2)
+      .setOrigin(0.5);
 
-    const btnPlay = this.add.dom(375, 372, 'button', null, 'INICIAR').setDepth(0).setScale(1.5);
+    const btnPlay = this.add.dom(375, 372, "button", null, "INICIAR").setDepth(0).setScale(1.5);
     const buttonElement = btnPlay.node as HTMLButtonElement;
-    buttonElement.classList.add('game-whack-btn-play');
+    buttonElement.classList.add("game-whack-btn-play");
 
     // Crear modal de instrucciones
     this.createInstructionsModal();
 
-    buttonElement.addEventListener('click', () => {
-      this.audioManager?.play('clic_sound', { volume: 0.3 });
-      
+    buttonElement.addEventListener("click", () => {
+      this.audioManager?.play("clic_sound", { volume: 0.3 });
+
       // Deshabilitar el botón para evitar múltiples clicks
       buttonElement.disabled = true;
-      buttonElement.style.pointerEvents = 'none';
-      
+      buttonElement.style.pointerEvents = "none";
+
       // Mostrar y reproducir la animación del martillo
       this.hammerSwingSprite.setVisible(true);
-      this.hammerSwingSprite.play('hammer-swing-anim');
-      
+      this.hammerSwingSprite.play("hammer-swing-anim");
+
       // Cuando termine la animación, mostrar el modal de instrucciones
-      this.hammerSwingSprite.once('animationcomplete', () => {
+      this.hammerSwingSprite.once("animationcomplete", () => {
         setTimeout(() => {
           this.showInstructionsModal();
         }, 300); // Pequeña pausa para que el golpe se sienta más natural
       });
     });
-
-
   }
 
   private createInstructionsModal() {
@@ -143,7 +154,8 @@ export class Menu extends Phaser.Scene {
     `;
 
     // Crear DOMElement dentro del canvas de Phaser
-    this.instructionsModalElement = this.add.dom(0, 0, 'div')
+    this.instructionsModalElement = this.add
+      .dom(0, 0, "div")
       .setOrigin(0, 0)
       .setDepth(200)
       .setVisible(false);
@@ -152,15 +164,17 @@ export class Menu extends Phaser.Scene {
     container.innerHTML = modalHTML;
     container.style.width = `${width}px`;
     container.style.height = `${height}px`;
-    container.style.position = 'relative';
-    container.style.overflow = 'hidden';
+    container.style.position = "relative";
+    container.style.overflow = "hidden";
 
-    this.instructionsModal = container.querySelector('.game-whack_instructions-modal') as HTMLElement;
+    this.instructionsModal = container.querySelector(
+      ".game-whack_instructions-modal",
+    ) as HTMLElement;
 
     // Configurar evento del botón para iniciar el juego
-    const startGameBtn = container.querySelector('#start-game-btn') as HTMLButtonElement;
-    startGameBtn.addEventListener('click', () => {
-      this.audioManager?.play('clic_sound', { volume: 0.3 });
+    const startGameBtn = container.querySelector("#start-game-btn") as HTMLButtonElement;
+    startGameBtn.addEventListener("click", () => {
+      this.audioManager?.play("clic_sound", { volume: 0.3 });
       this.hideInstructionsModal();
     });
   }
@@ -169,21 +183,21 @@ export class Menu extends Phaser.Scene {
     if (this.instructionsModalElement && this.instructionsModal) {
       // Ocultar la animación del martillo
       this.hammerSwingSprite.setVisible(false);
-      
+
       // Mostrar el DOMElement
       this.instructionsModalElement.setVisible(true);
-      
+
       // Configurar posición inicial fuera de pantalla (derecha)
-      gsap.set(this.instructionsModal, { 
-        x: '100%',
-        opacity: 1
+      gsap.set(this.instructionsModal, {
+        x: "100%",
+        opacity: 1,
       });
-      
+
       // Animar entrada desde la derecha con GSAP
       gsap.to(this.instructionsModal, {
-        x: '0%',
+        x: "0%",
         duration: 0.8,
-        ease: 'back.out(1.2)'
+        ease: "back.out(1.2)",
       });
     }
   }
@@ -192,9 +206,9 @@ export class Menu extends Phaser.Scene {
     if (this.instructionsModal) {
       // Animar salida hacia la izquierda con GSAP
       gsap.to(this.instructionsModal, {
-        x: '-100%',
+        x: "-100%",
         duration: 0.6,
-        ease: 'power2.in',
+        ease: "power2.in",
         onComplete: () => {
           // eliminar el DOMElement después de la animación
           if (this.instructionsModalElement) {
@@ -202,15 +216,15 @@ export class Menu extends Phaser.Scene {
           }
           // Fade out antes de cambiar a la escena del juego
           this.cameras.main.fadeOut(200, 0, 0, 0);
-          this.cameras.main.once('camerafadeoutcomplete', () => {
-            this.scene.start('gameScene');
+          this.cameras.main.once("camerafadeoutcomplete", () => {
+            this.scene.start("gameScene");
           });
-        }
+        },
       });
     }
   }
 
-  update(): void {
+  override update(): void {
     // Parallax automático
     this.bgLayer1.tilePositionX += 0.1;
   }

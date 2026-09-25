@@ -1,11 +1,15 @@
-import Phaser from 'phaser';
+import Phaser from "phaser";
 
-import { preloadCommonAssets, preloadThemeAssets, preloadThemeMusic } from '../../utils/game-assets';
-import { themeManager } from '../../utils/theme-manager';
+import {
+  preloadCommonAssets,
+  preloadThemeAssets,
+  preloadThemeMusic,
+} from "../../utils/game-assets";
+import { themeManager } from "../../utils/theme-manager";
 
 export class Preload extends Phaser.Scene {
   constructor() {
-    super('preloadScene');
+    super("preloadScene");
   }
 
   preload() {
@@ -27,8 +31,8 @@ export class Preload extends Phaser.Scene {
   create() {
     // Fade out antes de cambiar a la siguiente escena
     this.cameras.main.fadeOut(200, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.start('menuScene');
+    this.cameras.main.once("camerafadeoutcomplete", () => {
+      this.scene.start("menuScene");
     });
   }
   private createProgressBar() {
@@ -44,8 +48,8 @@ export class Preload extends Phaser.Scene {
       .text({
         x: width / 2,
         y: height / 2 - 50,
-        text: 'Cargando...',
-        style: { font: '20px monospace', color: '#000' }
+        text: "Cargando...",
+        style: { font: "20px monospace", color: "#000" },
       })
       .setOrigin(0.5, 0.5);
 
@@ -53,19 +57,19 @@ export class Preload extends Phaser.Scene {
       .text({
         x: width / 2,
         y: height / 2 - 5,
-        text: '0%',
-        style: { font: '18px monospace', color: '#eee' }
+        text: "0%",
+        style: { font: "18px monospace", color: "#eee" },
       })
       .setOrigin(0.5, 0.5);
 
-    this.load.on('progress', (value: number) => {
+    this.load.on("progress", (value: number) => {
       progressBar.clear();
       progressBar.fillStyle(0x00000, 1);
       progressBar.fillRect(width / 4 + 10, height / 2 - 20, (width / 2 - 20) * value, 30);
       percentText.setText(`${Math.round(value * 100)}%`);
     });
 
-    this.load.on('complete', () => {
+    this.load.on("complete", () => {
       progressBar.destroy();
       progressBox.destroy();
       loadingText.destroy();

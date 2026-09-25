@@ -1,4 +1,4 @@
-export { Menu } from './MenuScene';
-export { Preload } from './PreloadScene';
-export { Main } from './MainScene';
-export { EndGame } from './EndGameScene';
+export { EndGame } from "./EndGameScene";
+export { Main } from "./MainScene";
+export { Menu } from "./MenuScene";
+export { Preload } from "./PreloadScene";

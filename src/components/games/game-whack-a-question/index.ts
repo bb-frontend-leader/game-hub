@@ -5,10 +5,16 @@
  */
 
 // Componente principal
-export { GameWhackAQuestion } from './game-whack-a-question';
+export { GameWhackAQuestion } from "./game-whack-a-question";
 
 // Tipos e interfaces
-export { DEFAULT_THEME, type GameResult, type ThemeType,type WhackQuestion, WORLD_THEMES } from './types/types';
+export {
+  DEFAULT_THEME,
+  type GameResult,
+  type ThemeType,
+  type WhackQuestion,
+  WORLD_THEMES,
+} from "./types/types";
 
 // Utilidades de tema
 export {
@@ -21,7 +27,7 @@ export {
   getThemeSpritesheets,
   getThemeTileMap,
   themeManager,
-} from './utils';
+} from "./utils";
 
 // Estado global
-export { globalState, loadQuestions, setTheme } from './utils/global-state';
+export { globalState, loadQuestions, setTheme } from "./utils/global-state";

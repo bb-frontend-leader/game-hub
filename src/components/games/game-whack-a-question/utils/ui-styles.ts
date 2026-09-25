@@ -8,19 +8,22 @@ export function applyTheme(theme: ThemeType): void {
   const colors = theme.colors;
 
   // Aplicar variables CSS para el tema
-  root.style.setProperty('--theme-primary', colors.primary);
-  root.style.setProperty('--theme-secondary', colors.secondary);
-  root.style.setProperty('--theme-bg-button', colors.bgButton);
-  root.style.setProperty('--theme-text-button', colors.textButton);
-  root.style.setProperty('--theme-gradient-modal-feedbacks', colors.gradientModalFeedbacks);
-  root.style.setProperty('--theme-border-modal-feedbacks', colors.borderModalFeedbacks);
-  root.style.setProperty('--theme-gradient-modal-instructions', colors.gradientModalInstructions);
-  root.style.setProperty('--theme-border-modal-instruction-content', colors.borderModalInstructionContent);
-  
+  root.style.setProperty("--theme-primary", colors.primary);
+  root.style.setProperty("--theme-secondary", colors.secondary);
+  root.style.setProperty("--theme-bg-button", colors.bgButton);
+  root.style.setProperty("--theme-text-button", colors.textButton);
+  root.style.setProperty("--theme-gradient-modal-feedbacks", colors.gradientModalFeedbacks);
+  root.style.setProperty("--theme-border-modal-feedbacks", colors.borderModalFeedbacks);
+  root.style.setProperty("--theme-gradient-modal-instructions", colors.gradientModalInstructions);
+  root.style.setProperty(
+    "--theme-border-modal-instruction-content",
+    colors.borderModalInstructionContent,
+  );
+
   // También aplicar a elementos de Phaser si están presentes
-  const gameContainer = document.querySelector('.game-whack-a-question_container');
+  const gameContainer = document.querySelector(".game-whack-a-question_container");
   if (gameContainer) {
-    gameContainer.classList.add(`theme-${theme.name.toLowerCase().replace(/\s+/g, '-')}`);
+    gameContainer.classList.add(`theme-${theme.name.toLowerCase().replace(/\s+/g, "-")}`);
   }
 }
 
@@ -28,10 +31,12 @@ export function applyTheme(theme: ThemeType): void {
  * Remueve las clases de tema aplicadas previamente
  */
 export function removeThemeClasses(): void {
-  const gameContainer = document.querySelector('.game-whack-a-question_container');
+  const gameContainer = document.querySelector(".game-whack-a-question_container");
   if (gameContainer) {
-    const themeClasses = Array.from(gameContainer.classList).filter(cls => cls.startsWith('theme-'));
-    themeClasses.forEach(cls => gameContainer.classList.remove(cls));
+    const themeClasses = Array.from(gameContainer.classList).filter((cls) =>
+      cls.startsWith("theme-"),
+    );
+    themeClasses.forEach((cls) => gameContainer.classList.remove(cls));
   }
 }
 
@@ -47,6 +52,6 @@ export function getThemeColors(theme: ThemeType) {
     gradientModalFeedbacks: theme.colors.gradientModalFeedbacks,
     borderModalFeedbacks: theme.colors.borderModalFeedbacks,
     gradientModalInstructions: theme.colors.gradientModalInstructions,
-    borderModalInstructionContent: theme.colors.borderModalInstructionContent
+    borderModalInstructionContent: theme.colors.borderModalInstructionContent,
   };
 }

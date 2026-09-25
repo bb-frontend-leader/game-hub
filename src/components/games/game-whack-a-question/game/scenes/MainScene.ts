@@ -1,23 +1,23 @@
-import Phaser from 'phaser';
+import Phaser from "phaser";
 
-import { WhackQuestion } from '../../types/types';
-import { AudioManager } from '../../utils';
-import { Mole } from '../gameObjects/Mole';
+import { WhackQuestion } from "../../types/types";
+import { AudioManager } from "../../utils";
+import { Mole } from "../gameObjects/Mole";
 
 // Teclas válidas para activar el modo teclado
 const KEYBOARD_NAVIGATION_KEYS = [
-  'ArrowLeft',
-  'ArrowRight',
-  'ArrowUp',
-  'ArrowDown',
-  'w',
-  'W',
-  'a',
-  'A',
-  's',
-  'S',
-  'd',
-  'D'
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowUp",
+  "ArrowDown",
+  "w",
+  "W",
+  "a",
+  "A",
+  "s",
+  "S",
+  "d",
+  "D",
 ] as const;
 
 type NavigationKey = (typeof KEYBOARD_NAVIGATION_KEYS)[number];
@@ -71,13 +71,13 @@ export class Main extends Phaser.Scene {
   private hammerCursor!: Phaser.GameObjects.Sprite;
 
   constructor() {
-    super('gameScene');
+    super("gameScene");
   }
 
   init() {
     // Obtener datos del registry
-    this.questions = this.registry.get('questionsData') || [];
-    this.gameEvents = this.registry.get('gameEvents');
+    this.questions = this.registry.get("questionsData") || [];
+    this.gameEvents = this.registry.get("gameEvents");
     this.currentQuestionIndex = 0;
     this.lives = 3; // Inicializar vidas
 
@@ -91,111 +91,111 @@ export class Main extends Phaser.Scene {
     this.isPaused = false;
 
     if (this.questions.length === 0) {
-      console.error('No hay preguntas disponibles');
+      console.error("No hay preguntas disponibles");
     }
   }
 
   private createAnimations() {
     // ANIMACIONES EXTRAS
-    if (!this.anims.exists('hammer-hit-anim')) {
+    if (!this.anims.exists("hammer-hit-anim")) {
       this.anims.create({
-        key: 'hammer-hit-anim',
-        frames: this.anims.generateFrameNumbers('hammer-hit', { start: 0, end: 3 }),
+        key: "hammer-hit-anim",
+        frames: this.anims.generateFrameNumbers("hammer-hit", { start: 0, end: 3 }),
         frameRate: 15,
-        repeat: 0
+        repeat: 0,
       });
     }
-    
+
     // === ANIMACIONES DEL MOLE ===
-    const moleKey = 'mole';
-    const hurtMoleKey = 'hurt-mole';
-    const holeKey = 'hole';
+    const moleKey = "mole";
+    const hurtMoleKey = "hurt-mole";
+    const holeKey = "hole";
 
     // Animación de subir el topo (frame 9 escondido -> frame 0 visible)
-    if (!this.anims.exists('mole-up')) {
+    if (!this.anims.exists("mole-up")) {
       this.anims.create({
-        key: 'mole-up',
+        key: "mole-up",
         frames: this.anims.generateFrameNumbers(moleKey, { start: 9, end: 0 }),
         frameRate: 20,
-        repeat: 0
+        repeat: 0,
       });
     }
 
     // Animación de bajar el topo (frame 0 visible -> frame 9 escondido)
-    if (!this.anims.exists('mole-down')) {
+    if (!this.anims.exists("mole-down")) {
       this.anims.create({
-        key: 'mole-down',
+        key: "mole-down",
         frames: this.anims.generateFrameNumbers(moleKey, { start: 0, end: 9 }),
         frameRate: 20,
-        repeat: 0
+        repeat: 0,
       });
     }
 
     // Animación idle cuando está arriba (frame 0)
-    if (!this.anims.exists('mole-idle-up')) {
+    if (!this.anims.exists("mole-idle-up")) {
       this.anims.create({
-        key: 'mole-idle-up',
+        key: "mole-idle-up",
         frames: [{ key: moleKey, frame: 0 }],
-        frameRate: 1
+        frameRate: 1,
       });
     }
 
     // Animación idle cuando está escondido (frame 9)
-    if (!this.anims.exists('mole-idle-down')) {
+    if (!this.anims.exists("mole-idle-down")) {
       this.anims.create({
-        key: 'mole-idle-down',
+        key: "mole-idle-down",
         frames: [{ key: moleKey, frame: 9 }],
-        frameRate: 1
+        frameRate: 1,
       });
     }
 
     // === ANIMACIONES DEL MOLE HERIDO ===
     // Animación de bajada del topo herido (frame 0 arriba golpeado -> frame 8 escondido)
-    if (!this.anims.exists('mole-hurt')) {
+    if (!this.anims.exists("mole-hurt")) {
       this.anims.create({
-        key: 'mole-hurt',
+        key: "mole-hurt",
         frames: this.anims.generateFrameNumbers(hurtMoleKey, { start: 0, end: 8 }),
         frameRate: 13,
-        repeat: 0
+        repeat: 0,
       });
     }
 
     // === ANIMACIONES DEL HOLE ===
     // Animación del agujero cuando sube el topo (frame 9 vacío -> frame 0 ocupado)
-    if (!this.anims.exists('hole-up')) {
+    if (!this.anims.exists("hole-up")) {
       this.anims.create({
-        key: 'hole-up',
+        key: "hole-up",
         frames: this.anims.generateFrameNumbers(holeKey, { start: 9, end: 0 }),
         frameRate: 20,
-        repeat: 0
+        repeat: 0,
       });
     }
 
     // Animación del agujero cuando baja el topo (frame 0 ocupado -> frame 9 vacío)
-    if (!this.anims.exists('hole-down')) {
+    if (!this.anims.exists("hole-down")) {
       this.anims.create({
-        key: 'hole-down',
+        key: "hole-down",
         frames: this.anims.generateFrameNumbers(holeKey, { start: 0, end: 9 }),
         frameRate: 20,
-        repeat: 0
+        repeat: 0,
       });
     }
 
     // Animación idle del agujero con topo visible (frame 0)
-    if (!this.anims.exists('hole-idle-up')) {
+    if (!this.anims.exists("hole-idle-up")) {
       this.anims.create({
-        key: 'hole-idle-up',
+        key: "hole-idle-up",
         frames: [{ key: holeKey, frame: 0 }],
-        frameRate: 1
+        frameRate: 1,
       });
     }
 
     // Animación idle del agujero vacío (frame 9)
-    if (!this.anims.exists('hole-idle-down')) {
+    if (!this.anims.exists("hole-idle-down")) {
       this.anims.create({
-        key: 'hole-idle-down',
+        key: "hole-idle-down",
         frames: [{ key: holeKey, frame: 9 }],
-        frameRate: 1
+        frameRate: 1,
       });
     }
   }
@@ -209,21 +209,21 @@ export class Main extends Phaser.Scene {
     // --- FONDO CON PARALLAX ---
     // Fondo de cielo estático
     this.backgroudSky = this.add
-      .image(0, -200, 'background_sky')
+      .image(0, -200, "background_sky")
       .setOrigin(0, 0)
       .setDisplaySize(width, height)
       .setDepth(-2);
 
     // Nubes medianas (velocidad media)
     this.cloudsMedium = this.add
-      .tileSprite(0, 0, width, height, 'clouds_medium')
+      .tileSprite(0, 0, width, height, "clouds_medium")
       .setOrigin(0, 0)
       .setDepth(-1)
       .setScale(1.2);
 
     // Nubes pequeñas (más rápidas, más cerca)
     this.cloudsSmall = this.add
-      .tileSprite(0, 50, width, height, 'clouds_small')
+      .tileSprite(0, 50, width, height, "clouds_small")
       .setOrigin(0, 0)
       .setDepth(-2)
       .setScale(1)
@@ -234,26 +234,20 @@ export class Main extends Phaser.Scene {
 
     // --- MAPA TILEMAP
 
-    this.map = this.make.tilemap({ key: 'mapa_bosque' });
+    this.map = this.make.tilemap({ key: "mapa_bosque" });
 
     // Obtenemos los nombres de los tilesets desde el JSON del mapa
-    const tilesetGround = this.map.addTilesetImage(
-      this.map.tilesets[0].name,
-      'tiles_ground'
-    );
-    const tilesetTrees = this.map.addTilesetImage(
-      this.map.tilesets[1].name,
-      'tiles_trees'
-    );
+    const tilesetGround = this.map.addTilesetImage(this.map.tilesets[0].name, "tiles_ground");
+    const tilesetTrees = this.map.addTilesetImage(this.map.tilesets[1].name, "tiles_trees");
 
     if (!tilesetGround || !tilesetTrees) {
-      console.error('No se encontraron los tilesets');
+      console.error("No se encontraron los tilesets");
       return;
     }
 
     // Crear las capas - IMPORTANTE: ambas capas deben tener acceso a ambos tilesets
-    const tierraLayer = this.map.createLayer('Tierra', [tilesetGround, tilesetTrees], 0, 0);
-    const objetosLayer = this.map.createLayer('Objetos', [tilesetGround, tilesetTrees], 0, 0);
+    const tierraLayer = this.map.createLayer("Tierra", [tilesetGround, tilesetTrees], 0, 0);
+    const objetosLayer = this.map.createLayer("Objetos", [tilesetGround, tilesetTrees], 0, 0);
 
     // Escalar ambas capas con el mismo factor para que estén alineadas
     tierraLayer?.setScale(this.MAP_SCALE);
@@ -265,20 +259,20 @@ export class Main extends Phaser.Scene {
 
     // --- LOGICA DE OBJETOS (SPAWN TOPOS)
 
-    const spawnLayer = this.map.getObjectLayer('SpawnTopos');
+    const spawnLayer = this.map.getObjectLayer("SpawnTopos");
 
     if (spawnLayer) {
       this.spawnPoints = spawnLayer.objects;
-      console.log('Puntos de spawn encontrados:', this.spawnPoints.length);
+      console.log("Puntos de spawn encontrados:", this.spawnPoints.length);
     } else {
-      console.error('❌ No se encontró la capa SpawnTopos');
+      console.error("❌ No se encontró la capa SpawnTopos");
     }
 
     // --- GUI
 
-    this.GuiElement = this.add.dom(0, 0, 'div').setOrigin(0, 0).setDepth(3); // Contenedor para elementos GUI
+    this.GuiElement = this.add.dom(0, 0, "div").setOrigin(0, 0).setDepth(3); // Contenedor para elementos GUI
     const guiContainer = this.GuiElement.node as HTMLDivElement;
-    guiContainer.classList.add('game-whack_gui-container');
+    guiContainer.classList.add("game-whack_gui-container");
     guiContainer.innerHTML = `
 
     <div class="game-whack_gui-title">
@@ -305,12 +299,12 @@ export class Main extends Phaser.Scene {
     `;
 
     // Referencias a elementos del DOM
-    this.questionTextElement = guiContainer.querySelector('#question-text') as HTMLElement;
-    this.timerTextElement = guiContainer.querySelector('#timer-text') as HTMLElement;
-    this.livesTextElement = guiContainer.querySelector('#lives-text') as HTMLElement;
+    this.questionTextElement = guiContainer.querySelector("#question-text") as HTMLElement;
+    this.timerTextElement = guiContainer.querySelector("#timer-text") as HTMLElement;
+    this.livesTextElement = guiContainer.querySelector("#lives-text") as HTMLElement;
 
-    this.questionBg = guiContainer.querySelector('.game-whack_question-background') as HTMLElement;
-    this.questionBg.addEventListener('wheel', (e) => e.stopPropagation(), { passive: true });
+    this.questionBg = guiContainer.querySelector(".game-whack_question-background") as HTMLElement;
+    this.questionBg.addEventListener("wheel", (e) => e.stopPropagation(), { passive: true });
 
     // Crear modal de feedback
     const feedbackModalHTML = `
@@ -326,13 +320,13 @@ export class Main extends Phaser.Scene {
       </div>
     `;
 
-    guiContainer.insertAdjacentHTML('beforeend', feedbackModalHTML);
+    guiContainer.insertAdjacentHTML("beforeend", feedbackModalHTML);
 
-    this.feedbackModal = guiContainer.querySelector('#feedback-modal') as HTMLElement;
-    this.feedbackTitle = guiContainer.querySelector('#feedback-title') as HTMLElement;
-    this.feedbackMessage = guiContainer.querySelector('#feedback-message') as HTMLElement;
-    this.countdownElement = guiContainer.querySelector('#countdown') as HTMLElement;
-    this.countdownNumber = guiContainer.querySelector('#countdown-number') as HTMLElement;
+    this.feedbackModal = guiContainer.querySelector("#feedback-modal") as HTMLElement;
+    this.feedbackTitle = guiContainer.querySelector("#feedback-title") as HTMLElement;
+    this.feedbackMessage = guiContainer.querySelector("#feedback-message") as HTMLElement;
+    this.countdownElement = guiContainer.querySelector("#countdown") as HTMLElement;
+    this.countdownNumber = guiContainer.querySelector("#countdown-number") as HTMLElement;
 
     // Crear agujeros y topos usando Containers
     this.createMoles();
@@ -342,7 +336,7 @@ export class Main extends Phaser.Scene {
 
     // === AUDIO MANAGER ===
     // Recuperar o crear AudioManager
-    this.audioManager = this.registry.get('audioManager') as AudioManager;
+    this.audioManager = this.registry.get("audioManager") as AudioManager;
     if (this.audioManager) {
       this.audioManager.attachScene(this);
       // Crear el botón visual en esta escena
@@ -354,23 +348,23 @@ export class Main extends Phaser.Scene {
 
     // === CURSOR PERSONALIZADO ===
     // Ocultar el cursor predeterminado
-    this.input.setDefaultCursor('none');
+    this.input.setDefaultCursor("none");
 
     // Crear sprite del martillo que seguirá al cursor
     this.hammerCursor = this.add
-      .sprite(0, 0, 'hammer-hit', 0)
+      .sprite(0, 0, "hammer-hit", 0)
       .setDepth(1000) // Por encima de todo
       .setOrigin(0.2, 0.1) // Ajustar origen para que el punto de golpe esté en la punta
       .setScale(1.5); // Ajustar tamaño si es necesario
 
     // Reproducir animación al hacer clic
-    this.input.on('pointerdown', () => {
+    this.input.on("pointerdown", () => {
       // Solo reproducir si no está ya reproduciendo
       if (!this.hammerCursor.anims.isPlaying) {
-        this.hammerCursor.play('hammer-hit-anim');
+        this.hammerCursor.play("hammer-hit-anim");
 
         // Cuando termine, volver al frame 0
-        this.hammerCursor.once('animationcomplete', () => {
+        this.hammerCursor.once("animationcomplete", () => {
           this.hammerCursor.setFrame(0);
         });
       }
@@ -385,7 +379,7 @@ export class Main extends Phaser.Scene {
    */
   private restoreCursor() {
     // Restaurar el cursor CSS por defecto
-    this.input.setDefaultCursor('default');
+    this.input.setDefaultCursor("default");
 
     // Limpiar el sprite del martillo si existe
     if (this.hammerCursor) {
@@ -397,7 +391,7 @@ export class Main extends Phaser.Scene {
     const { width } = this.scale;
 
     // Botón de pausa (esquina superior derecha, un poco más a la izquierda del botón de audio)
-    const label = 'Pausar juego';
+    const label = "Pausar juego";
 
     this.pauseButton = this.add.dom(width - 32, 120).setDepth(100).createFromHTML(`
       <button
@@ -410,26 +404,26 @@ export class Main extends Phaser.Scene {
     `);
 
     const root = this.pauseButton.node as HTMLElement;
-    const btn = root.querySelector('button');
-    if (!btn) throw new Error('Pause button not found');
+    const btn = root.querySelector("button");
+    if (!btn) throw new Error("Pause button not found");
 
     this.pauseButtonElement = btn as HTMLButtonElement;
 
-    this.pauseButtonElement.addEventListener('click', () => this.togglePause());
-    this.pauseButtonElement.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.code === 'Enter' || e.code === 'Space') {
+    this.pauseButtonElement.addEventListener("click", () => this.togglePause());
+    this.pauseButtonElement.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.code === "Enter" || e.code === "Space") {
         e.preventDefault();
         this.togglePause();
       }
     });
 
     // Efectos hover
-    this.pauseButtonElement.addEventListener('mouseenter', () => {
-      this.pauseButtonElement.style.transform = 'scale(1.1)';
+    this.pauseButtonElement.addEventListener("mouseenter", () => {
+      this.pauseButtonElement.style.transform = "scale(1.1)";
     });
 
-    this.pauseButtonElement.addEventListener('mouseleave', () => {
-      this.pauseButtonElement.style.transform = 'scale(1)';
+    this.pauseButtonElement.addEventListener("mouseleave", () => {
+      this.pauseButtonElement.style.transform = "scale(1)";
     });
 
     // Overlay de pausa HTML (inicialmente invisible)
@@ -440,11 +434,11 @@ export class Main extends Phaser.Scene {
       <p class="game-whack_pause-instruction">Haz clic para reanudar</p>
       </div>
     `;
-    guiContainer.insertAdjacentHTML('beforeend', pauseOverlayHTML);
-    this.pauseOverlay = guiContainer.querySelector('#pause-overlay') as HTMLElement;
+    guiContainer.insertAdjacentHTML("beforeend", pauseOverlayHTML);
+    this.pauseOverlay = guiContainer.querySelector("#pause-overlay") as HTMLElement;
 
     // Click en overlay para reanudar
-    this.pauseOverlay.addEventListener('click', () => {
+    this.pauseOverlay.addEventListener("click", () => {
       if (this.isPaused) {
         this.togglePause();
       }
@@ -456,21 +450,21 @@ export class Main extends Phaser.Scene {
 
     if (this.isPaused) {
       // PAUSAR
-      this.audioManager?.play('pause_sound', { volume: 0.01 });
-      this.pauseButtonElement.className = 'game-whack_pause-button paused';
-      this.pauseButtonElement.setAttribute('aria-label', 'Reanudar juego');
-      this.pauseButtonElement.setAttribute('title', 'Reanudar juego');
-      this.pauseOverlay.style.display = 'flex';
+      this.audioManager?.play("pause_sound", { volume: 0.01 });
+      this.pauseButtonElement.className = "game-whack_pause-button paused";
+      this.pauseButtonElement.setAttribute("aria-label", "Reanudar juego");
+      this.pauseButtonElement.setAttribute("title", "Reanudar juego");
+      this.pauseOverlay.style.display = "flex";
 
       // Pausar la escena (detiene tweens, animaciones, timers)
       this.scene.pause();
     } else {
       // REANUDAR
-      this.audioManager?.play('pause_sound', { volume: 0.01 });
-      this.pauseButtonElement.className = 'game-whack_pause-button playing';
-      this.pauseButtonElement.setAttribute('aria-label', 'Pausar juego');
-      this.pauseButtonElement.setAttribute('title', 'Pausar juego');
-      this.pauseOverlay.style.display = 'none';
+      this.audioManager?.play("pause_sound", { volume: 0.01 });
+      this.pauseButtonElement.className = "game-whack_pause-button playing";
+      this.pauseButtonElement.setAttribute("aria-label", "Pausar juego");
+      this.pauseButtonElement.setAttribute("title", "Pausar juego");
+      this.pauseOverlay.style.display = "none";
 
       // Reanudar la escena
       this.scene.resume();
@@ -479,7 +473,7 @@ export class Main extends Phaser.Scene {
 
   private setupKeyboardNavigation() {
     // Escuchar cualquier tecla de navegación para ACTIVAR el modo teclado
-    this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
+    this.input.keyboard?.on("keydown", (event: KeyboardEvent) => {
       const isNavigationKey = KEYBOARD_NAVIGATION_KEYS.includes(event.key as NavigationKey);
 
       if (isNavigationKey && !this.isKeyboardModeActive) {
@@ -489,40 +483,40 @@ export class Main extends Phaser.Scene {
     });
 
     // Configurar los movimientos (flechas y WASD)
-    this.input.keyboard?.on('keydown-LEFT', () => this.moveFocus(-1));
-    this.input.keyboard?.on('keydown-RIGHT', () => this.moveFocus(1));
-    this.input.keyboard?.on('keydown-UP', () => this.moveFocus(-4));
-    this.input.keyboard?.on('keydown-DOWN', () => this.moveFocus(4));
-    this.input.keyboard?.on('keydown-A', () => this.moveFocus(-1));
-    this.input.keyboard?.on('keydown-D', () => this.moveFocus(1));
-    this.input.keyboard?.on('keydown-W', () => this.moveFocus(-4));
-    this.input.keyboard?.on('keydown-S', () => this.moveFocus(4));
+    this.input.keyboard?.on("keydown-LEFT", () => this.moveFocus(-1));
+    this.input.keyboard?.on("keydown-RIGHT", () => this.moveFocus(1));
+    this.input.keyboard?.on("keydown-UP", () => this.moveFocus(-4));
+    this.input.keyboard?.on("keydown-DOWN", () => this.moveFocus(4));
+    this.input.keyboard?.on("keydown-A", () => this.moveFocus(-1));
+    this.input.keyboard?.on("keydown-D", () => this.moveFocus(1));
+    this.input.keyboard?.on("keydown-W", () => this.moveFocus(-4));
+    this.input.keyboard?.on("keydown-S", () => this.moveFocus(4));
 
     // Acción de golpe (Space y Enter)
-    this.input.keyboard?.on('keydown-SPACE', () => {
+    this.input.keyboard?.on("keydown-SPACE", () => {
       if (this.isKeyboardModeActive && !this.isAnswering) {
         this.moles[this.focusedMoleIndex].triggerWhack();
       }
     });
 
-    this.input.keyboard?.on('keydown-ENTER', () => {
+    this.input.keyboard?.on("keydown-ENTER", () => {
       if (this.isKeyboardModeActive && !this.isAnswering) {
         this.moles[this.focusedMoleIndex].triggerWhack();
       }
     });
 
     // Pausa con tecla ESC
-    this.input.keyboard?.on('keydown-ESC', () => {
+    this.input.keyboard?.on("keydown-ESC", () => {
       this.togglePause();
     });
 
     // DESACTIVAR modo teclado si se usa el mouse
-    this.input.on('pointerdown', () => {
+    this.input.on("pointerdown", () => {
       this.disableKeyboardMode();
     });
 
     // Opcional: Desactivar si el mouse se mueve mucho
-    this.input.on('pointermove', () => {
+    this.input.on("pointermove", () => {
       // Solo lo desactivamos si estaba activo para no saturar procesos
       if (this.isKeyboardModeActive) {
         this.disableKeyboardMode();
@@ -584,9 +578,9 @@ export class Main extends Phaser.Scene {
         scale: 1.5,
         holeDepth: 3,
         containerDepth: 2,
-        moleKey: 'mole',
-        holeKey: 'hole',
-        hurtMoleKey: 'hurt-mole'
+        moleKey: "mole",
+        holeKey: "hole",
+        hurtMoleKey: "hurt-mole",
       });
 
       // Configurar callback de click
@@ -619,8 +613,8 @@ export class Main extends Phaser.Scene {
     this.timeLeft = 25;
     this.speedMultiplier = 1.0; // Reiniciar velocidad
     this.timerTextElement.textContent = this.formatTime(this.timeLeft);
-    this.timerTextElement.style.color = '#fff000';
-    this.timerTextElement.style.textShadow = '2px 2px 0 #885a00, 4px 4px 0 #441f00';
+    this.timerTextElement.style.color = "#fff000";
+    this.timerTextElement.style.textShadow = "2px 2px 0 #885a00, 4px 4px 0 #441f00";
     this.isAnswering = false;
 
     // Detener timer anterior si existe
@@ -633,7 +627,7 @@ export class Main extends Phaser.Scene {
       delay: 1000,
       callback: this.updateTimer,
       callbackScope: this,
-      loop: true
+      loop: true,
     });
 
     // Detener timers anteriores de moles
@@ -666,7 +660,11 @@ export class Main extends Phaser.Scene {
     selectedIndices.forEach((moleIndex, arrayPosition) => {
       const optionIndex = optionIndices[arrayPosition];
       const mole = this.moles[moleIndex];
-      mole.setAnswer(question.options[optionIndex], optionIndex === question.correctAnswer, optionIndex);
+      mole.setAnswer(
+        question.options[optionIndex],
+        optionIndex === question.correctAnswer,
+        optionIndex,
+      );
     });
   }
 
@@ -802,25 +800,23 @@ export class Main extends Phaser.Scene {
 
     // Lógica diferente según si es correcta o incorrecta
     if (isCorrect) {
-      
       // RESPUESTA CORRECTA: Avanzar a siguiente pregunta
       this.time.delayedCall(2000, () => {
         // Ocultar modal de feedback
         this.hideFeedback();
 
-        this.gameEvents.emit('question-answered', {
+        this.gameEvents.emit("question-answered", {
           isCorrect: true,
           questionIndex: this.currentQuestionIndex,
           selectedAnswer: mole.getAnswerText(),
           correctAnswer: question.options[question.correctAnswer],
-          question: question.question
+          question: question.question,
         });
 
         // Ocultar topos antes de siguiente pregunta
         this.hideMoles();
       });
     } else {
-
       // RESPUESTA INCORRECTA: Restar vida y continuar
       this.lives--;
       this.updateLivesDisplay();
@@ -829,12 +825,12 @@ export class Main extends Phaser.Scene {
         // Ocultar modal de feedback
         this.hideFeedback();
 
-        this.gameEvents.emit('question-answered', {
+        this.gameEvents.emit("question-answered", {
           isCorrect: false,
           questionIndex: this.currentQuestionIndex,
           selectedAnswer: mole.getAnswerText(),
           correctAnswer: question.options[question.correctAnswer],
-          question: question.question
+          question: question.question,
         });
 
         // Verificar si se acabaron las vidas
@@ -892,33 +888,35 @@ export class Main extends Phaser.Scene {
 
   private showFeedback(isCorrect: boolean) {
     // Configurar el contenido del modal
-    this.feedbackTitle.textContent = isCorrect ? '¡BIEN!' : '¡MAL!';
+    this.feedbackTitle.textContent = isCorrect ? "¡BIEN!" : "¡MAL!";
     this.feedbackTitle.className = isCorrect
-      ? 'game-whack_feedback-title correct'
-      : 'game-whack_feedback-title incorrect';
+      ? "game-whack_feedback-title correct"
+      : "game-whack_feedback-title incorrect";
 
-    this.feedbackMessage.textContent = isCorrect ? '¡Respuesta correcta!' : '¡Respuesta incorrecta!';
+    this.feedbackMessage.textContent = isCorrect
+      ? "¡Respuesta correcta!"
+      : "¡Respuesta incorrecta!";
 
     // Mostrar el modal con animación
-    this.feedbackModal.classList.add('show');
+    this.feedbackModal.classList.add("show");
 
     // Reproducir sonido usando AudioManager para respetar el estado de mute
     if (isCorrect) {
-      this.audioManager?.play('success_sound', { volume: 0.5 });
+      this.audioManager?.play("success_sound", { volume: 0.5 });
     } else {
-      this.audioManager?.play('wrong_sound', { volume: 0.5 });
+      this.audioManager?.play("wrong_sound", { volume: 0.5 });
     }
   }
 
   private hideFeedback() {
     // Remover la clase 'show' y agregar 'hide' para la animación de salida
-    this.feedbackModal.classList.remove('show');
-    this.feedbackModal.classList.add('hide');
+    this.feedbackModal.classList.remove("show");
+    this.feedbackModal.classList.add("hide");
 
     // Después de que termine la animación, remover la clase 'hide'
     setTimeout(() => {
-      this.feedbackModal.classList.remove('hide');
-    }, 600); 
+      this.feedbackModal.classList.remove("hide");
+    }, 600);
   }
 
   private showCountdown(callback: () => void) {
@@ -927,15 +925,15 @@ export class Main extends Phaser.Scene {
     const showNumber = () => {
       if (count > 0) {
         this.countdownNumber.textContent = count.toString();
-        this.countdownElement.classList.add('show');
+        this.countdownElement.classList.add("show");
 
         // Reproducir sonido de tick (si existe)
-        
-          this.audioManager?.play('tick', { volume: 0.5 });
-      
+
+        this.audioManager?.play("tick", { volume: 0.5 });
+
         // Remover clase después de la animación
         this.time.delayedCall(900, () => {
-          this.countdownElement.classList.remove('show');
+          this.countdownElement.classList.remove("show");
         });
 
         count--;
@@ -997,12 +995,12 @@ export class Main extends Phaser.Scene {
           // Ocultar modal de feedback
           this.hideFeedback();
 
-          this.gameEvents.emit('question-answered', {
+          this.gameEvents.emit("question-answered", {
             isCorrect: false,
             questionIndex: this.currentQuestionIndex,
-            selectedAnswer: 'Tiempo agotado',
+            selectedAnswer: "Tiempo agotado",
             correctAnswer: question.options[question.correctAnswer],
-            question: question.question
+            question: question.question,
           });
 
           // Verificar si se acabaron las vidas
@@ -1026,30 +1024,30 @@ export class Main extends Phaser.Scene {
     this.livesTextElement.textContent = this.formatLives(this.lives);
 
     // Animación de parpadeo al perder vida usando CSS
-    this.livesTextElement.style.animation = 'none';
+    this.livesTextElement.style.animation = "none";
     setTimeout(() => {
-      this.livesTextElement.style.animation = 'blink 0.1s 3';
+      this.livesTextElement.style.animation = "blink 0.1s 3";
     }, 10);
   }
 
   private formatLives(lives: number): string {
-    return lives.toString().padStart(3, '0');
+    return lives.toString().padStart(3, "0");
   }
 
   private formatTime(time: number): string {
-    return time.toString().padStart(3, '0');
+    return time.toString().padStart(3, "0");
   }
 
   private updateTimerColor() {
     if (this.timeLeft <= 5) {
-      this.timerTextElement.style.color = '#ff0000';
-      this.timerTextElement.style.textShadow = '2px 2px 0 #660000, 4px 4px 0 #330000';
+      this.timerTextElement.style.color = "#ff0000";
+      this.timerTextElement.style.textShadow = "2px 2px 0 #660000, 4px 4px 0 #330000";
     } else if (this.timeLeft <= 10) {
-      this.timerTextElement.style.color = '#ffa500';
-      this.timerTextElement.style.textShadow = '2px 2px 0 #885a00, 4px 4px 0 #441f00';
+      this.timerTextElement.style.color = "#ffa500";
+      this.timerTextElement.style.textShadow = "2px 2px 0 #885a00, 4px 4px 0 #441f00";
     } else {
-      this.timerTextElement.style.color = '#fff000';
-      this.timerTextElement.style.textShadow = '2px 2px 0 #885a00, 4px 4px 0 #441f00';
+      this.timerTextElement.style.color = "#fff000";
+      this.timerTextElement.style.textShadow = "2px 2px 0 #885a00, 4px 4px 0 #441f00";
     }
   }
 
@@ -1091,7 +1089,7 @@ export class Main extends Phaser.Scene {
         delay: 1000,
         callback: this.updateTimer,
         callbackScope: this,
-        loop: true
+        loop: true,
       });
 
       // Solo refrescar el foco visual si el modo teclado está activo
@@ -1123,9 +1121,9 @@ export class Main extends Phaser.Scene {
     });
 
     // Emitir evento de fin de juego
-    this.gameEvents.emit('game-over', {
-      reason: 'no-lives',
-      questionsAnswered: this.currentQuestionIndex
+    this.gameEvents.emit("game-over", {
+      reason: "no-lives",
+      questionsAnswered: this.currentQuestionIndex,
     });
 
     // Ir a la escena de fin con parámetro de derrota
@@ -1142,8 +1140,8 @@ export class Main extends Phaser.Scene {
       }
       // Fade out antes de cambiar de escena
       this.cameras.main.fadeOut(200, 0, 0, 0);
-      this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.scene.start('endGameScene', { won: false });
+      this.cameras.main.once("camerafadeoutcomplete", () => {
+        this.scene.start("endGameScene", { won: false });
       });
     });
   }
@@ -1156,8 +1154,8 @@ export class Main extends Phaser.Scene {
     this.stopAllMoleTimers();
 
     // Emitir evento de victoria
-    this.gameEvents.emit('game-completed', {
-      questionsAnswered: this.currentQuestionIndex
+    this.gameEvents.emit("game-completed", {
+      questionsAnswered: this.currentQuestionIndex,
     });
 
     // Ir a la escena de fin con parámetro de victoria
@@ -1174,13 +1172,13 @@ export class Main extends Phaser.Scene {
       }
       // Fade out antes de cambiar de escena
       this.cameras.main.fadeOut(200, 0, 0, 0);
-      this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.scene.start('endGameScene', { won: true });
+      this.cameras.main.once("camerafadeoutcomplete", () => {
+        this.scene.start("endGameScene", { won: true });
       });
     });
   }
 
-  update(): void {
+  override update(): void {
     // Animación de parallax - actualizar en el update()
     // Animación de parallax - mover las nubes a diferentes velocidades
     if (this.cloudsMedium) {
@@ -1205,7 +1203,7 @@ export class Main extends Phaser.Scene {
       this.timerEvent.destroy();
     }
 
-    this.molePopTimers.forEach(timer => timer.destroy());
+    this.molePopTimers.forEach((timer) => timer.destroy());
     this.molePopTimers = [];
   }
 }

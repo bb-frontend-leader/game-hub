@@ -1,1 +1,1 @@
-export { Mole, type MoleConfig } from './Mole';
+export { Mole, type MoleConfig } from "./Mole";

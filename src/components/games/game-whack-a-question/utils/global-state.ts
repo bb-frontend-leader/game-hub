@@ -1,5 +1,5 @@
-import type { ThemeType, WhackQuestion } from '../types/types';
-import { DEFAULT_THEME } from '../types/types';
+import type { ThemeType, WhackQuestion } from "../types/types";
+import { DEFAULT_THEME } from "../types/types";
 
 export const globalState = {
   questions: [] as WhackQuestion[],

@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import Phaser from "phaser";
 
 type AudioManagerOptions = {
   musicKey: string;
@@ -25,7 +25,7 @@ export class AudioManager {
   constructor(scene: Phaser.Scene, opts: AudioManagerOptions) {
     this.scene = scene;
 
-    this.storageKey = opts.storageKey ?? 'whack_music_muted';
+    this.storageKey = opts.storageKey ?? "whack_music_muted";
     this.volume = opts.volume ?? 0.005;
 
     this.initState();
@@ -72,30 +72,30 @@ export class AudioManager {
     this.currentMusicKey = key;
   }
 
-public play(key: string, config?: Phaser.Types.Sound.SoundConfig & { duration?: number }) {
-  if (this.muted) return;
-  
-  const { duration, ...soundConfig } = config || {};
-  const defaultConfig = { volume: 0.5, ...soundConfig };
-  
-  const sound = this.scene.sound.add(key, defaultConfig);
-  sound.play();
-  
-  // Si se especifica duración, detener después
-  if (duration) {
-    this.scene.time.delayedCall(duration, () => {
-      sound.stop();
-      sound.destroy();
-    });
-  } else {
-    // Si no tiene duración, auto-destruir cuando termine de reproducirse
-    sound.once('complete', () => {
-      sound.destroy();
-    });
+  public play(key: string, config?: Phaser.Types.Sound.SoundConfig & { duration?: number }) {
+    if (this.muted) return;
+
+    const { duration, ...soundConfig } = config || {};
+    const defaultConfig = { volume: 0.5, ...soundConfig };
+
+    const sound = this.scene.sound.add(key, defaultConfig);
+    sound.play();
+
+    // Si se especifica duración, detener después
+    if (duration) {
+      this.scene.time.delayedCall(duration, () => {
+        sound.stop();
+        sound.destroy();
+      });
+    } else {
+      // Si no tiene duración, auto-destruir cuando termine de reproducirse
+      sound.once("complete", () => {
+        sound.destroy();
+      });
+    }
+
+    return sound;
   }
-  
-  return sound;
-}
 
   /** Alternar entre muted/unmuted */
   public toggle() {
@@ -105,7 +105,7 @@ public play(key: string, config?: Phaser.Types.Sound.SoundConfig & { duration?: 
   /** Establecer estado muted */
   public setMuted(value: boolean) {
     this.muted = value;
-    localStorage.setItem(this.storageKey, value ? '1' : '0');
+    localStorage.setItem(this.storageKey, value ? "1" : "0");
 
     // Controlar música
     if (this.currentMusic) {
@@ -135,7 +135,7 @@ public play(key: string, config?: Phaser.Types.Sound.SoundConfig & { duration?: 
   // -------------------
 
   private initState() {
-    this.muted = localStorage.getItem(this.storageKey) === '1';
+    this.muted = localStorage.getItem(this.storageKey) === "1";
   }
 
   private stopMusic() {
@@ -146,7 +146,7 @@ public play(key: string, config?: Phaser.Types.Sound.SoundConfig & { duration?: 
   }
 
   private createButton(x: number, y: number, depth: number) {
-    const label = this.muted ? 'Activar audio' : 'Silenciar audio';
+    const label = this.muted ? "Activar audio" : "Silenciar audio";
 
     this.dom = this.scene.add.dom(x, y).setDepth(depth).createFromHTML(`
       <button
@@ -154,20 +154,20 @@ public play(key: string, config?: Phaser.Types.Sound.SoundConfig & { duration?: 
         aria-label="${label}"
         aria-pressed="${!this.muted}"
         title="${label}"
-        class="game-whack_audio-button ${this.muted ? 'muted' : 'sound'}"
+        class="game-whack_audio-button ${this.muted ? "muted" : "sound"}"
       >
       </button>
     `);
 
     const root = this.dom.node as HTMLElement;
-    const btn = root.querySelector('button');
-    if (!btn) throw new Error('Audio button not found');
+    const btn = root.querySelector("button");
+    if (!btn) throw new Error("Audio button not found");
 
     this.btn = btn as HTMLButtonElement;
 
-    this.btn.addEventListener('click', () => this.toggle());
-    this.btn.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.code === 'Enter' || e.code === 'Space') {
+    this.btn.addEventListener("click", () => this.toggle());
+    this.btn.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.code === "Enter" || e.code === "Space") {
         e.preventDefault();
         this.toggle();
       }
@@ -176,13 +176,13 @@ public play(key: string, config?: Phaser.Types.Sound.SoundConfig & { duration?: 
 
   private syncUI() {
     const active = !this.muted;
-    const label = active ? 'Silenciar audio' : 'Activar audio';
+    const label = active ? "Silenciar audio" : "Activar audio";
 
-    this.btn.setAttribute('aria-label', label);
-    this.btn.setAttribute('title', label);
-    this.btn.setAttribute('aria-pressed', String(active));
+    this.btn.setAttribute("aria-label", label);
+    this.btn.setAttribute("title", label);
+    this.btn.setAttribute("aria-pressed", String(active));
 
     // Cambiar clases CSS según estado
-    this.btn.className = `game-whack_audio-button ${active ? 'sound' : 'muted'}`;
+    this.btn.className = `game-whack_audio-button ${active ? "sound" : "muted"}`;
   }
 }

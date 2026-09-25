@@ -16,16 +16,16 @@ class ThemeManager {
     const root = document.documentElement;
     const colors = this.currentTheme.colors;
 
-    root.style.setProperty('--theme-primary', colors.primary);
-    root.style.setProperty('--theme-secondary', colors.secondary);
-    root.style.setProperty('--theme-bg-button', colors.bgButton);
-    root.style.setProperty('--theme-text-button', colors.textButton);
-    root.style.setProperty('--theme-gradient-modal-feedbacks', colors.gradientModalFeedbacks);
-    root.style.setProperty('--theme-border-modal-feedbacks', colors.borderModalFeedbacks);
-    root.style.setProperty('--theme-gradient-modal-instructions', colors.gradientModalInstructions);
+    root.style.setProperty("--theme-primary", colors.primary);
+    root.style.setProperty("--theme-secondary", colors.secondary);
+    root.style.setProperty("--theme-bg-button", colors.bgButton);
+    root.style.setProperty("--theme-text-button", colors.textButton);
+    root.style.setProperty("--theme-gradient-modal-feedbacks", colors.gradientModalFeedbacks);
+    root.style.setProperty("--theme-border-modal-feedbacks", colors.borderModalFeedbacks);
+    root.style.setProperty("--theme-gradient-modal-instructions", colors.gradientModalInstructions);
     root.style.setProperty(
-      '--theme-border-modal-instruction-content',
-      colors.borderModalInstructionContent
+      "--theme-border-modal-instruction-content",
+      colors.borderModalInstructionContent,
     );
   }
 
@@ -82,7 +82,7 @@ export const getImageByName = (imageName: string): string => {
 
   if (!image) {
     console.warn(`Image '${imageName}' not found for theme '${currentTheme.name}'`);
-    return images[0]?.path || '';
+    return images[0]?.path || "";
   }
 
   return image.path;
@@ -97,7 +97,7 @@ export const getSpritesheetByName = (spritesheetName: string): string => {
 
   if (!spritesheet) {
     console.warn(`Spritesheet '${spritesheetName}' not found for theme '${currentTheme.name}'`);
-    return spritesheets[0]?.path || '';
+    return spritesheets[0]?.path || "";
   }
 
   return spritesheet.path;
