@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 
+import { assetUrl } from "@/lib/asset-url";
+
 // Hojas de sprites que ya usan los juegos (public/assets). El hub las reutiliza
 // para que la plataforma se vea igual que lo que se juega dentro.
 export type SpriteSheet = {
@@ -11,31 +13,31 @@ export type SpriteSheet = {
 export const SHEETS = {
   // 8 columnas × 9 filas de 32×32. Idle = frames 0-1 (fila 0), correr = fila 3.
   hero: {
-    src: "/assets/game-attack/images/characters/AnimationSheet_Character.png",
+    src: assetUrl("assets/game-attack/images/characters/AnimationSheet_Character.png"),
     sheet: [256, 288],
     frame: [32, 32],
   },
   // 6 × 4 de 64×64; la fila 0 es el idle de frente.
   slime: {
-    src: "/assets/game-attack/images/enemies/Slime2_Idle_full.png",
+    src: assetUrl("assets/game-attack/images/enemies/Slime2_Idle_full.png"),
     sheet: [384, 256],
     frame: [64, 64],
   },
   // 4 × 4 de 64×64.
   plant: {
-    src: "/assets/game-attack/images/enemies/Plant2_Idle_full.png",
+    src: assetUrl("assets/game-attack/images/enemies/Plant2_Idle_full.png"),
     sheet: [256, 256],
     frame: [64, 64],
   },
   // 10 frames de 64×64: 0 = topo fuera, 9 = escondido.
   mole: {
-    src: "/assets/game-whack-a-question/sprites/mole.png",
+    src: assetUrl("assets/game-whack-a-question/sprites/mole.png"),
     sheet: [640, 64],
     frame: [64, 64],
   },
   // 10 frames de 64×64: 0 = borde del hoyo, 9 = hoyo abierto (oscuro).
   hole: {
-    src: "/assets/game-whack-a-question/sprites/hole.png",
+    src: assetUrl("assets/game-whack-a-question/sprites/hole.png"),
     sheet: [640, 64],
     frame: [64, 64],
   },

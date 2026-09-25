@@ -1,5 +1,7 @@
 import { GameObjects, Scene } from "phaser";
 
+import { assetUrl } from "@/lib/asset-url";
+
 import { Audio } from "../components";
 import css from "../styles/game-attack.module.css";
 import { ThemeType } from "../types/types";
@@ -224,7 +226,7 @@ export class MainMenu extends Scene {
           <div class="${css["overlay-character"]}">
             <img
               class="${css["overlay-character-img"]}"
-              src="assets/game-attack/images/characters/guardian.png"
+              src="${assetUrl("assets/game-attack/images/characters/guardian.png")}"
               alt="Guardiana Arcana"
             />
           </div>

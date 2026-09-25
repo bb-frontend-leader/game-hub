@@ -24,6 +24,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { UsernameGate } from "@/components/UsernameGate";
 import { getUserService } from "@/core";
+import { assetUrl } from "@/lib/asset-url";
 import { getPerfil, type Perfil, savePerfil } from "@/lib/perfil";
 import { PerfilContext } from "@/lib/perfil-context";
 import { cn } from "@/lib/utils";
@@ -89,7 +90,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           <PixelIcon name="reset" scale={2} />
           Reintentar
         </button>
-        <a href="/" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
+        <a href={import.meta.env.BASE_URL} className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
           Ir al inicio
         </a>
       </div>
@@ -126,9 +127,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       // Íconos generados con scripts/generate-favicon.mjs. El .ico cubre navegadores viejos y
       // Safari; los modernos toman el SVG (nítido a cualquier tamaño).
-      { rel: "icon", href: "/favicon.ico", sizes: "16x16 32x32 48x48" },
-      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "icon", href: assetUrl("favicon.ico"), sizes: "16x16 32x32 48x48" },
+      { rel: "icon", href: assetUrl("favicon.svg"), type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: assetUrl("apple-touch-icon.png") },
     ],
   }),
   shellComponent: RootShell,

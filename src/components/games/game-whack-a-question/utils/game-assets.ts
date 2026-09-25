@@ -1,6 +1,8 @@
 // game-assets.ts - Helper para cargar assets según el tema
 import type * as Phaser from "phaser";
 
+import { assetUrl } from "@/lib/asset-url";
+
 import { ThemeType } from "../types/types";
 
 /**
@@ -8,7 +10,7 @@ import { ThemeType } from "../types/types";
  */
 export function preloadThemeAssets(scene: Phaser.Scene, theme: ThemeType) {
   const basePath = "assets/game-whack-a-question";
-  scene.load.setPath(basePath);
+  scene.load.setPath(assetUrl(basePath));
 
   // 1. Cargar TODAS las imágenes del tema (incluyendo las capas del menú)
   const backgroundImages = theme.assets.images;
@@ -37,7 +39,7 @@ export function preloadThemeAssets(scene: Phaser.Scene, theme: ThemeType) {
  */
 export function preloadCommonAssets(scene: Phaser.Scene) {
   const basePath = "assets/game-whack-a-question";
-  scene.load.setPath(basePath);
+  scene.load.setPath(assetUrl(basePath));
 
   // Imágenes comunes (NO incluye las capas del menú, están en el tema)
   scene.load.image("container-title", "images/whackBG.png");
@@ -73,7 +75,7 @@ export function preloadCommonAssets(scene: Phaser.Scene) {
  */
 export function preloadThemeMusic(scene: Phaser.Scene, theme: ThemeType) {
   const basePath = "assets/game-whack-a-question";
-  scene.load.setPath(basePath);
+  scene.load.setPath(assetUrl(basePath));
 
   // Cargar la música de ambiente del tema actual
   const ambienceSounds = theme.assets.ambiencesSounds;
