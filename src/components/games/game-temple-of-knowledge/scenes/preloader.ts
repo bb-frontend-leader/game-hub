@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import * as Phaser from "phaser";
 
 import { preloadAssets } from "../utils/game-assets";
 import { themeManager } from "../utils/theme-manager";
