@@ -1,13 +1,10 @@
 import Phaser from "phaser";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { ThemeSelector } from "./components";
-import { loadQuestions, setTheme } from "./global-state";
+import { loadQuestions } from "./global-state";
 import PhaserGame from "./main";
 import css from "./styles/game-attack.module.css";
-import type { GameResult, Question, ThemeType } from "./types/types";
-import { announce } from "./utils/announce";
-import { applyTheme } from "./utils/ui-styles";
+import type { GameResult, Question } from "./types/types";
 
 interface AttackGameProps {
   questions: Question[];
@@ -23,7 +20,7 @@ export function AttackGame({ questions, gameId, onResult }: AttackGameProps) {
 
   const containerId = `game-container-${gameId ?? "default"}`;
 
-  const [phaserKey, setPhaserKey] = useState(0);
+  const [phaserKey, _] = useState(0);
 
   // ✅ 1) Cargar questions al globalState
   useEffect(() => {
@@ -31,21 +28,21 @@ export function AttackGame({ questions, gameId, onResult }: AttackGameProps) {
   }, [questions]);
 
   // ✅ 2) Handler del ThemeSelector
-  const handleThemeChange = useCallback(
-    (theme: ThemeType) => {
-      setTheme(theme); // globalState.theme
+  // const handleThemeChange = useCallback(
+  //   (theme: ThemeType) => {
+  //     setTheme(theme); // globalState.theme
 
-      applyTheme(theme);
+  //     applyTheme(theme);
 
-      // Avisar a Phaser para que lo aplique (o reinicie)
-      gameEvents.emit("theme-changed", { theme });
-      setPhaserKey((k) => k + 1);
+  //     // Avisar a Phaser para que lo aplique (o reinicie)
+  //     gameEvents.emit("theme-changed", { theme });
+  //     setPhaserKey((k) => k + 1);
 
-      // Anunciar el cambio
-      announce(`Tema cambiado a ${theme.name}. Presiona jugar para comenzar.`);
-    },
-    [gameEvents],
-  );
+  //     // Anunciar el cambio
+  //     announce(`Tema cambiado a ${theme.name}. Presiona jugar para comenzar.`);
+  //   },
+  //   [gameEvents],
+  // );
 
   // ✅ 3) Crear Phaser una sola vez
   useEffect(() => {
@@ -68,9 +65,9 @@ export function AttackGame({ questions, gameId, onResult }: AttackGameProps) {
   return (
     <>
       {/* Selector de temas */}
-      <div className={css["theme-selector-container"]}>
+      {/* <div className={css["theme-selector-container"]}>
         <ThemeSelector onThemeChange={handleThemeChange} gameEvents={gameEvents} />
-      </div>
+      </div> */}
       <div className={css["gameAttack_container"]} id="gameAttack-id">
         <div
           id="game-announcer"

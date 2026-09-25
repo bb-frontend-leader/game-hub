@@ -46,7 +46,7 @@ export const ThemeSelector: FC<ThemeSelectorProps> = ({ onThemeChange, gameEvent
         {availableThemes.map((theme) => (
           <button
             key={theme.id}
-            className={`${css["theme-button"]} ${currentTheme.id === theme.id ? `${css.active}` : ""}`}
+            className={`${css["theme-button"]} ${currentTheme.id === theme.id ? css["active"] : ""}`}
             onClick={() => handleThemeSelect(theme)}
             style={
               {

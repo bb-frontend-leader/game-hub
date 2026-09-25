@@ -1,13 +1,20 @@
 import { ThemeType, WORLD_THEMES } from "../types/types";
 
+// Tema por defecto (Bosque)
+const DEFAULT_THEME: ThemeType = (() => {
+  const theme = WORLD_THEMES[1];
+  if (!theme) throw new Error("WORLD_THEMES[1] (Cocina) no existe");
+  return theme;
+})();
+
 // Estado global del tema
 class ThemeManager {
   private currentTheme: ThemeType;
   private listeners: ((theme: ThemeType) => void)[] = [];
 
   constructor() {
-    // Tema por defecto (Cocina)
-    this.currentTheme = WORLD_THEMES[0];
+    // Tema por defecto (Castillo)
+    this.currentTheme = DEFAULT_THEME;
   }
 
   // Obtener el tema actual
@@ -58,7 +65,7 @@ class ThemeManager {
 
   // Resetear al tema por defecto
   reset(): void {
-    this.currentTheme = WORLD_THEMES[0]; // Cocina como tema por defecto
+    this.currentTheme = DEFAULT_THEME; // Castillo como tema por defecto
     this.notifyListeners();
     this.applyThemeToDOM();
   }
