@@ -5,16 +5,19 @@ import {
   ADMIN_ROLE,
   type AdminUsersPageDto,
   adminUserSummaryFromDto,
+  type ResetUserRequestDto,
 } from "@/core/infrastructure/dto/admin.dto";
 
 // Admin-only user management under {base}/users (players get 403).
 const ADMIN_USERS_PATH = "/users";
+// PUT {base}/reset with { userId }: clears that player's scores.
+const RESET_PATH = "/reset";
 // Largest page the backend accepts.
 const PAGE_SIZE = 100;
 
 export class HttpAdminRepository implements AdminRepository {
   // Walks every page so the roster is complete, and leaves admins out of it
-  // (they're not players, and an admin shouldn't be able to delete itself).
+  // (they're not players, and an admin shouldn't be able to reset itself).
   async listUsers(token: string): Promise<AdminUserSummary[]> {
     const users: AdminUserSummary[] = [];
     for (let page = 1; ; page++) {
@@ -35,10 +38,8 @@ export class HttpAdminRepository implements AdminRepository {
     await fetchApiDataSource.delete(`${ADMIN_USERS_PATH}/${userId}`, { token });
   }
 
-  // PLACEHOLDER_API_CONTRACT: POST {base}/admin/users/:id/reset-score
   async resetUserScore(token: string, userId: string): Promise<void> {
-    await fetchApiDataSource.post(`${ADMIN_USERS_PATH}/${userId}/reset-score`, undefined, {
-      token,
-    });
+    const body: ResetUserRequestDto = { userId };
+    await fetchApiDataSource.put(RESET_PATH, body, { token });
   }
 }

@@ -6,8 +6,11 @@ export type User = {
   name: string;
 };
 
-// A freshly registered player plus the bearer token the backend issues for
-// it, needed to authorize that player's later requests (e.g. submitting scores).
+// A player who just registered or logged in, plus the bearer token the
+// backend issued, needed to authorize that player's later requests (e.g.
+// submitting scores). `code` is the player's access code: together with the
+// name, it's what lets them log back in.
 export type RegisteredUser = User & {
   token: string;
+  code?: string;
 };

@@ -14,7 +14,7 @@ export type { Score } from "@/core/domain/entities/score";
 export type { RegisteredUser, User } from "@/core/domain/entities/user";
 export type { AdminLoginInput } from "@/core/domain/repositories/admin-auth.repository";
 export type { SubmitScoreInput } from "@/core/domain/repositories/score.repository";
-export type { CreateUserInput } from "@/core/domain/repositories/user.repository";
+export type { CreateUserInput, LoginUserInput } from "@/core/domain/repositories/user.repository";
 export { ApiError } from "@/core/infrastructure/datasources/fetch-api.datasource";
 export { getAdminService } from "@/core/infrastructure/dependencies/admin.dependency";
 export { getAdminAuthService } from "@/core/infrastructure/dependencies/admin-auth.dependency";

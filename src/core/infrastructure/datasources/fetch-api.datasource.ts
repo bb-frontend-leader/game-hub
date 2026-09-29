@@ -58,7 +58,7 @@ async function parseBody(response: Response): Promise<unknown> {
 }
 
 async function request<T>(
-  method: "GET" | "POST" | "DELETE",
+  method: "GET" | "POST" | "PUT" | "DELETE",
   path: string,
   query: QueryParams | undefined,
   body: unknown,
@@ -103,6 +103,9 @@ export const fetchApiDataSource = {
   },
   post<T = unknown>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
     return request<T>("POST", path, undefined, body, options);
+  },
+  put<T = unknown>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
+    return request<T>("PUT", path, undefined, body, options);
   },
   delete<T = unknown>(path: string, options?: RequestOptions): Promise<T> {
     return request<T>("DELETE", path, undefined, undefined, options);

@@ -11,7 +11,7 @@ import type {
 } from "@/core/infrastructure/dto/score.dto";
 import { userFromDto } from "@/core/infrastructure/dto/user.dto";
 
-// POST {base}/scores. Responds 409 if the player already has a score for that
+// PUT {base}/scores. Responds 409 if the player already has a score for that
 // game, and 403 if `userId` isn't the token's owner.
 const SCORES_PATH = "/scores";
 
@@ -22,7 +22,7 @@ export class HttpScoreRepository implements ScoreRepository {
       game: API_GAME[input.gameId],
       score: input.points,
     };
-    const dto = await fetchApiDataSource.post<SubmitScoreResponseDto>(SCORES_PATH, body, {
+    const dto = await fetchApiDataSource.put<SubmitScoreResponseDto>(SCORES_PATH, body, {
       token,
     });
     return userFromDto(dto.data);

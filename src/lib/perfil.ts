@@ -4,10 +4,11 @@
 
 const STORAGE_KEY = "booksquest-perfil";
 
-// `id` y `token` los asigna el backend al registrar el usuario (ver
+// `id`, `token` y `code` los asigna el backend al registrar el usuario (ver
 // UserService.createUser); quedan sin definir si el perfil solo se pudo
-// guardar de forma local. El token autoriza las peticiones del jugador.
-export type Perfil = { id?: string; name: string; emoji: string; token?: string };
+// guardar de forma local. El token autoriza las peticiones del jugador y el
+// código (con el nombre) le permite volver a entrar.
+export type Perfil = { id?: string; name: string; emoji: string; token?: string; code?: string };
 
 const ADJETIVOS = [
   "Tigre",

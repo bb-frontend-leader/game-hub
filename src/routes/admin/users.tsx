@@ -50,22 +50,12 @@ function UsersTable({ token }: { token: string }) {
     onSuccess: () => {
       toast.success("Puntaje reiniciado");
       invalidateUsers();
+      // Los puntajes cambiaron: la tabla de clasificación también.
+      void queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
     },
     onError: (error) => {
       console.error(error);
       toast.error("No pudimos reiniciar el puntaje");
-    },
-  });
-
-  const { mutate: deleteUser, isPending: isDeleting } = useMutation({
-    mutationFn: (userId: string) => getAdminService().deleteUser(token, userId),
-    onSuccess: () => {
-      toast.success("Usuario eliminado");
-      invalidateUsers();
-    },
-    onError: (error) => {
-      console.error(error);
-      toast.error("No pudimos eliminar el usuario");
     },
   });
 
@@ -90,6 +80,7 @@ function UsersTable({ token }: { token: string }) {
       <TableHeader>
         <TableRow>
           <TableHead>Jugador</TableHead>
+          <TableHead>Código</TableHead>
           <TableHead className="text-right">Puntos totales</TableHead>
           <TableHead className="text-right">Acciones</TableHead>
         </TableRow>
@@ -98,38 +89,33 @@ function UsersTable({ token }: { token: string }) {
         {users.map((user: AdminUserSummary) => (
           <TableRow key={user.id}>
             <TableCell className="text-xl font-semibold">{user.name}</TableCell>
+            <TableCell className="select-all font-pixel text-base tracking-widest">
+              {user.code ?? "—"}
+            </TableCell>
             <TableCell className="text-right font-pixel text-base font-bold text-gold">
               {user.totalPoints}
             </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={isResetting}
-                  onClick={() => resetScore(user.id)}
-                >
-                  <PixelIcon name="reset" scale={2} />
-                  Reiniciar
-                </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="sm" disabled={isDeleting}>
-                      <PixelIcon name="trash" scale={2} />
-                      Eliminar
+                    <Button variant="outline" size="sm" disabled={isResetting}>
+                      <PixelIcon name="reset" scale={2} />
+                      Reiniciar
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>¿Eliminar a {user.name}?</AlertDialogTitle>
+                      <AlertDialogTitle>¿Reiniciar el puntaje de {user.name}?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Esta acción borra al usuario y no se puede deshacer.
+                        Se borran sus puntajes de ambos juegos y podrá volver a jugarlos. No se
+                        puede deshacer.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction variant="destructive" onClick={() => deleteUser(user.id)}>
-                        Eliminar
+                      <AlertDialogAction onClick={() => resetScore(user.id)}>
+                        Reiniciar
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

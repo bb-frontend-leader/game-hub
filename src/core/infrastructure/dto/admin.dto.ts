@@ -7,6 +7,7 @@ export type AdminUserDto = {
   id: string;
   username: string;
   role: string;
+  code: string | null;
   totalScore: number;
 };
 
@@ -26,8 +27,13 @@ export type AdminUsersPageDto = {
   };
 };
 
+// Wire format for PUT {base}/reset (admin only).
+export type ResetUserRequestDto = {
+  userId: string;
+};
+
 export const ADMIN_ROLE = "ADMIN";
 
 export function adminUserSummaryFromDto(dto: AdminUserDto): AdminUserSummary {
-  return { id: dto.id, name: dto.username, totalPoints: dto.totalScore };
+  return { id: dto.id, name: dto.username, code: dto.code, totalPoints: dto.totalScore };
 }
