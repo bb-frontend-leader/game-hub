@@ -4,6 +4,18 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { PixelIcon, PixelLogo, RankBadge } from "@/components/pixel";
+import { PlayerCode } from "@/components/PlayerCode";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { getLeaderboardService, getUserService } from "@/core";
@@ -13,6 +25,7 @@ const LEADERBOARD_SIZE = 5;
 
 export function AppHeader({ perfil }: { perfil: Perfil }) {
   const [showBoard, setShowBoard] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   // Solo se pide al backend cuando el jugador abre el modal. Requiere el token
   // del registro: un perfil solo local (sin token) no puede ver la tabla.
@@ -69,9 +82,12 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
             <span className="hidden lg:inline">Clasificación</span>
           </Button>
 
-          <div
-            className="px-frame px-c-night hidden h-12 max-w-[12rem] items-center gap-2 px-2 min-[380px]:flex sm:px-3"
-            title={perfil.name}
+          <button
+            type="button"
+            onClick={() => setShowProfile(true)}
+            aria-label={`Mi perfil: ${perfil.name}`}
+            className="px-frame px-c-night hidden h-12 max-w-[12rem] items-center gap-2 px-2 transition-transform duration-100 ease-[steps(2)] hover:-translate-y-0.5 min-[380px]:flex sm:px-3"
+            title="Ver mi perfil y mi código"
           >
             <span
               aria-hidden
@@ -80,20 +96,85 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
               {perfil.emoji}
             </span>
             <span className="hidden truncate text-lg font-semibold md:inline">{perfil.name}</span>
-          </div>
+          </button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => void logout()}
-            disabled={isLoggingOut}
-            title="Cerrar sesión"
-            aria-label="Cerrar sesión"
-          >
-            <PixelIcon name="exit" scale={2} />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={isLoggingOut}
+                title="Cerrar sesión"
+                aria-label="Cerrar sesión"
+              >
+                <PixelIcon name="exit" scale={2} />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
+                <AlertDialogDescription asChild>
+                  <div className="space-y-4">
+                    {perfil.code ? (
+                      <>
+                        <p>
+                          Para volver a entrar necesitarás tu nombre{" "}
+                          <strong className="text-foreground">{perfil.name}</strong> y este código:
+                        </p>
+                        <PlayerCode code={perfil.code} />
+                      </>
+                    ) : (
+                      <p>
+                        Tu jugador no está guardado en el servidor: si cierras sesión, no podrás
+                        recuperarlo.
+                      </p>
+                    )}
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Seguir jugando</AlertDialogCancel>
+                <AlertDialogAction variant="destructive" onClick={() => void logout()}>
+                  Cerrar sesión
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
+
+      <Dialog open={showProfile} onOpenChange={setShowProfile}>
+        <DialogContent className="max-w-md gap-0 p-0">
+          <div className="px-bar min-h-14 pr-14 [--px-bar-hi:var(--px-cyan-hi)] [--px-bar:var(--px-cyan)]">
+            <PixelIcon name="shield" scale={2} />
+            <DialogTitle className="pr-0 text-base leading-snug text-ink">Mi perfil</DialogTitle>
+          </div>
+
+          <div className="space-y-5 p-5 text-center">
+            <p className="flex items-center justify-center gap-3 text-2xl font-semibold">
+              <span aria-hidden className="text-3xl leading-none">
+                {perfil.emoji}
+              </span>
+              {perfil.name}
+            </p>
+            {perfil.code ? (
+              <>
+                <DialogDescription className="text-lg">
+                  Tu código para volver a entrar:
+                </DialogDescription>
+                <PlayerCode code={perfil.code} />
+                <p className="text-base text-muted-foreground">
+                  ¡No se lo muestres a nadie! Si lo olvidas, tu profe puede dártelo.
+                </p>
+              </>
+            ) : (
+              <DialogDescription className="text-lg">
+                Tu jugador no está guardado en el servidor, así que no tiene código.
+              </DialogDescription>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showBoard} onOpenChange={setShowBoard}>
         <DialogContent className="max-w-md gap-0 p-0">

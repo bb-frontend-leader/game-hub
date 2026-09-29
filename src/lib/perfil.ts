@@ -76,6 +76,29 @@ export function savePerfil(perfil: Perfil): Perfil {
   return perfil;
 }
 
+// La sesión del jugador venció (401): se borra el perfil, pero se recuerda su
+// nombre para que la pantalla de inicio le ofrezca volver a entrar con su
+// código sin reescribirlo. Distinto de un logout voluntario (clearPerfil),
+// donde no se guarda nada: en un computador compartido, el siguiente niño no
+// debería ver el nombre del anterior.
+const RETURNING_NAME_KEY = "booksquest-returning-name";
+
+export function expirePerfil(name: string) {
+  window.localStorage.setItem(RETURNING_NAME_KEY, name);
+  clearPerfil();
+}
+
+// Lee y borra (una sola vez) el nombre guardado por expirePerfil.
+export function consumeReturningName(): string | null {
+  try {
+    const name = window.localStorage.getItem(RETURNING_NAME_KEY);
+    window.localStorage.removeItem(RETURNING_NAME_KEY);
+    return name;
+  } catch {
+    return null;
+  }
+}
+
 export function clearPerfil() {
   window.localStorage.removeItem(STORAGE_KEY);
   window.dispatchEvent(new Event("booksquest:logout"));

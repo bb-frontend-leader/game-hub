@@ -1,8 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { GroundParade, PixelGround, PixelIcon } from "@/components/pixel";
+import { PlayerCode } from "@/components/PlayerCode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,7 +14,13 @@ import {
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
 } from "@/core";
-import { type Perfil, randomEmoji, randomUsername, savePerfil } from "@/lib/perfil";
+import {
+  consumeReturningName,
+  type Perfil,
+  randomEmoji,
+  randomUsername,
+  savePerfil,
+} from "@/lib/perfil";
 
 type OnJoin = (perfil: Perfil) => void;
 
@@ -26,6 +33,17 @@ export function UsernameGate({ onJoin }: { onJoin: OnJoin }) {
   const [name, setName] = useState("");
   // Jugador recién registrado: se le muestra su código antes de entrar.
   const [registered, setRegistered] = useState<Perfil | null>(null);
+
+  // Si la sesión anterior venció (ver expirePerfil), abrimos directo "Ya
+  // tengo usuario" con su nombre escrito. En un efecto, no en el estado
+  // inicial: localStorage no existe en el render del servidor.
+  useEffect(() => {
+    const returningName = consumeReturningName();
+    if (returningName) {
+      setName(returningName);
+      setMode("returning");
+    }
+  }, []);
 
   const goToLogin = (prefillName?: string) => {
     if (prefillName !== undefined) setName(prefillName);
@@ -284,17 +302,6 @@ function ReturningPlayerForm({
 }
 
 function ShowCode({ perfil, onContinue }: { perfil: Perfil; onContinue: () => void }) {
-  const code = perfil.code ?? "";
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast.success("¡Código copiado!");
-    } catch {
-      toast.error("No pudimos copiarlo, anótalo a mano");
-    }
-  };
-
   return (
     <div
       className="px-frame px-c-deep px-drop animate-px-pop mt-8 w-full max-w-lg"
@@ -309,25 +316,15 @@ function ShowCode({ perfil, onContinue }: { perfil: Perfil; onContinue: () => vo
         <p className="text-xl">
           Con tu nombre <strong>{perfil.name}</strong> y este código puedes volver a entrar:
         </p>
-        <p
-          className="px-frame px-c-night select-all py-4 font-pixel text-3xl tracking-[0.3em] text-gold sm:text-4xl"
-          aria-label={`Tu código es ${code.split("").join(" ")}`}
-        >
-          {code}
-        </p>
+        <PlayerCode code={perfil.code ?? ""} />
         <p className="text-lg text-muted-foreground">
           ¡Anótalo en tu cuaderno! Si lo olvidas, tu profe puede dártelo.
         </p>
 
-        <div className="flex flex-col gap-4 sm:flex-row">
-          <Button type="button" variant="secondary" onClick={copy} className="flex-1">
-            Copiar código
-          </Button>
-          <Button type="button" variant="success" onClick={onContinue} className="flex-1">
-            <PixelIcon name="play" scale={2} />
-            ¡Ya lo anoté!
-          </Button>
-        </div>
+        <Button type="button" variant="success" onClick={onContinue} className="w-full">
+          <PixelIcon name="play" scale={2} />
+          ¡Ya lo anoté!
+        </Button>
       </div>
     </div>
   );

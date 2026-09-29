@@ -21,7 +21,10 @@ export {
 export type { AdminLoginInput } from "@/core/domain/repositories/admin-auth.repository";
 export type { SubmitScoreInput } from "@/core/domain/repositories/score.repository";
 export type { CreateUserInput, LoginUserInput } from "@/core/domain/repositories/user.repository";
-export { ApiError } from "@/core/infrastructure/datasources/fetch-api.datasource";
+export {
+  ApiError,
+  SessionExpiredError,
+} from "@/core/infrastructure/datasources/fetch-api.datasource";
 export { getAdminService } from "@/core/infrastructure/dependencies/admin.dependency";
 export { getAdminAuthService } from "@/core/infrastructure/dependencies/admin-auth.dependency";
 export { getLeaderboardService } from "@/core/infrastructure/dependencies/leaderboard.dependency";

@@ -39,7 +39,11 @@ export const Route = createFileRoute("/admin/users")({
 function UsersTable({ token }: { token: string }) {
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading } = useQuery({
+  const {
+    data: users,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["admin", "users"],
     queryFn: () => getAdminService().listUsers(token),
   });
@@ -64,6 +68,16 @@ function UsersTable({ token }: { token: string }) {
     return (
       <p role="status" className="animate-px-blink py-12 text-center text-xl text-muted-foreground">
         Cargando usuarios...
+      </p>
+    );
+  }
+
+  // Una sesión vencida la maneja el handler global (manda al login); aquí
+  // queda cualquier otro fallo, que no debe verse como "no hay usuarios".
+  if (isError) {
+    return (
+      <p role="alert" className="py-12 text-center text-xl text-muted-foreground">
+        No pudimos cargar los usuarios. Recarga la página para intentarlo de nuevo.
       </p>
     );
   }
