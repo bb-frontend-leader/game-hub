@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { PixelIcon, PixelLogo, RankBadge } from "@/components/pixel";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { getLeaderboardService } from "@/core";
+import { getLeaderboardService, getUserService } from "@/core";
 import { clearPerfil, type Perfil } from "@/lib/perfil";
 
 const LEADERBOARD_SIZE = 5;
@@ -27,8 +27,27 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
     enabled: showBoard && !!token,
   });
 
-  const logout = () => {
-    toast.success("¡Hasta pronto!");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Invalida el token en el backend y luego borra el perfil local. Si la
+  // llamada falla (sin red, token ya vencido) se cierra la sesión igual.
+  const logout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    if (perfil.token) {
+      try {
+        await getUserService().logoutUser(perfil.token);
+      } catch (error) {
+        console.warn("No se pudo cerrar la sesión en el servidor", error);
+      }
+    }
+    // Sin token ya no hay vuelta atrás: le recordamos su código para entrar.
+    toast.success(
+      perfil.code
+        ? `¡Hasta pronto! Para volver usa tu nombre y el código ${perfil.code}`
+        : "¡Hasta pronto!",
+      { duration: 8000 },
+    );
     setTimeout(() => clearPerfil(), 400);
   };
 
@@ -66,7 +85,8 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
           <Button
             variant="outline"
             size="icon"
-            onClick={logout}
+            onClick={() => void logout()}
+            disabled={isLoggingOut}
             title="Cerrar sesión"
             aria-label="Cerrar sesión"
           >

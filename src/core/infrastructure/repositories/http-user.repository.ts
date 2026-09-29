@@ -22,6 +22,8 @@ import {
 const REGISTER_PATH = "/register";
 // Shared with admins. Responds 401 on a wrong name/code.
 const LOGIN_PATH = "/login";
+// Invalidates the bearer token (401 if it was already invalid/expired).
+const LOGOUT_PATH = "/logout";
 // Responds 404 when the user doesn't exist (e.g. an admin deleted it).
 const USERS_PATH = "/users";
 
@@ -40,6 +42,10 @@ export class HttpUserRepository implements UserRepository {
       throw new ApiError("Authenticated user is not a player", { status: 403, body: dto });
     }
     return registeredUserFromDto(dto);
+  }
+
+  async logout(token: string): Promise<void> {
+    await fetchApiDataSource.post(LOGOUT_PATH, undefined, { token });
   }
 
   async getById(token: string, id: string): Promise<User> {

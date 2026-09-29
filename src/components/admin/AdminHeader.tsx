@@ -1,14 +1,30 @@
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { PixelIcon } from "@/components/pixel";
 import { Button } from "@/components/ui/button";
-import { clearAdminSession } from "@/lib/admin-session";
+import { getAdminAuthService } from "@/core";
+import { clearAdminSession, getAdminSession } from "@/lib/admin-session";
 
 export function AdminHeader({ username }: { username: string }) {
   const navigate = useNavigate();
 
-  const logout = () => {
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Invalida el token en el backend y luego borra la sesión local. Si la
+  // llamada falla (sin red, token ya vencido) se cierra la sesión igual.
+  const logout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    const session = getAdminSession();
+    if (session) {
+      try {
+        await getAdminAuthService().logout(session.token);
+      } catch (error) {
+        console.warn("No se pudo cerrar la sesión en el servidor", error);
+      }
+    }
     clearAdminSession();
     toast.success("Sesión de administrador cerrada");
     navigate({ to: "/admin/login" });
@@ -28,7 +44,8 @@ export function AdminHeader({ username }: { username: string }) {
           <Button
             variant="outline"
             size="sm"
-            onClick={logout}
+            onClick={() => void logout()}
+            disabled={isLoggingOut}
             aria-label="Cerrar sesión de administrador"
           >
             <PixelIcon name="exit" scale={2} />
