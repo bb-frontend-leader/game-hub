@@ -1,4 +1,5 @@
 import { SubmitScoreUseCase } from "@/core/application/use-cases/submit-score.use-case";
+import type { User } from "@/core/domain/entities/user";
 import type {
   ScoreRepository,
   SubmitScoreInput,
@@ -11,7 +12,7 @@ export class ScoreService {
     this.submitScoreUseCase = new SubmitScoreUseCase(scoreRepository);
   }
 
-  async submitScore(input: SubmitScoreInput): Promise<void> {
-    return this.submitScoreUseCase.execute(input);
+  async submitScore(token: string, input: SubmitScoreInput): Promise<User> {
+    return this.submitScoreUseCase.execute(token, input);
   }
 }
