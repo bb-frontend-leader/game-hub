@@ -20,6 +20,16 @@ export class ApiError extends Error {
   }
 }
 
+// A 401 on a request that DID carry a bearer token: the session behind that
+// token is over (expired, or invalidated by a logout elsewhere). A 401 without
+// a token (e.g. wrong name/code at login) stays a plain ApiError.
+export class SessionExpiredError extends ApiError {
+  constructor(message: string, options: ApiErrorOptions) {
+    super(message, options);
+    this.name = "SessionExpiredError";
+  }
+}
+
 type QueryParams = Record<string, string | number | boolean | undefined>;
 type RequestOptions = { token?: string };
 
@@ -85,6 +95,12 @@ async function request<T>(
   const parsed = await parseBody(response);
 
   if (!response.ok) {
+    if (response.status === 401 && options?.token) {
+      throw new SessionExpiredError(`Session expired for ${method} ${path}`, {
+        status: response.status,
+        body: parsed,
+      });
+    }
     throw new ApiError(`API responded with ${response.status} for ${method} ${path}`, {
       status: response.status,
       body: parsed,

@@ -14,6 +14,8 @@ export type LoginUserInput = {
 export interface UserRepository {
   create(input: CreateUserInput): Promise<RegisteredUser>;
   login(input: LoginUserInput): Promise<RegisteredUser>;
+  // Invalidates the player's token on the backend.
+  logout(token: string): Promise<void>;
   // `token` is the bearer token of whoever is asking.
   getById(token: string, id: string): Promise<User>;
 }

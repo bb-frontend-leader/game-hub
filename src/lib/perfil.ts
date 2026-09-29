@@ -2,13 +2,23 @@
 // backend (ver UserService), pero el juego sigue funcionando si eso falla.
 // Math.random() solo se usa dentro de manejadores de eventos, nunca durante el render.
 
+import type { GameId } from "@/core";
+
 const STORAGE_KEY = "booksquest-perfil";
 
 // `id`, `token` y `code` los asigna el backend al registrar el usuario (ver
 // UserService.createUser); quedan sin definir si el perfil solo se pudo
 // guardar de forma local. El token autoriza las peticiones del jugador y el
-// código (con el nombre) le permite volver a entrar.
-export type Perfil = { id?: string; name: string; emoji: string; token?: string; code?: string };
+// código (con el nombre) le permite volver a entrar. `playedGames` son los
+// juegos que ya tienen puntaje (se refresca desde el backend, ver __root.tsx).
+export type Perfil = {
+  id?: string;
+  name: string;
+  emoji: string;
+  token?: string;
+  code?: string;
+  playedGames?: GameId[];
+};
 
 const ADJETIVOS = [
   "Tigre",
@@ -74,6 +84,29 @@ export function randomEmoji(): string {
 export function savePerfil(perfil: Perfil): Perfil {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(perfil));
   return perfil;
+}
+
+// La sesión del jugador venció (401): se borra el perfil, pero se recuerda su
+// nombre para que la pantalla de inicio le ofrezca volver a entrar con su
+// código sin reescribirlo. Distinto de un logout voluntario (clearPerfil),
+// donde no se guarda nada: en un computador compartido, el siguiente niño no
+// debería ver el nombre del anterior.
+const RETURNING_NAME_KEY = "booksquest-returning-name";
+
+export function expirePerfil(name: string) {
+  window.localStorage.setItem(RETURNING_NAME_KEY, name);
+  clearPerfil();
+}
+
+// Lee y borra (una sola vez) el nombre guardado por expirePerfil.
+export function consumeReturningName(): string | null {
+  try {
+    const name = window.localStorage.getItem(RETURNING_NAME_KEY);
+    window.localStorage.removeItem(RETURNING_NAME_KEY);
+    return name;
+  } catch {
+    return null;
+  }
 }
 
 export function clearPerfil() {

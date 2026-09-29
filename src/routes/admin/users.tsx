@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 
+import { AdminBreadcrumb } from "@/components/admin/AdminBreadcrumb";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { RequireAdminSession } from "@/components/admin/RequireAdminSession";
 import { PixelIcon } from "@/components/pixel";
@@ -38,7 +39,11 @@ export const Route = createFileRoute("/admin/users")({
 function UsersTable({ token }: { token: string }) {
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading } = useQuery({
+  const {
+    data: users,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["admin", "users"],
     queryFn: () => getAdminService().listUsers(token),
   });
@@ -63,6 +68,16 @@ function UsersTable({ token }: { token: string }) {
     return (
       <p role="status" className="animate-px-blink py-12 text-center text-xl text-muted-foreground">
         Cargando usuarios...
+      </p>
+    );
+  }
+
+  // Una sesión vencida la maneja el handler global (manda al login); aquí
+  // queda cualquier otro fallo, que no debe verse como "no hay usuarios".
+  if (isError) {
+    return (
+      <p role="alert" className="py-12 text-center text-xl text-muted-foreground">
+        No pudimos cargar los usuarios. Recarga la página para intentarlo de nuevo.
       </p>
     );
   }
@@ -136,6 +151,7 @@ function AdminUsers() {
         <div className="min-h-screen">
           <AdminHeader username={session.username} />
           <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+            <AdminBreadcrumb current="Usuarios registrados" />
             <h1 className="px-title mb-8 text-[1.5rem] sm:text-[2rem]">Usuarios registrados</h1>
             <Card className="p-2 sm:p-4">
               <UsersTable token={session.token} />

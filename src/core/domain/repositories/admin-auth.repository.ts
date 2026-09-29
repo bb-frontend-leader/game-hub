@@ -8,4 +8,6 @@ export type AdminLoginInput = {
 // Port for admin authentication.
 export interface AdminAuthRepository {
   login(input: AdminLoginInput): Promise<AdminSession>;
+  // Invalidates the admin's token on the backend.
+  logout(token: string): Promise<void>;
 }

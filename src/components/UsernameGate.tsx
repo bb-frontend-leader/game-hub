@@ -1,12 +1,26 @@
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { GroundParade, PixelGround, PixelIcon } from "@/components/pixel";
+import { PlayerCode } from "@/components/PlayerCode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ApiError, getUserService } from "@/core";
-import { type Perfil, randomEmoji, randomUsername, savePerfil } from "@/lib/perfil";
+import {
+  ApiError,
+  getUserService,
+  isValidUsername,
+  sanitizeUsername,
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+} from "@/core";
+import {
+  consumeReturningName,
+  type Perfil,
+  randomEmoji,
+  randomUsername,
+  savePerfil,
+} from "@/lib/perfil";
 
 type OnJoin = (perfil: Perfil) => void;
 
@@ -19,6 +33,17 @@ export function UsernameGate({ onJoin }: { onJoin: OnJoin }) {
   const [name, setName] = useState("");
   // Jugador recién registrado: se le muestra su código antes de entrar.
   const [registered, setRegistered] = useState<Perfil | null>(null);
+
+  // Si la sesión anterior venció (ver expirePerfil), abrimos directo "Ya
+  // tengo usuario" con su nombre escrito. En un efecto, no en el estado
+  // inicial: localStorage no existe en el render del servidor.
+  useEffect(() => {
+    const returningName = consumeReturningName();
+    if (returningName) {
+      setName(returningName);
+      setMode("returning");
+    }
+  }, []);
 
   const goToLogin = (prefillName?: string) => {
     if (prefillName !== undefined) setName(prefillName);
@@ -104,6 +129,13 @@ function NewPlayerForm({
         onGoToLogin(name);
         return;
       }
+      if (error instanceof ApiError && error.status === 400) {
+        // No debería pasar (el nombre se valida antes), pero si el backend
+        // cambia la regla, no dejamos entrar con un perfil solo local.
+        console.error(error);
+        toast.error("Ese nombre no es válido, prueba con otro");
+        return;
+      }
       // El backend puede no estar disponible todavía (o fallar): seguimos
       // dejando jugar con un perfil solo local, sin id de servidor.
       console.error(error);
@@ -112,10 +144,11 @@ function NewPlayerForm({
     },
   });
 
+  const isValid = isValidUsername(name);
+
   const handleJoin = () => {
-    const clean = name.trim();
-    if (!clean || isJoining) return;
-    join({ name: clean, emoji: randomEmoji() });
+    if (!isValid || isJoining) return;
+    join({ name, emoji: randomEmoji() });
   };
 
   return (
@@ -134,14 +167,18 @@ function NewPlayerForm({
         </div>
 
         <div className="space-y-5 p-5 sm:p-6">
-          <Input
-            value={name}
-            onChange={(e) => onNameChange(e.target.value)}
-            maxLength={20}
-            placeholder="Escribe tu nombre..."
-            aria-label="Nombre de jugador"
-            autoComplete="off"
-          />
+          <div className="space-y-2">
+            <Input
+              value={name}
+              onChange={(e) => onNameChange(sanitizeUsername(e.target.value))}
+              maxLength={USERNAME_MAX_LENGTH}
+              placeholder="Escribe tu nombre..."
+              aria-label="Nombre de jugador"
+              aria-describedby="username-hint"
+              autoComplete="off"
+            />
+            <UsernameHint name={name} />
+          </div>
 
           <div className="flex flex-col gap-4 sm:flex-row">
             <Button
@@ -156,11 +193,11 @@ function NewPlayerForm({
             <Button
               type="submit"
               variant="success"
-              disabled={!name.trim() || isJoining}
+              disabled={!isValid || isJoining}
               className="flex-1"
             >
               <PixelIcon name="play" scale={2} />
-              {isJoining ? "Entrando..." : "¡A jugar!"}
+              {isJoining ? "Entrando" : "¡A jugar!"}
             </Button>
           </div>
         </div>
@@ -205,7 +242,7 @@ function ReturningPlayerForm({
     },
   });
 
-  const canSubmit = !!name.trim() && !!code.trim() && !isPending;
+  const canSubmit = isValidUsername(name) && !!code.trim() && !isPending;
 
   return (
     <>
@@ -225,8 +262,8 @@ function ReturningPlayerForm({
         <div className="space-y-5 p-5 sm:p-6">
           <Input
             value={name}
-            onChange={(e) => onNameChange(e.target.value)}
-            maxLength={20}
+            onChange={(e) => onNameChange(sanitizeUsername(e.target.value))}
+            maxLength={USERNAME_MAX_LENGTH}
             placeholder="Tu nombre de jugador..."
             aria-label="Nombre de jugador"
             autoComplete="username"
@@ -265,17 +302,6 @@ function ReturningPlayerForm({
 }
 
 function ShowCode({ perfil, onContinue }: { perfil: Perfil; onContinue: () => void }) {
-  const code = perfil.code ?? "";
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast.success("¡Código copiado!");
-    } catch {
-      toast.error("No pudimos copiarlo, anótalo a mano");
-    }
-  };
-
   return (
     <div
       className="px-frame px-c-deep px-drop animate-px-pop mt-8 w-full max-w-lg"
@@ -290,26 +316,34 @@ function ShowCode({ perfil, onContinue }: { perfil: Perfil; onContinue: () => vo
         <p className="text-xl">
           Con tu nombre <strong>{perfil.name}</strong> y este código puedes volver a entrar:
         </p>
-        <p
-          className="px-frame px-c-night select-all py-4 font-pixel text-3xl tracking-[0.3em] text-gold sm:text-4xl"
-          aria-label={`Tu código es ${code.split("").join(" ")}`}
-        >
-          {code}
-        </p>
+        <PlayerCode code={perfil.code ?? ""} />
         <p className="text-lg text-muted-foreground">
           ¡Anótalo en tu cuaderno! Si lo olvidas, tu profe puede dártelo.
         </p>
 
-        <div className="flex flex-col gap-4 sm:flex-row">
-          <Button type="button" variant="secondary" onClick={copy} className="flex-1">
-            Copiar código
-          </Button>
-          <Button type="button" variant="success" onClick={onContinue} className="flex-1">
-            <PixelIcon name="play" scale={2} />
-            ¡Ya lo anoté!
-          </Button>
-        </div>
+        <Button type="button" variant="success" onClick={onContinue} className="w-full">
+          <PixelIcon name="play" scale={2} />
+          ¡Ya lo anoté!
+        </Button>
       </div>
     </div>
+  );
+}
+
+// Regla del nombre, siempre visible y en tono amable. Los caracteres no
+// permitidos ya se corrigen al escribir (ver sanitizeUsername); aquí solo
+// queda avisar si falta largo.
+function UsernameHint({ name }: { name: string }) {
+  const tooShort = name.length > 0 && name.length < USERNAME_MIN_LENGTH;
+  return (
+    <p
+      id="username-hint"
+      className={`text-base ${tooShort ? "text-gold" : "text-muted-foreground"}`}
+      aria-live="polite"
+    >
+      {tooShort
+        ? `¡Un poquito más largo! Mínimo ${USERNAME_MIN_LENGTH} letras.`
+        : `De ${USERNAME_MIN_LENGTH} a ${USERNAME_MAX_LENGTH} letras o números, sin tildes ni espacios (usa _).`}
+    </p>
   );
 }

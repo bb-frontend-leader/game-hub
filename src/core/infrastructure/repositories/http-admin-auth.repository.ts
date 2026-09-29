@@ -15,6 +15,8 @@ import {
 } from "@/core/infrastructure/dto/admin-auth.dto";
 
 const ADMIN_LOGIN_PATH = "/login";
+// Invalidates the bearer token (401 if it was already invalid/expired).
+const LOGOUT_PATH = "/logout";
 
 export class HttpAdminAuthRepository implements AdminAuthRepository {
   async login(input: AdminLoginInput): Promise<AdminSession> {
@@ -26,5 +28,9 @@ export class HttpAdminAuthRepository implements AdminAuthRepository {
       throw new ApiError("Authenticated user is not an admin", { status: 403, body: dto });
     }
     return adminSessionFromDto(dto);
+  }
+
+  async logout(token: string): Promise<void> {
+    await fetchApiDataSource.post(LOGOUT_PATH, undefined, { token });
   }
 }

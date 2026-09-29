@@ -33,11 +33,6 @@ export class HttpAdminRepository implements AdminRepository {
     }
   }
 
-  // PLACEHOLDER_API_CONTRACT: DELETE {base}/admin/users/:id
-  async deleteUser(token: string, userId: string): Promise<void> {
-    await fetchApiDataSource.delete(`${ADMIN_USERS_PATH}/${userId}`, { token });
-  }
-
   async resetUserScore(token: string, userId: string): Promise<void> {
     const body: ResetUserRequestDto = { userId };
     await fetchApiDataSource.put(RESET_PATH, body, { token });

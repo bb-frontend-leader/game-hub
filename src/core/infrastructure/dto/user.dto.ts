@@ -1,4 +1,6 @@
+import type { GameId } from "@/core/domain/entities/game";
 import type { RegisteredUser, User } from "@/core/domain/entities/user";
+import { API_GAME } from "@/core/infrastructure/dto/game.dto";
 
 // Wire format of a user as the backend returns it (register, login,
 // GET /users/:id). `code` is the player's access code (null for admins).
@@ -7,6 +9,8 @@ export type UserDto = {
   username: string;
   role: string;
   code: string | null;
+  game1Played: boolean;
+  game2Played: boolean;
 };
 
 // Wire format for POST {base}/register: the username alone creates the
@@ -42,7 +46,9 @@ export type GetUserResponseDto = {
 export const PLAYER_ROLE = "PLAYER";
 
 export function userFromDto(dto: UserDto): User {
-  return { id: dto.id, name: dto.username };
+  const gameIds = Object.keys(API_GAME) as GameId[];
+  const playedGames = gameIds.filter((gameId) => dto[`${API_GAME[gameId]}Played`]);
+  return { id: dto.id, name: dto.username, playedGames };
 }
 
 export function registeredUserFromDto(dto: PlayerAuthResponseDto): RegisteredUser {

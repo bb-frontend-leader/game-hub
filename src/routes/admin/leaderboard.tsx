@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { AdminBreadcrumb } from "@/components/admin/AdminBreadcrumb";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { RequireAdminSession } from "@/components/admin/RequireAdminSession";
 import { RankBadge } from "@/components/pixel";
@@ -20,9 +21,11 @@ const BOARD_SIZE = 20;
 function BoardTable({
   entries,
   isLoading,
+  isError,
 }: {
   entries: (GlobalLeaderboardEntry | LeaderboardEntry)[] | undefined;
   isLoading: boolean;
+  isError: boolean;
 }) {
   if (isLoading) {
     return (
@@ -31,6 +34,13 @@ function BoardTable({
         className="animate-px-blink py-12 text-center text-2xl text-muted-foreground"
       >
         Cargando...
+      </p>
+    );
+  }
+  if (isError) {
+    return (
+      <p role="alert" className="py-12 text-center text-2xl text-muted-foreground">
+        No pudimos cargar la clasificación. Recarga la página para intentarlo de nuevo.
       </p>
     );
   }
@@ -72,6 +82,7 @@ function AdminLeaderboard() {
         <div className="min-h-screen">
           <AdminHeader username={session.username} />
           <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+            <AdminBreadcrumb current="Tabla de clasificación" />
             <h1 className="px-title mb-8 text-balance text-center text-[1.5rem] sm:text-[2.5rem]">
               Tabla de clasificación
             </h1>
@@ -84,17 +95,29 @@ function AdminLeaderboard() {
 }
 
 function Boards({ token }: { token: string }) {
-  const { data: globalEntries, isLoading: isGlobalLoading } = useQuery({
+  const {
+    data: globalEntries,
+    isLoading: isGlobalLoading,
+    isError: isGlobalError,
+  } = useQuery({
     queryKey: ["leaderboard", "global", BOARD_SIZE],
     queryFn: () => getLeaderboardService().getGlobalLeaderboard(token, BOARD_SIZE),
   });
 
-  const { data: templeEntries, isLoading: isTempleLoading } = useQuery({
+  const {
+    data: templeEntries,
+    isLoading: isTempleLoading,
+    isError: isTempleError,
+  } = useQuery({
     queryKey: ["leaderboard", "temple-of-knowledge", BOARD_SIZE],
     queryFn: () => getLeaderboardService().getLeaderboard(token, "temple-of-knowledge", BOARD_SIZE),
   });
 
-  const { data: whackEntries, isLoading: isWhackLoading } = useQuery({
+  const {
+    data: whackEntries,
+    isLoading: isWhackLoading,
+    isError: isWhackError,
+  } = useQuery({
     queryKey: ["leaderboard", "whack-a-question", BOARD_SIZE],
     queryFn: () => getLeaderboardService().getLeaderboard(token, "whack-a-question", BOARD_SIZE),
   });
@@ -107,13 +130,13 @@ function Boards({ token }: { token: string }) {
         <TabsTrigger value="whack-a-question">Whack a game</TabsTrigger>
       </TabsList>
       <TabsContent value="global">
-        <BoardTable entries={globalEntries} isLoading={isGlobalLoading} />
+        <BoardTable entries={globalEntries} isLoading={isGlobalLoading} isError={isGlobalError} />
       </TabsContent>
       <TabsContent value="temple-of-knowledge">
-        <BoardTable entries={templeEntries} isLoading={isTempleLoading} />
+        <BoardTable entries={templeEntries} isLoading={isTempleLoading} isError={isTempleError} />
       </TabsContent>
       <TabsContent value="whack-a-question">
-        <BoardTable entries={whackEntries} isLoading={isWhackLoading} />
+        <BoardTable entries={whackEntries} isLoading={isWhackLoading} isError={isWhackError} />
       </TabsContent>
     </Tabs>
   );
