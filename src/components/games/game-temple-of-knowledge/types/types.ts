@@ -8,6 +8,8 @@ export interface GameResult {
   selectedAnswer?: string;
   correctAnswer: string;
   question: Question;
+  score: number; // puntaje después de esta respuesta
+  isGameFinished: boolean; // true si respondió bien la última pregunta
 }
 
 export type GameOverData = {
