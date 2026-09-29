@@ -1,9 +1,14 @@
+import type { GameId } from "@/core/domain/entities/game";
+
 // A player as recorded by the backend: only the username is stored (the
 // emoji is a client-side choice, see src/lib/perfil.ts). `id` is assigned by
 // the backend the first time the register endpoint is called.
+// `playedGames` lists the games the player already has a score for (each
+// game can be scored only once).
 export type User = {
   id: string;
   name: string;
+  playedGames: GameId[];
 };
 
 // Username rule enforced by the backend: 3–20 characters, only ASCII letters,

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { GroundParade, PixelGround, PixelIcon, TempleScene, WhackScene } from "@/components/pixel";
+import type { GameId } from "@/core";
 import { usePerfil } from "@/lib/perfil-context";
 
 export const Route = createFileRoute("/")({
@@ -25,8 +26,18 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const games = [
+const games: {
+  id: GameId;
+  to: "/temple-of-knowledge" | "/whack-a-question";
+  name: string;
+  tagline: string;
+  tags: readonly string[];
+  scene: React.ReactNode;
+  bar: string;
+  delay: string;
+}[] = [
   {
+    id: "temple-of-knowledge",
     to: "/temple-of-knowledge",
     name: "Temple of Knowledge",
     tagline: "Responde rápido y suma puntos",
@@ -36,6 +47,7 @@ const games = [
     delay: "0.1s",
   },
   {
+    id: "whack-a-question",
     to: "/whack-a-question",
     name: "Whack a game",
     tagline: "Golpea rápido y suma puntos",
@@ -44,7 +56,7 @@ const games = [
     bar: "[--px-bar-hi:var(--px-blue-hi)] [--px-bar:var(--px-blue)]",
     delay: "0.25s",
   },
-] as const;
+];
 
 function Index() {
   const perfil = usePerfil();
@@ -70,38 +82,48 @@ function Index() {
         </p>
 
         <div className="mt-8 grid w-full gap-10 sm:mt-9 sm:grid-cols-2">
-          {games.map((game) => (
-            <Link
-              key={game.to}
-              to={game.to}
-              className="animate-px-pop group block focus-visible:outline-offset-4"
-              style={{ animationDelay: game.delay }}
-            >
-              <article className="px-frame px-c-deep px-drop transition-transform duration-100 ease-[steps(2)] group-hover:-translate-y-1">
-                <div className={`px-bar ${game.bar}`}>
-                  <PixelIcon name="star" scale={2} />
-                  <h2 className="leading-snug">{game.name}</h2>
-                </div>
-
-                {game.scene}
-
-                <div className="space-y-4 border-t-4 border-ink p-5">
-                  <p className="text-xl text-star">{game.tagline}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {game.tags.map((tag) => (
-                      <span key={tag} className="px-frame px-chip px-c-night">
-                        {tag}
-                      </span>
-                    ))}
+          {games.map((game) => {
+            const played = perfil.playedGames?.includes(game.id) ?? false;
+            return (
+              <Link
+                key={game.to}
+                to={game.to}
+                aria-label={played ? `${game.name} (ya jugado)` : undefined}
+                className="animate-px-pop group block focus-visible:outline-offset-4"
+                style={{ animationDelay: game.delay }}
+              >
+                <article className="px-frame px-c-deep px-drop transition-transform duration-100 ease-[steps(2)] group-hover:-translate-y-1">
+                  <div className={`px-bar ${game.bar}`}>
+                    <PixelIcon name="star" scale={2} />
+                    <h2 className="leading-snug">{game.name}</h2>
                   </div>
-                  <span className="px-frame px-btn px-btn--lg px-c-gold w-full group-hover:brightness-110">
-                    <PixelIcon name="play" scale={2} />
-                    ¡Jugar!
-                  </span>
-                </div>
-              </article>
-            </Link>
-          ))}
+
+                  {game.scene}
+
+                  <div className="space-y-4 border-t-4 border-ink p-5">
+                    <p className="text-xl text-star">{game.tagline}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {played && (
+                        <span className="px-frame px-chip px-c-green">
+                          <PixelIcon name="check" scale={2} />
+                          Jugado
+                        </span>
+                      )}
+                      {game.tags.map((tag) => (
+                        <span key={tag} className="px-frame px-chip px-c-night">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="px-frame px-btn px-btn--lg px-c-gold w-full group-hover:brightness-110">
+                      <PixelIcon name="play" scale={2} />
+                      ¡Jugar!
+                    </span>
+                  </div>
+                </article>
+              </Link>
+            );
+          })}
         </div>
       </main>
 
