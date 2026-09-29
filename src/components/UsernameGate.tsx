@@ -5,7 +5,14 @@ import { toast } from "sonner";
 import { GroundParade, PixelGround, PixelIcon } from "@/components/pixel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ApiError, getUserService } from "@/core";
+import {
+  ApiError,
+  getUserService,
+  isValidUsername,
+  sanitizeUsername,
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+} from "@/core";
 import { type Perfil, randomEmoji, randomUsername, savePerfil } from "@/lib/perfil";
 
 type OnJoin = (perfil: Perfil) => void;
@@ -104,6 +111,13 @@ function NewPlayerForm({
         onGoToLogin(name);
         return;
       }
+      if (error instanceof ApiError && error.status === 400) {
+        // No debería pasar (el nombre se valida antes), pero si el backend
+        // cambia la regla, no dejamos entrar con un perfil solo local.
+        console.error(error);
+        toast.error("Ese nombre no es válido, prueba con otro");
+        return;
+      }
       // El backend puede no estar disponible todavía (o fallar): seguimos
       // dejando jugar con un perfil solo local, sin id de servidor.
       console.error(error);
@@ -112,10 +126,11 @@ function NewPlayerForm({
     },
   });
 
+  const isValid = isValidUsername(name);
+
   const handleJoin = () => {
-    const clean = name.trim();
-    if (!clean || isJoining) return;
-    join({ name: clean, emoji: randomEmoji() });
+    if (!isValid || isJoining) return;
+    join({ name, emoji: randomEmoji() });
   };
 
   return (
@@ -134,14 +149,18 @@ function NewPlayerForm({
         </div>
 
         <div className="space-y-5 p-5 sm:p-6">
-          <Input
-            value={name}
-            onChange={(e) => onNameChange(e.target.value)}
-            maxLength={20}
-            placeholder="Escribe tu nombre..."
-            aria-label="Nombre de jugador"
-            autoComplete="off"
-          />
+          <div className="space-y-2">
+            <Input
+              value={name}
+              onChange={(e) => onNameChange(sanitizeUsername(e.target.value))}
+              maxLength={USERNAME_MAX_LENGTH}
+              placeholder="Escribe tu nombre..."
+              aria-label="Nombre de jugador"
+              aria-describedby="username-hint"
+              autoComplete="off"
+            />
+            <UsernameHint name={name} />
+          </div>
 
           <div className="flex flex-col gap-4 sm:flex-row">
             <Button
@@ -156,7 +175,7 @@ function NewPlayerForm({
             <Button
               type="submit"
               variant="success"
-              disabled={!name.trim() || isJoining}
+              disabled={!isValid || isJoining}
               className="flex-1"
             >
               <PixelIcon name="play" scale={2} />
@@ -205,7 +224,7 @@ function ReturningPlayerForm({
     },
   });
 
-  const canSubmit = !!name.trim() && !!code.trim() && !isPending;
+  const canSubmit = isValidUsername(name) && !!code.trim() && !isPending;
 
   return (
     <>
@@ -225,8 +244,8 @@ function ReturningPlayerForm({
         <div className="space-y-5 p-5 sm:p-6">
           <Input
             value={name}
-            onChange={(e) => onNameChange(e.target.value)}
-            maxLength={20}
+            onChange={(e) => onNameChange(sanitizeUsername(e.target.value))}
+            maxLength={USERNAME_MAX_LENGTH}
             placeholder="Tu nombre de jugador..."
             aria-label="Nombre de jugador"
             autoComplete="username"
@@ -311,5 +330,23 @@ function ShowCode({ perfil, onContinue }: { perfil: Perfil; onContinue: () => vo
         </div>
       </div>
     </div>
+  );
+}
+
+// Regla del nombre, siempre visible y en tono amable. Los caracteres no
+// permitidos ya se corrigen al escribir (ver sanitizeUsername); aquí solo
+// queda avisar si falta largo.
+function UsernameHint({ name }: { name: string }) {
+  const tooShort = name.length > 0 && name.length < USERNAME_MIN_LENGTH;
+  return (
+    <p
+      id="username-hint"
+      className={`text-base ${tooShort ? "text-gold" : "text-muted-foreground"}`}
+      aria-live="polite"
+    >
+      {tooShort
+        ? `¡Un poquito más largo! Mínimo ${USERNAME_MIN_LENGTH} letras.`
+        : `De ${USERNAME_MIN_LENGTH} a ${USERNAME_MAX_LENGTH} letras o números, sin tildes ni espacios (usa _).`}
+    </p>
   );
 }

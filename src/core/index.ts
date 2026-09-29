@@ -12,6 +12,12 @@ export type {
 } from "@/core/domain/entities/leaderboard-entry";
 export type { Score } from "@/core/domain/entities/score";
 export type { RegisteredUser, User } from "@/core/domain/entities/user";
+export {
+  isValidUsername,
+  sanitizeUsername,
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+} from "@/core/domain/entities/user";
 export type { AdminLoginInput } from "@/core/domain/repositories/admin-auth.repository";
 export type { SubmitScoreInput } from "@/core/domain/repositories/score.repository";
 export type { CreateUserInput, LoginUserInput } from "@/core/domain/repositories/user.repository";
