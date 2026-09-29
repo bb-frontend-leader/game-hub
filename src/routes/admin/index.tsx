@@ -23,7 +23,7 @@ const sections = [
     to: "/admin/users" as const,
     icon: "users" as const,
     title: "Usuarios registrados",
-    description: "Ve a todos los jugadores registrados. Elimina cuentas o reinicia puntajes.",
+    description: "Ve a todos los jugadores registrados, consulta sus códigos o reinicia puntajes.",
   },
 ];
 

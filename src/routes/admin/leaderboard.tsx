@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { AdminBreadcrumb } from "@/components/admin/AdminBreadcrumb";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { RequireAdminSession } from "@/components/admin/RequireAdminSession";
 import { RankBadge } from "@/components/pixel";
@@ -72,6 +73,7 @@ function AdminLeaderboard() {
         <div className="min-h-screen">
           <AdminHeader username={session.username} />
           <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+            <AdminBreadcrumb current="Tabla de clasificación" />
             <h1 className="px-title mb-8 text-balance text-center text-[1.5rem] sm:text-[2.5rem]">
               Tabla de clasificación
             </h1>

@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 
+import { AdminBreadcrumb } from "@/components/admin/AdminBreadcrumb";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { RequireAdminSession } from "@/components/admin/RequireAdminSession";
 import { PixelIcon } from "@/components/pixel";
@@ -136,6 +137,7 @@ function AdminUsers() {
         <div className="min-h-screen">
           <AdminHeader username={session.username} />
           <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+            <AdminBreadcrumb current="Usuarios registrados" />
             <h1 className="px-title mb-8 text-[1.5rem] sm:text-[2rem]">Usuarios registrados</h1>
             <Card className="p-2 sm:p-4">
               <UsersTable token={session.token} />
