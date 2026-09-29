@@ -121,16 +121,16 @@ export function GroundParade() {
   return (
     <>
       <div className="px-ground__actor px-ground__walker">
-        <PixelSprite sheet={SHEETS.hero} scale={4} row={3} frames={4} fps={8} />
+        <PixelSprite sheet={SHEETS.hero} scale={3} row={3} frames={4} fps={8} />
       </div>
       <div className="px-ground__actor" style={{ left: "10%" }}>
-        <MoleInHole scale={1.1} delay={0.6} />
+        <MoleInHole scale={0.8} delay={0.6} />
       </div>
       <div className="px-ground__actor" style={{ left: "38%" }}>
-        <MoleInHole scale={1.1} delay={0.9} />
+        <MoleInHole scale={0.8} delay={0.9} />
       </div>
       <div className="px-ground__actor" style={{ left: "90%" }}>
-        <MoleInHole scale={1.1} delay={0.4} />
+        <MoleInHole scale={0.8} delay={0.4} />
       </div>
     </>
   );

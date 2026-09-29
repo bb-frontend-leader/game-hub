@@ -179,7 +179,7 @@ function NewPlayerForm({
               className="flex-1"
             >
               <PixelIcon name="play" scale={2} />
-              {isJoining ? "Entrando..." : "¡A jugar!"}
+              {isJoining ? "Entrando" : "¡A jugar!"}
             </Button>
           </div>
         </div>
