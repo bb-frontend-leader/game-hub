@@ -6,31 +6,28 @@ import type {
 import type { LeaderboardRepository } from "@/core/domain/repositories/leaderboard.repository";
 import { fetchApiDataSource } from "@/core/infrastructure/datasources/fetch-api.datasource";
 import {
-  type GlobalLeaderboardEntryDto,
-  globalLeaderboardEntryFromDto,
-  type LeaderboardEntryDto,
-  leaderboardEntryFromDto,
+  globalLeaderboardFromDto,
+  leaderboardFromDto,
+  type RankingResponseDto,
 } from "@/core/infrastructure/dto/leaderboard.dto";
 
-// PLACEHOLDER_API_CONTRACT: GET {base}/leaderboard?gameId=...&limit=...
-const LEADERBOARD_PATH = "/leaderboard";
-// PLACEHOLDER_API_CONTRACT: GET {base}/leaderboard/global?limit=...
-const GLOBAL_LEADERBOARD_PATH = "/leaderboard/global";
+// GET {base}/ranking[?limit=N]. It accepts `limit` but includes admins in the
+// result and can't sort by a single game, so the whole list is fetched and
+// filtered/sorted/cut client-side.
+const RANKING_PATH = "/ranking";
 
 export class HttpLeaderboardRepository implements LeaderboardRepository {
-  async getTop(gameId: GameId, limit?: number): Promise<LeaderboardEntry[]> {
-    const dtos = await fetchApiDataSource.get<LeaderboardEntryDto[]>(LEADERBOARD_PATH, {
-      gameId,
-      limit,
+  async getTop(token: string, gameId: GameId, limit?: number): Promise<LeaderboardEntry[]> {
+    const dto = await fetchApiDataSource.get<RankingResponseDto>(RANKING_PATH, undefined, {
+      token,
     });
-    return dtos.map(leaderboardEntryFromDto);
+    return leaderboardFromDto(dto, gameId, limit);
   }
 
-  async getGlobalTop(limit?: number): Promise<GlobalLeaderboardEntry[]> {
-    const dtos = await fetchApiDataSource.get<GlobalLeaderboardEntryDto[]>(
-      GLOBAL_LEADERBOARD_PATH,
-      { limit },
-    );
-    return dtos.map(globalLeaderboardEntryFromDto);
+  async getGlobalTop(token: string, limit?: number): Promise<GlobalLeaderboardEntry[]> {
+    const dto = await fetchApiDataSource.get<RankingResponseDto>(RANKING_PATH, undefined, {
+      token,
+    });
+    return globalLeaderboardFromDto(dto, limit);
   }
 }

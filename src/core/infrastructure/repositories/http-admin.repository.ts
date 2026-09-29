@@ -2,20 +2,32 @@ import type { AdminUserSummary } from "@/core/domain/entities/admin-user";
 import type { AdminRepository } from "@/core/domain/repositories/admin.repository";
 import { fetchApiDataSource } from "@/core/infrastructure/datasources/fetch-api.datasource";
 import {
-  type AdminUserSummaryDto,
+  ADMIN_ROLE,
+  type AdminUsersPageDto,
   adminUserSummaryFromDto,
 } from "@/core/infrastructure/dto/admin.dto";
 
-// PLACEHOLDER_API_CONTRACT: admin-only user management, all under {base}/admin/users.
-const ADMIN_USERS_PATH = "/admin/users";
+// Admin-only user management under {base}/users (players get 403).
+const ADMIN_USERS_PATH = "/users";
+// Largest page the backend accepts.
+const PAGE_SIZE = 100;
 
 export class HttpAdminRepository implements AdminRepository {
-  // PLACEHOLDER_API_CONTRACT: GET {base}/admin/users
+  // Walks every page so the roster is complete, and leaves admins out of it
+  // (they're not players, and an admin shouldn't be able to delete itself).
   async listUsers(token: string): Promise<AdminUserSummary[]> {
-    const dtos = await fetchApiDataSource.get<AdminUserSummaryDto[]>(ADMIN_USERS_PATH, undefined, {
-      token,
-    });
-    return dtos.map(adminUserSummaryFromDto);
+    const users: AdminUserSummary[] = [];
+    for (let page = 1; ; page++) {
+      const dto = await fetchApiDataSource.get<AdminUsersPageDto>(
+        ADMIN_USERS_PATH,
+        { page, limit: PAGE_SIZE },
+        { token },
+      );
+      for (const row of dto.data.rows) {
+        if (row.role !== ADMIN_ROLE) users.push(adminUserSummaryFromDto(row));
+      }
+      if (!dto.data.meta.hasNext) return users;
+    }
   }
 
   // PLACEHOLDER_API_CONTRACT: DELETE {base}/admin/users/:id

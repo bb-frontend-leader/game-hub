@@ -49,9 +49,6 @@ function BoardTable({
           }`}
         >
           <RankBadge rank={entry.rank} scale={4} className="w-12 shrink-0 sm:w-14" />
-          <span className="text-3xl leading-none" aria-hidden>
-            {entry.emoji}
-          </span>
           <span className="min-w-0 flex-1 truncate text-2xl font-semibold sm:text-3xl">
             {entry.name}
           </span>
@@ -69,21 +66,6 @@ function BoardTable({
 }
 
 function AdminLeaderboard() {
-  const { data: globalEntries, isLoading: isGlobalLoading } = useQuery({
-    queryKey: ["leaderboard", "global", BOARD_SIZE],
-    queryFn: () => getLeaderboardService().getGlobalLeaderboard(BOARD_SIZE),
-  });
-
-  const { data: templeEntries, isLoading: isTempleLoading } = useQuery({
-    queryKey: ["leaderboard", "temple-of-knowledge", BOARD_SIZE],
-    queryFn: () => getLeaderboardService().getLeaderboard("temple-of-knowledge", BOARD_SIZE),
-  });
-
-  const { data: whackEntries, isLoading: isWhackLoading } = useQuery({
-    queryKey: ["leaderboard", "whack-a-question", BOARD_SIZE],
-    queryFn: () => getLeaderboardService().getLeaderboard("whack-a-question", BOARD_SIZE),
-  });
-
   return (
     <RequireAdminSession>
       {(session) => (
@@ -93,25 +75,46 @@ function AdminLeaderboard() {
             <h1 className="px-title mb-8 text-balance text-center text-[1.5rem] sm:text-[2.5rem]">
               Tabla de clasificación
             </h1>
-            <Tabs defaultValue="global">
-              <TabsList className="mb-6 justify-center">
-                <TabsTrigger value="global">General</TabsTrigger>
-                <TabsTrigger value="temple-of-knowledge">Temple of Knowledge</TabsTrigger>
-                <TabsTrigger value="whack-a-question">Whack a game</TabsTrigger>
-              </TabsList>
-              <TabsContent value="global">
-                <BoardTable entries={globalEntries} isLoading={isGlobalLoading} />
-              </TabsContent>
-              <TabsContent value="temple-of-knowledge">
-                <BoardTable entries={templeEntries} isLoading={isTempleLoading} />
-              </TabsContent>
-              <TabsContent value="whack-a-question">
-                <BoardTable entries={whackEntries} isLoading={isWhackLoading} />
-              </TabsContent>
-            </Tabs>
+            <Boards token={session.token} />
           </main>
         </div>
       )}
     </RequireAdminSession>
+  );
+}
+
+function Boards({ token }: { token: string }) {
+  const { data: globalEntries, isLoading: isGlobalLoading } = useQuery({
+    queryKey: ["leaderboard", "global", BOARD_SIZE],
+    queryFn: () => getLeaderboardService().getGlobalLeaderboard(token, BOARD_SIZE),
+  });
+
+  const { data: templeEntries, isLoading: isTempleLoading } = useQuery({
+    queryKey: ["leaderboard", "temple-of-knowledge", BOARD_SIZE],
+    queryFn: () => getLeaderboardService().getLeaderboard(token, "temple-of-knowledge", BOARD_SIZE),
+  });
+
+  const { data: whackEntries, isLoading: isWhackLoading } = useQuery({
+    queryKey: ["leaderboard", "whack-a-question", BOARD_SIZE],
+    queryFn: () => getLeaderboardService().getLeaderboard(token, "whack-a-question", BOARD_SIZE),
+  });
+
+  return (
+    <Tabs defaultValue="global">
+      <TabsList className="mb-6 justify-center">
+        <TabsTrigger value="global">General</TabsTrigger>
+        <TabsTrigger value="temple-of-knowledge">Temple of Knowledge</TabsTrigger>
+        <TabsTrigger value="whack-a-question">Whack a game</TabsTrigger>
+      </TabsList>
+      <TabsContent value="global">
+        <BoardTable entries={globalEntries} isLoading={isGlobalLoading} />
+      </TabsContent>
+      <TabsContent value="temple-of-knowledge">
+        <BoardTable entries={templeEntries} isLoading={isTempleLoading} />
+      </TabsContent>
+      <TabsContent value="whack-a-question">
+        <BoardTable entries={whackEntries} isLoading={isWhackLoading} />
+      </TabsContent>
+    </Tabs>
   );
 }

@@ -1,10 +1,10 @@
 import type { GameId } from "@/core/domain/entities/game";
 
-// One ranked row of a game's leaderboard, as computed by the backend.
+// One ranked row of a game's leaderboard. The backend doesn't store the
+// player's emoji, so entries only carry the username.
 export type LeaderboardEntry = {
   userId: string;
   name: string;
-  emoji: string;
   gameId: GameId;
   points: number;
   rank: number;
@@ -15,7 +15,6 @@ export type LeaderboardEntry = {
 export type GlobalLeaderboardEntry = {
   userId: string;
   name: string;
-  emoji: string;
   points: number;
   rank: number;
 };

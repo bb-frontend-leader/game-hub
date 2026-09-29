@@ -16,11 +16,11 @@ export class LeaderboardService {
     this.getGlobalLeaderboardUseCase = new GetGlobalLeaderboardUseCase(leaderboardRepository);
   }
 
-  async getLeaderboard(gameId: GameId, limit?: number): Promise<LeaderboardEntry[]> {
-    return this.getLeaderboardUseCase.execute(gameId, limit);
+  async getLeaderboard(token: string, gameId: GameId, limit?: number): Promise<LeaderboardEntry[]> {
+    return this.getLeaderboardUseCase.execute(token, gameId, limit);
   }
 
-  async getGlobalLeaderboard(limit?: number): Promise<GlobalLeaderboardEntry[]> {
-    return this.getGlobalLeaderboardUseCase.execute(limit);
+  async getGlobalLeaderboard(token: string, limit?: number): Promise<GlobalLeaderboardEntry[]> {
+    return this.getGlobalLeaderboardUseCase.execute(token, limit);
   }
 }

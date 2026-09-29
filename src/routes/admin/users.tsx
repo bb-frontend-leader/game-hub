@@ -97,12 +97,7 @@ function UsersTable({ token }: { token: string }) {
       <TableBody>
         {users.map((user: AdminUserSummary) => (
           <TableRow key={user.id}>
-            <TableCell className="text-xl font-semibold">
-              <span className="mr-2" aria-hidden>
-                {user.emoji}
-              </span>
-              {user.name}
-            </TableCell>
+            <TableCell className="text-xl font-semibold">{user.name}</TableCell>
             <TableCell className="text-right font-pixel text-base font-bold text-gold">
               {user.totalPoints}
             </TableCell>

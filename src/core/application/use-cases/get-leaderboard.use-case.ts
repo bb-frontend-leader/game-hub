@@ -6,7 +6,7 @@ import type { LeaderboardRepository } from "@/core/domain/repositories/leaderboa
 export class GetLeaderboardUseCase {
   constructor(private readonly leaderboardRepository: LeaderboardRepository) {}
 
-  async execute(gameId: GameId, limit?: number): Promise<LeaderboardEntry[]> {
-    return this.leaderboardRepository.getTop(gameId, limit);
+  async execute(token: string, gameId: GameId, limit?: number): Promise<LeaderboardEntry[]> {
+    return this.leaderboardRepository.getTop(token, gameId, limit);
   }
 }

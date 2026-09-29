@@ -14,11 +14,17 @@ const LEADERBOARD_SIZE = 5;
 export function AppHeader({ perfil }: { perfil: Perfil }) {
   const [showBoard, setShowBoard] = useState(false);
 
-  // Solo se pide al backend cuando el jugador abre el modal.
-  const { data: entries, isLoading } = useQuery({
-    queryKey: ["leaderboard", "global"],
-    queryFn: () => getLeaderboardService().getGlobalLeaderboard(LEADERBOARD_SIZE),
-    enabled: showBoard,
+  // Solo se pide al backend cuando el jugador abre el modal. Requiere el token
+  // del registro: un perfil solo local (sin token) no puede ver la tabla.
+  const token = perfil.token;
+  const {
+    data: entries,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["leaderboard", "global", LEADERBOARD_SIZE],
+    queryFn: () => getLeaderboardService().getGlobalLeaderboard(token!, LEADERBOARD_SIZE),
+    enabled: showBoard && !!token,
   });
 
   const logout = () => {
@@ -87,6 +93,11 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
                 Cargando...
               </p>
             )}
+            {(!token || isError) && (
+              <p className="py-6 text-center text-xl text-muted-foreground">
+                No pudimos cargar la clasificación. ¡Inténtalo más tarde!
+              </p>
+            )}
             {!isLoading && entries?.length === 0 && (
               <p className="py-6 text-center text-xl text-muted-foreground">
                 ¡Todavía no hay puntajes! Sé el primero en jugar.
@@ -100,9 +111,6 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
                     className="px-frame px-c-night flex items-center gap-3 px-3 py-2 [--px:2px]"
                   >
                     <RankBadge rank={entry.rank} className="w-9 shrink-0" />
-                    <span aria-hidden className="text-xl leading-none">
-                      {entry.emoji}
-                    </span>
                     <span className="min-w-0 flex-1 truncate text-xl font-semibold">
                       {entry.name}
                     </span>

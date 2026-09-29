@@ -1,26 +1,32 @@
-import type { User } from "@/core/domain/entities/user";
+import type { RegisteredUser, User } from "@/core/domain/entities/user";
 import type { CreateUserInput, UserRepository } from "@/core/domain/repositories/user.repository";
 import { fetchApiDataSource } from "@/core/infrastructure/datasources/fetch-api.datasource";
 import {
-  type CreateUserRequestDto,
-  type UserDto,
+  type GetUserResponseDto,
+  registeredUserFromDto,
+  type RegisterUserRequestDto,
+  type RegisterUserResponseDto,
   userFromDto,
 } from "@/core/infrastructure/dto/user.dto";
 
-// PLACEHOLDER_API_CONTRACT: POST {base}/users. Assumes the backend returns the
-// created user, including its persistent id, in the response body.
+// Responds 409 when the username is already taken.
+const REGISTER_PATH = "/register";
+// Responds 404 when the user doesn't exist (e.g. an admin deleted it).
 const USERS_PATH = "/users";
 
 export class HttpUserRepository implements UserRepository {
-  async create(input: CreateUserInput): Promise<User> {
-    const body: CreateUserRequestDto = { name: input.name, emoji: input.emoji };
-    const dto = await fetchApiDataSource.post<UserDto>(USERS_PATH, body);
-    return userFromDto(dto);
+  async create(input: CreateUserInput): Promise<RegisteredUser> {
+    const body: RegisterUserRequestDto = { username: input.name };
+    const dto = await fetchApiDataSource.post<RegisterUserResponseDto>(REGISTER_PATH, body);
+    return registeredUserFromDto(dto);
   }
 
-  // PLACEHOLDER_API_CONTRACT: GET {base}/users/:id
-  async getById(id: string): Promise<User> {
-    const dto = await fetchApiDataSource.get<UserDto>(`${USERS_PATH}/${id}`);
-    return userFromDto(dto);
+  async getById(token: string, id: string): Promise<User> {
+    const dto = await fetchApiDataSource.get<GetUserResponseDto>(
+      `${USERS_PATH}/${encodeURIComponent(id)}`,
+      undefined,
+      { token },
+    );
+    return userFromDto(dto.data);
   }
 }

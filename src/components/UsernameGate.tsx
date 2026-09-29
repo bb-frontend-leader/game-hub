@@ -5,17 +5,22 @@ import { toast } from "sonner";
 import { GroundParade, PixelGround, PixelIcon } from "@/components/pixel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getUserService } from "@/core";
+import { ApiError, getUserService } from "@/core";
 import { type Perfil, randomEmoji, randomUsername, savePerfil } from "@/lib/perfil";
 
 export function UsernameGate({ onJoin }: { onJoin: (perfil: Perfil) => void }) {
   const [name, setName] = useState("");
 
   const { mutate: join, isPending: isJoining } = useMutation({
-    mutationFn: ({ name, emoji }: { name: string; emoji: string }) =>
-      getUserService().createUser({ name, emoji }),
-    onSuccess: (user) => onJoin(savePerfil(user)),
+    mutationFn: ({ name }: { name: string; emoji: string }) =>
+      getUserService().createUser({ name }),
+    // El backend no guarda el emoji: se queda solo en el perfil local.
+    onSuccess: (user, { emoji }) => onJoin(savePerfil({ ...user, emoji })),
     onError: (error, { name, emoji }) => {
+      if (error instanceof ApiError && error.status === 409) {
+        toast.error("Ese nombre ya está en uso, ¡prueba con otro!");
+        return;
+      }
       // El backend puede no estar disponible todavía (o fallar): seguimos
       // dejando jugar con un perfil solo local, sin id de servidor.
       console.error(error);

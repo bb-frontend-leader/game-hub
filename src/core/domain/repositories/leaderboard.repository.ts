@@ -4,9 +4,10 @@ import type {
   LeaderboardEntry,
 } from "@/core/domain/entities/leaderboard-entry";
 
-// Port for querying leaderboard/ranking tables.
+// Port for querying leaderboard/ranking tables. `token` is the bearer token
+// of whoever is asking (a registered player or an admin).
 export interface LeaderboardRepository {
-  getTop(gameId: GameId, limit?: number): Promise<LeaderboardEntry[]>;
+  getTop(token: string, gameId: GameId, limit?: number): Promise<LeaderboardEntry[]>;
   // Ranking of users by points summed across every game.
-  getGlobalTop(limit?: number): Promise<GlobalLeaderboardEntry[]>;
+  getGlobalTop(token: string, limit?: number): Promise<GlobalLeaderboardEntry[]>;
 }
