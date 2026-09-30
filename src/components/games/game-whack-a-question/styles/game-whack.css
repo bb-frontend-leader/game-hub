@@ -484,6 +484,26 @@
   user-select: none;
 }
 
+/* Puntaje en modal de feedback: tipografía pequeña y neutra para no competir con el título */
+.game-whack_feedback-score {
+  font-family: "MaidenOrange";
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  margin: 4px 0 0 0;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 2px 2px 0 #000;
+  user-select: none;
+}
+
+.game-whack_feedback-score.correct {
+color: rgba(255, 255, 255, 0.85);
+}
+
+.game-whack_feedback-score.incorrect {
+ color: rgba(255, 255, 255, 0.85);
+}
+
 /* Contador regresivo */
 .game-whack_countdown {
   position: absolute;
@@ -662,7 +682,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 14px;
   pointer-events: all;
   user-select: none;
 }
@@ -694,6 +714,17 @@
   font-size: 2rem;
   color: var(--theme-text-button);
   margin: 0;
+}
+
+/* Puntaje total en EndGame: discreto, sin animación para no competir con el título */
+.game-whack_endgame-score {
+  font-family: "MaidenOrange";
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  color: var(--theme-text-button);
+  font-weight: 600;
+  margin: 0;
+  user-select: none;
 }
 
 .game-whack_endgame-button {

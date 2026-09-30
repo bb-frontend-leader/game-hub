@@ -65,6 +65,8 @@ export const GameWhackAQuestion: React.FC<GameWhackAQuestionProps> = ({
       selectedAnswer: string;
       correctAnswer: string;
       question: string;
+      score: number;
+      isGameFinished: boolean;
     }) => {
       const result: GameResult = {
         isCorrect: resultData.isCorrect,
@@ -72,6 +74,8 @@ export const GameWhackAQuestion: React.FC<GameWhackAQuestionProps> = ({
         selectedAnswer: resultData.selectedAnswer,
         correctAnswer: resultData.correctAnswer,
         question: resultData.question,
+        score: resultData.score,
+        isGameFinished: resultData.isGameFinished,
       };
 
       if (onResultRef.current) {

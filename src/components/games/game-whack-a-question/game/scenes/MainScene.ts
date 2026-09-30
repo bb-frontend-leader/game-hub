@@ -34,7 +34,11 @@ export class Main extends Phaser.Scene {
   private timeLeft: number = 25; // 25 segundos por pregunta
   private timerEvent?: Phaser.Time.TimerEvent;
   private isAnswering: boolean = false;
-  private lives: number = 3; // Sistema de vidas
+  private lives: number = 3; // Sistema de vidas (cada vida vale 5 puntos)
+  public score: number = 15; // Puntaje: 3 vidas x 5 pts. +10 acierto / -5 fallo-timeout
+  private static readonly POINTS_PER_CORRECT = 10;
+  private static readonly POINTS_PER_LIFE = 5;
+  private static readonly INITIAL_LIVES = 3;
   private speedMultiplier: number = 1.0; // Multiplicador de velocidad (aumenta con el tiempo)
   private map!: Phaser.Tilemaps.Tilemap;
   private spawnPoints: Phaser.Types.Tilemaps.TiledObject[] = [];
@@ -64,6 +68,7 @@ export class Main extends Phaser.Scene {
   private feedbackModal!: HTMLElement;
   private feedbackTitle!: HTMLElement;
   private feedbackMessage!: HTMLElement;
+  private feedbackScore!: HTMLElement;
   private countdownElement!: HTMLElement;
   private countdownNumber!: HTMLElement;
 
@@ -79,7 +84,8 @@ export class Main extends Phaser.Scene {
     this.questions = this.registry.get("questionsData") || [];
     this.gameEvents = this.registry.get("gameEvents");
     this.currentQuestionIndex = 0;
-    this.lives = 3; // Inicializar vidas
+    this.lives = Main.INITIAL_LIVES; // Inicializar vidas
+    this.score = Main.INITIAL_LIVES * Main.POINTS_PER_LIFE; // 3 x 5 = 15
 
     // Limpiar estado anterior
     this.moles = [];
@@ -312,6 +318,7 @@ export class Main extends Phaser.Scene {
         <div class="game-whack_feedback-content">
           <h2 id="feedback-title" class="game-whack_feedback-title"></h2>
           <p id="feedback-message" class="game-whack_feedback-message"></p>
+          <p id="feedback-score" class="game-whack_feedback-score"></p>
         </div>
       </div>
       
@@ -325,6 +332,7 @@ export class Main extends Phaser.Scene {
     this.feedbackModal = guiContainer.querySelector("#feedback-modal") as HTMLElement;
     this.feedbackTitle = guiContainer.querySelector("#feedback-title") as HTMLElement;
     this.feedbackMessage = guiContainer.querySelector("#feedback-message") as HTMLElement;
+    this.feedbackScore = guiContainer.querySelector("#feedback-score") as HTMLElement;
     this.countdownElement = guiContainer.querySelector("#countdown") as HTMLElement;
     this.countdownNumber = guiContainer.querySelector("#countdown-number") as HTMLElement;
 
@@ -384,6 +392,18 @@ export class Main extends Phaser.Scene {
     // Limpiar el sprite del martillo si existe
     if (this.hammerCursor) {
       this.hammerCursor.destroy();
+    }
+  }
+
+  /**
+   * Sistema de puntaje: +10 acierto / -5 por vida perdida (fallo o timeout).
+   * Una vida siempre vale 5 puntos. Nunca baja de 0.
+   */
+  private updateScore(correct: boolean) {
+    if (correct) {
+      this.score += Main.POINTS_PER_CORRECT;
+    } else {
+      this.score = Math.max(0, this.score - Main.POINTS_PER_LIFE);
     }
   }
 
@@ -795,6 +815,9 @@ export class Main extends Phaser.Scene {
     const question = this.questions[this.currentQuestionIndex];
     const isCorrect = mole.correctAnswer;
 
+    // Sistema de puntaje: +10 acierto / -5 por vida perdida
+    this.updateScore(isCorrect);
+
     // Mostrar feedback visual de texto
     this.showFeedback(isCorrect);
 
@@ -811,6 +834,9 @@ export class Main extends Phaser.Scene {
           selectedAnswer: mole.getAnswerText(),
           correctAnswer: question.options[question.correctAnswer],
           question: question.question,
+          score: this.score,
+          isGameFinished:
+            this.currentQuestionIndex >= this.questions.length - 1,
         });
 
         // Ocultar topos antes de siguiente pregunta
@@ -831,6 +857,8 @@ export class Main extends Phaser.Scene {
           selectedAnswer: mole.getAnswerText(),
           correctAnswer: question.options[question.correctAnswer],
           question: question.question,
+          score: this.score,
+          isGameFinished: false,
         });
 
         // Verificar si se acabaron las vidas
@@ -887,7 +915,7 @@ export class Main extends Phaser.Scene {
   }
 
   private showFeedback(isCorrect: boolean) {
-    // Configurar el contenido del modal
+    // Configurar el contenido del modal (score visible en guiContainer)
     this.feedbackTitle.textContent = isCorrect ? "¡BIEN!" : "¡MAL!";
     this.feedbackTitle.className = isCorrect
       ? "game-whack_feedback-title correct"
@@ -896,6 +924,11 @@ export class Main extends Phaser.Scene {
     this.feedbackMessage.textContent = isCorrect
       ? "¡Respuesta correcta!"
       : "¡Respuesta incorrecta!";
+
+    this.feedbackScore.textContent = `Puntos: ${this.score}`;
+    this.feedbackScore.className = isCorrect
+      ? "game-whack_feedback-score correct"
+      : "game-whack_feedback-score incorrect";
 
     // Mostrar el modal con animación
     this.feedbackModal.classList.add("show");
@@ -984,9 +1017,10 @@ export class Main extends Phaser.Scene {
 
         const question = this.questions[this.currentQuestionIndex];
 
-        // Restar vida por timeout
+        // Restar vida por timeout (vale 5 puntos)
         this.lives--;
         this.updateLivesDisplay();
+        this.updateScore(false);
 
         this.showFeedback(false);
 
@@ -1001,6 +1035,8 @@ export class Main extends Phaser.Scene {
             selectedAnswer: "Tiempo agotado",
             correctAnswer: question.options[question.correctAnswer],
             question: question.question,
+            score: this.score,
+            isGameFinished: false,
           });
 
           // Verificar si se acabaron las vidas
@@ -1120,10 +1156,14 @@ export class Main extends Phaser.Scene {
       mole.forceDown();
     });
 
+    // Puntaje final visible en EndGameScene
+    this.registry.set("finalScore", this.score);
+
     // Emitir evento de fin de juego
     this.gameEvents.emit("game-over", {
       reason: "no-lives",
       questionsAnswered: this.currentQuestionIndex,
+      score: this.score,
     });
 
     // Ir a la escena de fin con parámetro de derrota
@@ -1141,7 +1181,7 @@ export class Main extends Phaser.Scene {
       // Fade out antes de cambiar de escena
       this.cameras.main.fadeOut(200, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("endGameScene", { won: false });
+        this.scene.start("endGameScene", { won: false, score: this.score });
       });
     });
   }
@@ -1153,9 +1193,13 @@ export class Main extends Phaser.Scene {
     }
     this.stopAllMoleTimers();
 
+    // Puntaje final visible en EndGameScene
+    this.registry.set("finalScore", this.score);
+
     // Emitir evento de victoria
     this.gameEvents.emit("game-completed", {
       questionsAnswered: this.currentQuestionIndex,
+      score: this.score,
     });
 
     // Ir a la escena de fin con parámetro de victoria
@@ -1173,7 +1217,7 @@ export class Main extends Phaser.Scene {
       // Fade out antes de cambiar de escena
       this.cameras.main.fadeOut(200, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("endGameScene", { won: true });
+        this.scene.start("endGameScene", { won: true, score: this.score });
       });
     });
   }
