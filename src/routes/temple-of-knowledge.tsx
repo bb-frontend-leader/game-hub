@@ -1,11 +1,12 @@
 import { AttackGame } from "@games/game-temple-of-knowledge/attack-game";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { GameResult } from "@games/game-temple-of-knowledge/types/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { GameShell } from "@/components/GameShell";
-import { ApiError, type GameId, getScoreService } from "@/core";
+import { ApiError, type GameId, getLeaderboardService, getScoreService } from "@/core";
 import { TEMPLE_OF_KNOWLEDGE_QUESTIONS } from "@/data-test";
 import { usePerfil } from "@/lib/perfil-context";
 
@@ -27,18 +28,29 @@ export const Route = createFileRoute("/temple-of-knowledge")({
 });
 
 const GAME_ID: GameId = "temple-of-knowledge";
+const LEADERBOARD_LOOKUP_SIZE = 100;
 
 function TempleOfKnowledge() {
+  const savedPoints = useSavedPoints();
   const submitScore = useSubmitScore();
+  const [score, setScore] = useState(15);
+
+  const handleResult = useCallback(
+    (result: GameResult) => {
+      setScore(result.score);
+      if (result.isGameFinished) submitScore(result.score);
+    },
+    [submitScore],
+  );
 
   return (
-    <GameShell title="Temple of Knowledge" accent="red" className="max-w-4xl">
-      <AttackGame
-        questions={TEMPLE_OF_KNOWLEDGE_QUESTIONS}
-        onResult={(result) => {
-          if (result.isGameFinished) submitScore(result.score);
-        }}
-      />
+    <GameShell
+      title="Temple of Knowledge"
+      accent="red"
+      className="max-w-4xl"
+      score={savedPoints ?? score}
+    >
+      <AttackGame questions={TEMPLE_OF_KNOWLEDGE_QUESTIONS} onResult={handleResult} />
     </GameShell>
   );
 }
@@ -125,6 +137,7 @@ function useSubmitScore() {
       statusRef.current = "done";
       toast.success(`¡${points} puntos guardados para ${user.name}!`);
       void queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+      void queryClient.invalidateQueries({ queryKey: ["user"] });
     },
     onError: (error) => {
       if (error instanceof ApiError) {
@@ -156,4 +169,18 @@ function useSubmitScore() {
     },
     [mutate],
   );
+}
+
+function useSavedPoints() {
+  const perfil = usePerfil();
+
+  const { data: entries } = useQuery({
+    // empieza por "leaderboard" → se refresca solo tras guardar puntos
+    queryKey: ["leaderboard", "global", LEADERBOARD_LOOKUP_SIZE],
+    queryFn: () =>
+      getLeaderboardService().getGlobalLeaderboard(perfil.token!, LEADERBOARD_LOOKUP_SIZE),
+    enabled: !!perfil.token,
+  });
+
+  return entries?.find((entry) => entry.userId === perfil.id)?.points ?? null;
 }
