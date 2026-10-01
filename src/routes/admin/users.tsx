@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 
+import { AdminBreadcrumb } from "@/components/admin/AdminBreadcrumb";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { RequireAdminSession } from "@/components/admin/RequireAdminSession";
 import { PixelIcon } from "@/components/pixel";
@@ -38,7 +39,11 @@ export const Route = createFileRoute("/admin/users")({
 function UsersTable({ token }: { token: string }) {
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading } = useQuery({
+  const {
+    data: users,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["admin", "users"],
     queryFn: () => getAdminService().listUsers(token),
   });
@@ -50,6 +55,8 @@ function UsersTable({ token }: { token: string }) {
     onSuccess: () => {
       toast.success("Puntaje reiniciado");
       invalidateUsers();
+      // Los puntajes cambiaron: la tabla de clasificación también.
+      void queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
     },
     onError: (error) => {
       console.error(error);
@@ -57,22 +64,20 @@ function UsersTable({ token }: { token: string }) {
     },
   });
 
-  const { mutate: deleteUser, isPending: isDeleting } = useMutation({
-    mutationFn: (userId: string) => getAdminService().deleteUser(token, userId),
-    onSuccess: () => {
-      toast.success("Usuario eliminado");
-      invalidateUsers();
-    },
-    onError: (error) => {
-      console.error(error);
-      toast.error("No pudimos eliminar el usuario");
-    },
-  });
-
   if (isLoading) {
     return (
       <p role="status" className="animate-px-blink py-12 text-center text-xl text-muted-foreground">
         Cargando usuarios...
+      </p>
+    );
+  }
+
+  // Una sesión vencida la maneja el handler global (manda al login); aquí
+  // queda cualquier otro fallo, que no debe verse como "no hay usuarios".
+  if (isError) {
+    return (
+      <p role="alert" className="py-12 text-center text-xl text-muted-foreground">
+        No pudimos cargar los usuarios. Recarga la página para intentarlo de nuevo.
       </p>
     );
   }
@@ -90,6 +95,7 @@ function UsersTable({ token }: { token: string }) {
       <TableHeader>
         <TableRow>
           <TableHead>Jugador</TableHead>
+          <TableHead>Código</TableHead>
           <TableHead className="text-right">Puntos totales</TableHead>
           <TableHead className="text-right">Acciones</TableHead>
         </TableRow>
@@ -97,44 +103,34 @@ function UsersTable({ token }: { token: string }) {
       <TableBody>
         {users.map((user: AdminUserSummary) => (
           <TableRow key={user.id}>
-            <TableCell className="text-xl font-semibold">
-              <span className="mr-2" aria-hidden>
-                {user.emoji}
-              </span>
-              {user.name}
+            <TableCell className="text-xl font-semibold">{user.name}</TableCell>
+            <TableCell className="select-all font-pixel text-base tracking-widest">
+              {user.code ?? "—"}
             </TableCell>
             <TableCell className="text-right font-pixel text-base font-bold text-gold">
               {user.totalPoints}
             </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={isResetting}
-                  onClick={() => resetScore(user.id)}
-                >
-                  <PixelIcon name="reset" scale={2} />
-                  Reiniciar
-                </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="sm" disabled={isDeleting}>
-                      <PixelIcon name="trash" scale={2} />
-                      Eliminar
+                    <Button variant="outline" size="sm" disabled={isResetting}>
+                      <PixelIcon name="reset" scale={2} />
+                      Reiniciar
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>¿Eliminar a {user.name}?</AlertDialogTitle>
+                      <AlertDialogTitle>¿Reiniciar el puntaje de {user.name}?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Esta acción borra al usuario y no se puede deshacer.
+                        Se borran sus puntajes de ambos juegos y podrá volver a jugarlos. No se
+                        puede deshacer.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction variant="destructive" onClick={() => deleteUser(user.id)}>
-                        Eliminar
+                      <AlertDialogAction onClick={() => resetScore(user.id)}>
+                        Reiniciar
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -155,6 +151,7 @@ function AdminUsers() {
         <div className="min-h-screen">
           <AdminHeader username={session.username} />
           <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+            <AdminBreadcrumb current="Usuarios registrados" />
             <h1 className="px-title mb-8 text-[1.5rem] sm:text-[2rem]">Usuarios registrados</h1>
             <Card className="p-2 sm:p-4">
               <UsersTable token={session.token} />

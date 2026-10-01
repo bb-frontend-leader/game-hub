@@ -1,13 +1,39 @@
 import type { AdminUserSummary } from "@/core/domain/entities/admin-user";
 
-// PLACEHOLDER_API_CONTRACT — wire format for GET {base}/admin/users.
-export type AdminUserSummaryDto = {
+// Wire format for GET {base}/users?page=N&limit=M (admin only; `limit` <= 100).
+// Only the fields the client uses are typed — the rows also carry the
+// password hash, which must never be read or stored here.
+export type AdminUserDto = {
   id: string;
-  name: string;
-  emoji: string;
-  totalPoints: number;
+  username: string;
+  role: string;
+  code: string | null;
+  totalScore: number;
 };
 
-export function adminUserSummaryFromDto(dto: AdminUserSummaryDto): AdminUserSummary {
-  return { id: dto.id, name: dto.name, emoji: dto.emoji, totalPoints: dto.totalPoints };
+export type AdminUsersPageDto = {
+  success: boolean;
+  message: string;
+  data: {
+    rows: AdminUserDto[];
+    meta: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+    };
+  };
+};
+
+// Wire format for PUT {base}/reset (admin only).
+export type ResetUserRequestDto = {
+  userId: string;
+};
+
+export const ADMIN_ROLE = "ADMIN";
+
+export function adminUserSummaryFromDto(dto: AdminUserDto): AdminUserSummary {
+  return { id: dto.id, name: dto.username, code: dto.code, totalPoints: dto.totalScore };
 }

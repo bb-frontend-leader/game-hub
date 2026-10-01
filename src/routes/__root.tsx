@@ -90,7 +90,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           <PixelIcon name="reset" scale={2} />
           Reintentar
         </button>
-        <a href={import.meta.env.BASE_URL} className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
+        <a
+          href={import.meta.env.BASE_URL}
+          className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
+        >
           Ir al inicio
         </a>
       </div>
@@ -195,16 +198,17 @@ function AppShell() {
   }, [queryClient]);
 
   // Refresca el perfil desde el backend cuando ya tenemos un usuario
-  // registrado (perfil.id). Si falla (sin conexión, backend caído, etc.) no
-  // pasa nada: seguimos usando el perfil local ya cargado.
+  // registrado (perfil.id + token). Si falla (sin conexión, token vencido,
+  // etc.) no pasa nada: seguimos usando el perfil local ya cargado.
   const { data: user } = useQuery({
     queryKey: ["user", perfil?.id],
-    queryFn: () => getUserService().getUser(perfil!.id!),
-    enabled: !isAdminRoute && !!perfil?.id,
+    queryFn: () => getUserService().getUser(perfil!.token!, perfil!.id!),
+    enabled: !isAdminRoute && !!perfil?.id && !!perfil?.token,
   });
 
   useEffect(() => {
-    if (user) setPerfil(savePerfil(user));
+    // Merge para no perder el token ni el emoji: GET /users/:id no los devuelve.
+    if (user) setPerfil((prev) => (prev ? savePerfil({ ...prev, ...user }) : prev));
   }, [user]);
 
   if (isAdminRoute) return <Outlet />;

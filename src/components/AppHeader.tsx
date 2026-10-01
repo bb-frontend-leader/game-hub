@@ -4,25 +4,63 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { PixelIcon, PixelLogo, RankBadge } from "@/components/pixel";
+import { PlayerCode } from "@/components/PlayerCode";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { getLeaderboardService } from "@/core";
+import { getLeaderboardService, getUserService } from "@/core";
 import { clearPerfil, type Perfil } from "@/lib/perfil";
 
 const LEADERBOARD_SIZE = 5;
 
 export function AppHeader({ perfil }: { perfil: Perfil }) {
   const [showBoard, setShowBoard] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
-  // Solo se pide al backend cuando el jugador abre el modal.
-  const { data: entries, isLoading } = useQuery({
-    queryKey: ["leaderboard", "global"],
-    queryFn: () => getLeaderboardService().getGlobalLeaderboard(LEADERBOARD_SIZE),
-    enabled: showBoard,
+  // Solo se pide al backend cuando el jugador abre el modal. Requiere el token
+  // del registro: un perfil solo local (sin token) no puede ver la tabla.
+  const token = perfil.token;
+  const {
+    data: entries,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["leaderboard", "global", LEADERBOARD_SIZE],
+    queryFn: () => getLeaderboardService().getGlobalLeaderboard(token!, LEADERBOARD_SIZE),
+    enabled: showBoard && !!token,
   });
 
-  const logout = () => {
-    toast.success("¡Hasta pronto!");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Invalida el token en el backend y luego borra el perfil local. Si la
+  // llamada falla (sin red, token ya vencido) se cierra la sesión igual.
+  const logout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    if (perfil.token) {
+      try {
+        await getUserService().logoutUser(perfil.token);
+      } catch (error) {
+        console.warn("No se pudo cerrar la sesión en el servidor", error);
+      }
+    }
+    // Sin token ya no hay vuelta atrás: le recordamos su código para entrar.
+    toast.success(
+      perfil.code
+        ? `¡Hasta pronto! Para volver usa tu nombre y el código ${perfil.code}`
+        : "¡Hasta pronto!",
+      { duration: 8000 },
+    );
     setTimeout(() => clearPerfil(), 400);
   };
 
@@ -44,9 +82,12 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
             <span className="hidden lg:inline">Clasificación</span>
           </Button>
 
-          <div
-            className="px-frame px-c-night hidden h-12 max-w-[12rem] items-center gap-2 px-2 min-[380px]:flex sm:px-3"
-            title={perfil.name}
+          <button
+            type="button"
+            onClick={() => setShowProfile(true)}
+            aria-label={`Mi perfil: ${perfil.name}`}
+            className="px-frame px-c-night hidden h-12 max-w-[12rem] items-center gap-2 px-2 transition-transform duration-100 ease-[steps(2)] hover:-translate-y-0.5 min-[380px]:flex sm:px-3"
+            title="Ver mi perfil y mi código"
           >
             <span
               aria-hidden
@@ -55,19 +96,85 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
               {perfil.emoji}
             </span>
             <span className="hidden truncate text-lg font-semibold md:inline">{perfil.name}</span>
-          </div>
+          </button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={logout}
-            title="Cerrar sesión"
-            aria-label="Cerrar sesión"
-          >
-            <PixelIcon name="exit" scale={2} />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={isLoggingOut}
+                title="Cerrar sesión"
+                aria-label="Cerrar sesión"
+              >
+                <PixelIcon name="exit" scale={2} />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
+                <AlertDialogDescription asChild>
+                  <div className="space-y-4">
+                    {perfil.code ? (
+                      <>
+                        <p>
+                          Para volver a entrar necesitarás tu nombre{" "}
+                          <strong className="text-foreground">{perfil.name}</strong> y este código:
+                        </p>
+                        <PlayerCode code={perfil.code} />
+                      </>
+                    ) : (
+                      <p>
+                        Tu jugador no está guardado en el servidor: si cierras sesión, no podrás
+                        recuperarlo.
+                      </p>
+                    )}
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Seguir jugando</AlertDialogCancel>
+                <AlertDialogAction variant="destructive" onClick={() => void logout()}>
+                  Cerrar sesión
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
+
+      <Dialog open={showProfile} onOpenChange={setShowProfile}>
+        <DialogContent className="max-w-md gap-0 p-0">
+          <div className="px-bar min-h-14 pr-14 [--px-bar-hi:var(--px-cyan-hi)] [--px-bar:var(--px-cyan)]">
+            <PixelIcon name="shield" scale={2} />
+            <DialogTitle className="pr-0 text-base leading-snug text-ink">Mi perfil</DialogTitle>
+          </div>
+
+          <div className="space-y-5 p-5 text-center">
+            <p className="flex items-center justify-center gap-3 text-2xl font-semibold">
+              <span aria-hidden className="text-3xl leading-none">
+                {perfil.emoji}
+              </span>
+              {perfil.name}
+            </p>
+            {perfil.code ? (
+              <>
+                <DialogDescription className="text-lg">
+                  Tu código para volver a entrar:
+                </DialogDescription>
+                <PlayerCode code={perfil.code} />
+                <p className="text-base text-muted-foreground">
+                  ¡No se lo muestres a nadie! Si lo olvidas, tu profe puede dártelo.
+                </p>
+              </>
+            ) : (
+              <DialogDescription className="text-lg">
+                Tu jugador no está guardado en el servidor, así que no tiene código.
+              </DialogDescription>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showBoard} onOpenChange={setShowBoard}>
         <DialogContent className="max-w-md gap-0 p-0">
@@ -87,6 +194,11 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
                 Cargando...
               </p>
             )}
+            {(!token || isError) && (
+              <p className="py-6 text-center text-xl text-muted-foreground">
+                No pudimos cargar la clasificación. ¡Inténtalo más tarde!
+              </p>
+            )}
             {!isLoading && entries?.length === 0 && (
               <p className="py-6 text-center text-xl text-muted-foreground">
                 ¡Todavía no hay puntajes! Sé el primero en jugar.
@@ -100,9 +212,6 @@ export function AppHeader({ perfil }: { perfil: Perfil }) {
                     className="px-frame px-c-night flex items-center gap-3 px-3 py-2 [--px:2px]"
                   >
                     <RankBadge rank={entry.rank} className="w-9 shrink-0" />
-                    <span aria-hidden className="text-xl leading-none">
-                      {entry.emoji}
-                    </span>
                     <span className="min-w-0 flex-1 truncate text-xl font-semibold">
                       {entry.name}
                     </span>

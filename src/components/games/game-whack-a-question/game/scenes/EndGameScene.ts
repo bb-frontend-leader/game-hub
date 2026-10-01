@@ -8,6 +8,7 @@ export class EndGame extends Phaser.Scene {
   private map!: Phaser.Tilemaps.Tilemap;
   private readonly MAP_SCALE = 0.84; // Escala del mapa
   private won: boolean = false; // Indica si ganó o perdió
+  private finalScore: number = 0; // Puntaje total a mostrar
   private GuiElement?: Phaser.GameObjects.DOMElement;
   private audioManager?: AudioManager;
 
@@ -15,8 +16,15 @@ export class EndGame extends Phaser.Scene {
     super("endGameScene");
   }
 
-  init(data: { won: boolean }) {
+  init(data: { won: boolean; score?: number }) {
     this.won = data.won || false;
+    const fromRegistry = this.registry?.get("finalScore");
+    this.finalScore =
+      typeof data.score === "number"
+        ? data.score
+        : typeof fromRegistry === "number"
+          ? fromRegistry
+          : 0;
   }
 
   preload() {}
@@ -105,6 +113,7 @@ export class EndGame extends Phaser.Scene {
       <div class="game-whack_endgame-content">
         <h1 class="game-whack_endgame-title ${resultClass}">${resultMessage}</h1>
         <p class="game-whack_endgame-subtext">${resultSubtext}</p>
+        <p class="game-whack_endgame-score">PUNTAJE: ${this.finalScore}</p>
         <button class="game-whack_endgame-button">VOLVER A JUGAR</button>
       </div>
     `;

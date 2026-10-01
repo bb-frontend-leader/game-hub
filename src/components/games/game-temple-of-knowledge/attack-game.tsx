@@ -60,7 +60,7 @@ export function AttackGame({ questions, gameId, onResult }: AttackGameProps) {
       phaserGameInstanceRef.current?.destroy(true);
       phaserGameInstanceRef.current = null;
     };
-  }, [containerId, phaserKey, onResult]); // 👈 phaserKey aquí
+  }, [containerId, phaserKey]); // 👈 phaserKey aquí
 
   return (
     <>

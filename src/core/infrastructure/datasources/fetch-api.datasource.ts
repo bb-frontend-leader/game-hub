@@ -20,6 +20,16 @@ export class ApiError extends Error {
   }
 }
 
+// A 401 on a request that DID carry a bearer token: the session behind that
+// token is over (expired, or invalidated by a logout elsewhere). A 401 without
+// a token (e.g. wrong name/code at login) stays a plain ApiError.
+export class SessionExpiredError extends ApiError {
+  constructor(message: string, options: ApiErrorOptions) {
+    super(message, options);
+    this.name = "SessionExpiredError";
+  }
+}
+
 type QueryParams = Record<string, string | number | boolean | undefined>;
 type RequestOptions = { token?: string };
 
@@ -58,7 +68,7 @@ async function parseBody(response: Response): Promise<unknown> {
 }
 
 async function request<T>(
-  method: "GET" | "POST" | "DELETE",
+  method: "GET" | "POST" | "PUT" | "DELETE",
   path: string,
   query: QueryParams | undefined,
   body: unknown,
@@ -85,6 +95,12 @@ async function request<T>(
   const parsed = await parseBody(response);
 
   if (!response.ok) {
+    if (response.status === 401 && options?.token) {
+      throw new SessionExpiredError(`Session expired for ${method} ${path}`, {
+        status: response.status,
+        body: parsed,
+      });
+    }
     throw new ApiError(`API responded with ${response.status} for ${method} ${path}`, {
       status: response.status,
       body: parsed,
@@ -103,6 +119,9 @@ export const fetchApiDataSource = {
   },
   post<T = unknown>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
     return request<T>("POST", path, undefined, body, options);
+  },
+  put<T = unknown>(path: string, body?: unknown, options?: RequestOptions): Promise<T> {
+    return request<T>("PUT", path, undefined, body, options);
   },
   delete<T = unknown>(path: string, options?: RequestOptions): Promise<T> {
     return request<T>("DELETE", path, undefined, undefined, options);

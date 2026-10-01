@@ -5,6 +5,8 @@ import { PixelGround, PixelIcon } from "@/components/pixel";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { ScoreHud } from "./ScoreHud";
+
 const ACCENTS = {
   red: "[--px-bar-hi:var(--px-red-hi)] [--px-bar:var(--px-red)]",
   blue: "[--px-bar-hi:var(--px-blue-hi)] [--px-bar:var(--px-blue)]",
@@ -17,11 +19,13 @@ const ACCENTS = {
 export function GameShell({
   title,
   accent,
+  score,
   className,
   children,
 }: {
   title: string;
   accent: keyof typeof ACCENTS;
+  score?: number;
   className?: string;
   children: ReactNode;
 }) {
@@ -33,11 +37,12 @@ export function GameShell({
           className,
         )}
       >
-        <div>
+        <div className="flex items-center justify-between gap-3">
           <Link to="/" className={buttonVariants({ variant: "outline", size: "sm" })}>
             <PixelIcon name="arrow-left" scale={2} />
             Volver a los juegos
           </Link>
+          {score !== undefined && <ScoreHud score={score} />}
         </div>
 
         <section className="px-frame px-c-deep px-drop animate-px-pop">

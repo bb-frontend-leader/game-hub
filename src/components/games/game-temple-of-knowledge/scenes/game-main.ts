@@ -17,6 +17,11 @@ export class GameMain extends Scene {
   private enemiesDefeated = 0;
   private attempts = 0;
 
+  // 🆕 Puntaje
+  private static readonly POINTS_PER_CORRECT = 10;
+  private static readonly POINTS_PER_LIFE = 5;
+  private score = 0;
+
   cards: Card[] = [];
   domButtons: Phaser.GameObjects.DOMElement[] = [];
 
@@ -142,6 +147,9 @@ export class GameMain extends Scene {
     // 5) Vida depende de cantidad de preguntas
     this.maxHP = 3;
     this.hp = this.maxHP;
+
+    // 🆕 Puntaje inicial: cada vida vale 5 → 3 vidas = 15
+    this.score = this.maxHP * GameMain.POINTS_PER_LIFE;
 
     // La barra del héroe inicia llena (porcentaje)
     this.heroDisplayPct = 1; // = 1
@@ -340,7 +348,7 @@ export class GameMain extends Scene {
         }
 
         // 4) si fue correcta y no es la última -> avanzar normal
-        await this.refillHeroBarIfNeeded();
+        // await this.refillHeroBarIfNeeded();
         await this.endAnswerWithCurtain();
 
         this.isResolving = false;
@@ -596,7 +604,8 @@ export class GameMain extends Scene {
     await this.showOverlay({
       mode: "next",
       title: "¡Nivel superado!",
-      subtitle: `Siguiente desafío listo (${this.qIndex + 1} / ${total})`,
+      subtitle: `Siguiente desafío listo (${this.qIndex + 1} / ${total})<br/><br/>
+                 Puntaje: <b>${this.score}</b>`,
       buttonText: "Siguiente",
     });
   }
@@ -760,27 +769,27 @@ export class GameMain extends Scene {
     this.updateHealthBars();
   }
 
-  private refillHeroBarIfNeeded(): Promise<void> {
-    // si ya está llena, no hacemos nada
-    if (this.hp >= this.maxHP) return Promise.resolve();
+  // private refillHeroBarIfNeeded(): Promise<void> {
+  //   // si ya está llena, no hacemos nada
+  //   if (this.hp >= this.maxHP) return Promise.resolve();
 
-    // curación automática: vuelve a full
-    this.hp = this.maxHP;
+  //   // curación automática: vuelve a full
+  //   this.hp = this.maxHP;
 
-    // anima la barra al 100%
-    this.heroFillTween?.stop();
+  //   // anima la barra al 100%
+  //   this.heroFillTween?.stop();
 
-    return new Promise((resolve) => {
-      this.heroFillTween = this.tweens.add({
-        targets: this,
-        heroDisplayPct: 1,
-        duration: 320,
-        ease: "Sine.easeOut",
-        onUpdate: () => this.updateHealthBars(),
-        onComplete: () => resolve(),
-      });
-    });
-  }
+  //   return new Promise((resolve) => {
+  //     this.heroFillTween = this.tweens.add({
+  //       targets: this,
+  //       heroDisplayPct: 1,
+  //       duration: 320,
+  //       ease: "Sine.easeOut",
+  //       onUpdate: () => this.updateHealthBars(),
+  //       onComplete: () => resolve(),
+  //     });
+  //   });
+  // }
 
   // ---------------------------
   // Utils
@@ -818,7 +827,7 @@ export class GameMain extends Scene {
       mode: "hurt",
       title: "¡Auch!",
       subtitle: `${life}.<br/><br/>
-              Inténtalo de nuevo en la siguiente.<br/><br/>
+              Puntaje: <b>${this.score}</b><br/><br/>
               Mantén la calma: puedes recuperarte.`,
       buttonText: "Siguiente",
     });
@@ -864,28 +873,42 @@ export class GameMain extends Scene {
     cb?.(payload);
   }
 
+  // 🆕 +10 si acierta, -5 si pierde una vida
+  private updateScore(correct: boolean) {
+    if (correct) {
+      this.score += GameMain.POINTS_PER_CORRECT;
+    } else {
+      this.score = Math.max(0, this.score - GameMain.POINTS_PER_LIFE);
+    }
+  }
+
   private onResult(opt: Option) {
     const questions = globalState.questions;
     const question = questions[this.qIndex];
     if (!question) return;
 
-    const correctOpt = question?.options.find((o) => o.correct);
+    const correctOpt = question.options.find((o) => o.correct);
     const correctAnswer = correctOpt?.id ?? "";
+
+    this.updateScore(opt.correct); // 🆕
+
+    const isGameFinished = opt.correct && this.qIndex >= questions.length - 1; // 🆕
 
     announce(
       `Seleccionaste la opción ${opt.id}: ${opt.text}. ` +
-        (opt.correct ? "Correcto." : `Incorrecto.`) +
+        (opt.correct ? "Correcto." : "Incorrecto.") +
+        ` Puntaje: ${this.score}.` +
         ` Pregunta ${this.qIndex + 1} de ${questions.length}.`,
     );
 
-    const result: GameResult = {
+    this.emitResult({
       isCorrect: opt.correct,
       questionIndex: this.qIndex,
-      selectedAnswer: opt.id, // ✅ la que escogió
-      correctAnswer, // ✅ id de la correcta
-      question, // ✅ question completa
-    };
-
-    this.emitResult(result);
+      selectedAnswer: opt.id,
+      correctAnswer,
+      question,
+      score: this.score, // 🆕
+      isGameFinished, // 🆕
+    });
   }
 }

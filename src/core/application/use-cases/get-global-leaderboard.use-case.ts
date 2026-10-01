@@ -5,7 +5,7 @@ import type { LeaderboardRepository } from "@/core/domain/repositories/leaderboa
 export class GetGlobalLeaderboardUseCase {
   constructor(private readonly leaderboardRepository: LeaderboardRepository) {}
 
-  async execute(limit?: number): Promise<GlobalLeaderboardEntry[]> {
-    return this.leaderboardRepository.getGlobalTop(limit);
+  async execute(token: string, limit?: number): Promise<GlobalLeaderboardEntry[]> {
+    return this.leaderboardRepository.getGlobalTop(token, limit);
   }
 }

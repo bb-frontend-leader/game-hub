@@ -85,7 +85,7 @@ export const dataGameWhackAQuestion: WhackQuestion[] = [
     options: [
       "a. Computer Style Sheets",
       "b. Cascading Style Sheets",
-      "c. Creative Styling System"
+      "c. Creative Styling System",
     ],
     correctAnswer: 1,
   },
