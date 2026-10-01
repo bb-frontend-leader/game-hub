@@ -111,3 +111,9 @@ pm2 start ecosystem.config.js
 ```
 
 `ecosystem.config.js` requiere un `.env` en el mismo directorio (`cwd`) con `VITE_API_URL`.
+
+## ❤️ Hecho con el 💙 en Books&Books  
+
+Nos enorgullece desarrollar este proyecto como parte del compromiso de **Books&Books** con la educación y la innovación tecnológica. 🌟🏆💪  
+
+Gracias por visitar nuestro proyecto. ¡Juntos podemos hacer del aprendizaje una experiencia increíble! 🥳✨🎉🚀  
