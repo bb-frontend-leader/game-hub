@@ -4,6 +4,9 @@ import { API_GAME } from "@/core/infrastructure/dto/game.dto";
 
 // Wire format of a user as the backend returns it (register, login,
 // GET /users/:id). `code` is the player's access code (null for admins).
+// The score fields may be absent on register/login (a brand-new user hasn't
+// played anything yet); `userFromDto` only reads them for games marked
+// played, so a missing field there never surfaces as a fake score.
 export type UserDto = {
   id: string;
   username: string;
@@ -11,6 +14,8 @@ export type UserDto = {
   code: string | null;
   game1Played: boolean;
   game2Played: boolean;
+  game1Score?: number;
+  game2Score?: number;
 };
 
 // Wire format for POST {base}/register: the username alone creates the
@@ -48,7 +53,10 @@ export const PLAYER_ROLE = "PLAYER";
 export function userFromDto(dto: UserDto): User {
   const gameIds = Object.keys(API_GAME) as GameId[];
   const playedGames = gameIds.filter((gameId) => dto[`${API_GAME[gameId]}Played`]);
-  return { id: dto.id, name: dto.username, playedGames };
+  const scores = Object.fromEntries(
+    playedGames.map((gameId) => [gameId, dto[`${API_GAME[gameId]}Score`] ?? 0]),
+  ) as Partial<Record<GameId, number>>;
+  return { id: dto.id, name: dto.username, playedGames, scores };
 }
 
 export function registeredUserFromDto(dto: PlayerAuthResponseDto): RegisteredUser {

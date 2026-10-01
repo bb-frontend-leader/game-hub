@@ -1,12 +1,12 @@
 import { AttackGame } from "@games/game-temple-of-knowledge/attack-game";
 import { GameResult } from "@games/game-temple-of-knowledge/types/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { GameShell } from "@/components/GameShell";
-import { ApiError, type GameId, getLeaderboardService, getScoreService } from "@/core";
+import { ApiError, type GameId, getScoreService } from "@/core";
 import { TEMPLE_OF_KNOWLEDGE_QUESTIONS } from "@/data-test";
 import { usePerfil } from "@/lib/perfil-context";
 
@@ -28,12 +28,15 @@ export const Route = createFileRoute("/temple-of-knowledge")({
 });
 
 const GAME_ID: GameId = "temple-of-knowledge";
-const LEADERBOARD_LOOKUP_SIZE = 100;
 
 function TempleOfKnowledge() {
-  const savedPoints = useSavedPoints();
+  const perfil = usePerfil();
+  // Ausente (undefined) = todavía no jugado: se muestra el puntaje en vivo
+  // (el estado `score` de abajo). Presente = ya se guardó en el backend: se
+  // muestra ese puntaje, de solo lectura (cada juego se puntúa una sola vez).
+  const savedPoints = perfil.scores?.[GAME_ID] ?? null;
   const submitScore = useSubmitScore();
-  const [score, setScore] = useState(15);
+  const [score, setScore] = useState(0);
 
   const handleResult = useCallback(
     (result: GameResult) => {
@@ -54,66 +57,6 @@ function TempleOfKnowledge() {
     </GameShell>
   );
 }
-
-// function SubmitScoreTestButton() {
-//   const perfil = usePerfil();
-//   const queryClient = useQueryClient();
-//   const [points, setPoints] = useState("50");
-
-//   const { mutate: submit, isPending } = useMutation({
-//     mutationFn: () => {
-//       if (!perfil.token || !perfil.id) {
-//         throw new Error("Perfil sin id/token: solo local, no registrado en el backend");
-//       }
-//       return getScoreService().submitScore(perfil.token, {
-//         userId: perfil.id,
-//         gameId: GAME_ID,
-//         points: Number(points),
-//       });
-//     },
-//     onSuccess: (user) => {
-//       console.info("[test] puntaje enviado", user);
-//       toast.success(`Puntaje guardado para ${user.name}`);
-//       void queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
-//     },
-//     onError: (error) => {
-//       console.error("[test] error al enviar puntaje", error);
-//       if (error instanceof ApiError) {
-//         const message =
-//           error.status === 409
-//             ? "Ya registraste tu puntaje en este juego"
-//             : error.status === 401
-//               ? "Token vencido o inválido"
-//               : `Error ${error.status ?? "de red"}`;
-//         toast.error(message);
-//         return;
-//       }
-//       toast.error(error.message);
-//     },
-//   });
-
-//   return (
-//     <form
-//       className="flex items-center gap-3 border-t-4 border-dashed border-ink p-4"
-//       onSubmit={(e) => {
-//         e.preventDefault();
-//         if (!isPending) submit();
-//       }}
-//     >
-//       <span className="shrink-0 text-lg text-muted-foreground">[Prueba] Puntos:</span>
-//       <Input
-//         type="number"
-//         value={points}
-//         onChange={(e) => setPoints(e.target.value)}
-//         aria-label="Puntos de prueba"
-//         className="w-28"
-//       />
-//       <Button type="submit" variant="secondary" disabled={isPending}>
-//         {isPending ? "Enviando..." : "Enviar puntaje"}
-//       </Button>
-//     </form>
-//   );
-// }
 
 function useSubmitScore() {
   const perfil = usePerfil();
@@ -169,18 +112,4 @@ function useSubmitScore() {
     },
     [mutate],
   );
-}
-
-function useSavedPoints() {
-  const perfil = usePerfil();
-
-  const { data: entries } = useQuery({
-    // empieza por "leaderboard" → se refresca solo tras guardar puntos
-    queryKey: ["leaderboard", "global", LEADERBOARD_LOOKUP_SIZE],
-    queryFn: () =>
-      getLeaderboardService().getGlobalLeaderboard(perfil.token!, LEADERBOARD_LOOKUP_SIZE),
-    enabled: !!perfil.token,
-  });
-
-  return entries?.find((entry) => entry.userId === perfil.id)?.points ?? null;
 }

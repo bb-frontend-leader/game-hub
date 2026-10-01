@@ -4,11 +4,14 @@ import type { GameId } from "@/core/domain/entities/game";
 // emoji is a client-side choice, see src/lib/perfil.ts). `id` is assigned by
 // the backend the first time the register endpoint is called.
 // `playedGames` lists the games the player already has a score for (each
-// game can be scored only once).
+// game can be scored only once). `scores` has an entry only for games in
+// `playedGames` — an unplayed game is absent, not 0, so the UI can tell "no
+// score yet" apart from "scored zero".
 export type User = {
   id: string;
   name: string;
   playedGames: GameId[];
+  scores: Partial<Record<GameId, number>>;
 };
 
 // Username rule enforced by the backend: 3–20 characters, only ASCII letters,

@@ -10,7 +10,10 @@ const STORAGE_KEY = "booksquest-perfil";
 // UserService.createUser); quedan sin definir si el perfil solo se pudo
 // guardar de forma local. El token autoriza las peticiones del jugador y el
 // código (con el nombre) le permite volver a entrar. `playedGames` son los
-// juegos que ya tienen puntaje (se refresca desde el backend, ver __root.tsx).
+// juegos que ya tienen puntaje y `scores` el puntaje de cada uno de esos
+// juegos (ambos se refrescan desde el backend, ver __root.tsx). Un juego
+// ausente en `scores` es "todavía no jugado", no "jugado con 0 puntos": por
+// eso cada página de juego lee `perfil.scores?.[gameId] ?? null`.
 export type Perfil = {
   id?: string;
   name: string;
@@ -18,6 +21,7 @@ export type Perfil = {
   token?: string;
   code?: string;
   playedGames?: GameId[];
+  scores?: Partial<Record<GameId, number>>;
 };
 
 const ADJETIVOS = [

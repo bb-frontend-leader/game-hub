@@ -1,15 +1,13 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  GameWhackAQuestion,
-  type GameResult,
-} from "@/components/games/game-whack-a-question";
-import { GameShell } from "@/components/GameShell";
-import { dataGameWhackAQuestion } from "@/data-test";
-import { ApiError, type GameId, getLeaderboardService, getScoreService } from "@/core";
-import { usePerfil } from "@/lib/perfil-context";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
+
+import { type GameResult, GameWhackAQuestion } from "@/components/games/game-whack-a-question";
+import { GameShell } from "@/components/GameShell";
+import { ApiError, type GameId, getScoreService } from "@/core";
+import { dataGameWhackAQuestion } from "@/data-test";
+import { usePerfil } from "@/lib/perfil-context";
 
 export const Route = createFileRoute("/whack-a-question")({
   head: () => ({
@@ -29,12 +27,15 @@ export const Route = createFileRoute("/whack-a-question")({
 });
 
 const GAME_ID: GameId = "whack-a-question";
-const LEADERBOARD_LOOKUP_SIZE = 100;
 
 function WhackAQuestion() {
-  const savedPoints = useSavedPoints();
+  const perfil = usePerfil();
+  // Ausente (undefined) = todavía no jugado: se muestra el puntaje en vivo
+  // (el estado `score` de abajo). Presente = ya se guardó en el backend: se
+  // muestra ese puntaje, de solo lectura (cada juego se puntúa una sola vez).
+  const savedPoints = perfil.scores?.[GAME_ID] ?? null;
   const submitScore = useSubmitScore();
-  const [score, setScore] = useState(15);
+  const [score, setScore] = useState(0);
 
   const handleResult = useCallback(
     (result: GameResult) => {
@@ -110,18 +111,4 @@ function useSubmitScore() {
     },
     [mutate],
   );
-}
-
-function useSavedPoints() {
-  const perfil = usePerfil();
-
-  const { data: entries } = useQuery({
-    // empieza por "leaderboard" → se refresca solo tras guardar puntos
-    queryKey: ["leaderboard", "global", LEADERBOARD_LOOKUP_SIZE],
-    queryFn: () =>
-      getLeaderboardService().getGlobalLeaderboard(perfil.token!, LEADERBOARD_LOOKUP_SIZE),
-    enabled: !!perfil.token,
-  });
-
-  return entries?.find((entry) => entry.userId === perfil.id)?.points ?? null;
 }
