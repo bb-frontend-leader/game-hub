@@ -19,8 +19,9 @@ export class GameMain extends Scene {
 
   // 🆕 Puntaje
   private static readonly POINTS_PER_CORRECT = 10;
-  private static readonly POINTS_PER_LIFE = 5;
+  private static readonly POINTS_PER_LIFE = 5; // cada corazón restante suma 5 al final
   private score = 0;
+  private lifeBonus = 0;
 
   cards: Card[] = [];
   domButtons: Phaser.GameObjects.DOMElement[] = [];
@@ -34,6 +35,8 @@ export class GameMain extends Scene {
   questionBoxGfx!: Phaser.GameObjects.Graphics;
 
   // UI respuesta
+  private static readonly QUESTIONS_PER_RUN = 5;
+  private questions: typeof globalState.questions = []; // Preguntas de esta partida (subset aleatorio)
   hero!: Phaser.GameObjects.Sprite;
   plant!: Phaser.GameObjects.Sprite;
 
@@ -88,6 +91,10 @@ export class GameMain extends Scene {
   init() {
     // ✅ reset completo de run state
     this.qIndex = 0;
+    this.questions = this.pickRandomQuestions(GameMain.QUESTIONS_PER_RUN);
+
+    this.score = 0;
+    this.lifeBonus = 0;
 
     this.maxHP = 0;
     this.hp = 0;
@@ -149,7 +156,7 @@ export class GameMain extends Scene {
     this.hp = this.maxHP;
 
     // 🆕 Puntaje inicial: cada vida vale 5 → 3 vidas = 15
-    this.score = this.maxHP * GameMain.POINTS_PER_LIFE;
+    this.score = 0;
 
     // La barra del héroe inicia llena (porcentaje)
     this.heroDisplayPct = 1; // = 1
@@ -202,7 +209,7 @@ export class GameMain extends Scene {
     });
 
     // 6) Cargar primera pregunta
-    if (!globalState.questions.length) {
+    if (!this.questions.length) {
       console.error("GameMain: No hay preguntas en globalState");
       return;
     }
@@ -251,10 +258,10 @@ export class GameMain extends Scene {
   loadQuestion(index: number) {
     this.clearCards();
 
-    const q = globalState.questions[index];
+    const q = this.questions[index];
     if (!q) return; // guard rail
 
-    const questionText = this.escapeHtml(`${q.id}. ${q.text}`);
+    const questionText = this.escapeHtml(`${index + 1}. ${q.text}`);
 
     const el = this.questionDom.node as HTMLDivElement;
     el.innerHTML = questionText; // ✅ actualiza, no crea otro DOM
@@ -262,12 +269,21 @@ export class GameMain extends Scene {
 
     this.renderAnswerCards(q.options);
 
-    announce(`Pregunta ${index + 1} de ${globalState.questions.length}. ${q.text}`);
+    announce(`Pregunta ${index + 1} de ${this.questions.length}. ${q.text}`);
   }
 
   // ---------------------------
   // Respuestas (cards + botones DOM)
   // ---------------------------
+
+  private pickRandomQuestions(count: number) {
+    const pool = [...globalState.questions];
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j]!, pool[i]!];
+    }
+    return pool.slice(0, Math.min(count, pool.length));
+  }
 
   renderAnswerCards(options: Option[]) {
     const cardY = this.scale.height - 110;
@@ -338,7 +354,7 @@ export class GameMain extends Scene {
         }
 
         // 3) si fue correcta y es la última -> GameOver (ganaste)
-        const total = globalState.questions.length;
+        const total = this.questions.length;
         const isLast = this.qIndex >= total - 1;
 
         if (isLast) {
@@ -564,7 +580,7 @@ export class GameMain extends Scene {
         this.qIndex += 1;
 
         // ✅ si ya terminó todo => GANASTE => GameOver con stats + detener Game
-        const total = globalState.questions.length;
+        const total = this.questions.length;
         if (this.qIndex >= total) {
           this.goToGameOver(true);
           return;
@@ -599,7 +615,7 @@ export class GameMain extends Scene {
   }
 
   private async endAnswerWithCurtain() {
-    const total = globalState.questions.length;
+    const total = this.questions.length;
     // si ya vas a pasar a la siguiente
     await this.showOverlay({
       mode: "next",
@@ -703,7 +719,6 @@ export class GameMain extends Scene {
   // ---------------------------
   // Enable/disable answers
   // ---------------------------
-
   private setAnswersEnabled(enabled: boolean) {
     this.domButtons.forEach((dom) => {
       const el = dom.node as HTMLButtonElement;
@@ -806,7 +821,7 @@ export class GameMain extends Scene {
 
   private async onHeroDead() {
     this.heroDied = true;
-    const total = globalState.questions.length;
+    const total = this.questions.length;
 
     await this.showOverlay({
       mode: "restart",
@@ -850,7 +865,9 @@ export class GameMain extends Scene {
 
     // para la escena actual sí o sí
     this.scene.stop("Game");
-    const total = globalState.questions.length;
+    const total = this.questions.length;
+
+    if (win) this.applyLifeBonus();
 
     // inicia GameOver con stats
     this.scene.start("GameOver", {
@@ -861,6 +878,8 @@ export class GameMain extends Scene {
       questionsAnswered: win ? total : this.qIndex + 1,
       totalQuestions: total,
       attempts: this.attempts,
+      score: this.score,
+      lifeBonus: this.lifeBonus,
     });
   }
 
@@ -873,17 +892,20 @@ export class GameMain extends Scene {
     cb?.(payload);
   }
 
-  // 🆕 +10 si acierta, -5 si pierde una vida
+  // 🆕 +10 por acierto (el error no resta; ya cuesta una vida)
   private updateScore(correct: boolean) {
-    if (correct) {
-      this.score += GameMain.POINTS_PER_CORRECT;
-    } else {
-      this.score = Math.max(0, this.score - GameMain.POINTS_PER_LIFE);
-    }
+    if (correct) this.score += GameMain.POINTS_PER_CORRECT;
+  }
+
+  // 🆕 Bono final: corazones restantes
+  private applyLifeBonus() {
+    if (this.lifeBonus > 0) return; // evita sumarlo dos veces
+    this.lifeBonus = this.hp * GameMain.POINTS_PER_LIFE;
+    this.score += this.lifeBonus;
   }
 
   private onResult(opt: Option) {
-    const questions = globalState.questions;
+    const questions = this.questions;
     const question = questions[this.qIndex];
     if (!question) return;
 
@@ -892,13 +914,15 @@ export class GameMain extends Scene {
 
     this.updateScore(opt.correct); // 🆕
 
-    const isGameFinished = opt.correct && this.qIndex >= questions.length - 1; // 🆕
+    const isGameFinished = opt.correct && this.qIndex >= questions.length - 1;
+    if (isGameFinished) this.applyLifeBonus(); // 🆕
 
     announce(
       `Seleccionaste la opción ${opt.id}: ${opt.text}. ` +
-        (opt.correct ? "Correcto." : "Incorrecto.") +
-        ` Puntaje: ${this.score}.` +
-        ` Pregunta ${this.qIndex + 1} de ${questions.length}.`,
+      (opt.correct ? "Correcto." : "Incorrecto.") +
+      (isGameFinished ? ` Bono por vidas: ${this.lifeBonus}.` : "") +
+      ` Puntaje: ${this.score}.` +
+      ` Pregunta ${this.qIndex + 1} de ${questions.length}.`,
     );
 
     this.emitResult({

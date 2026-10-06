@@ -77,16 +77,52 @@ export const TEMPLE_OF_KNOWLEDGE_QUESTIONS: Question[] = [
 export const dataGameWhackAQuestion: WhackQuestion[] = [
   {
     question: "¿Cuál es la capital de Francia?",
-    options: ["a. Paris", "b. Londres", "c. Berlin", "d. Madrid", "e. Roma"],
+    options: ["París", "Londres", "Berlín", "Madrid"],
     correctAnswer: 0,
   },
   {
     question: "¿Qué significa CSS?",
-    options: [
-      "a. Computer Style Sheets",
-      "b. Cascading Style Sheets",
-      "c. Creative Styling System",
-    ],
+    options: ["Estilos", "Sonido", "Redes"],
+    correctAnswer: 0,
+  },
+  {
+    question: "¿Cuánto es 7 + 5?",
+    options: ["12", "10", "13", "11"],
+    correctAnswer: 0,
+  },
+  {
+    question: "¿Qué planeta es rojo?",
+    options: ["Venus", "Marte", "Júpiter"],
+    correctAnswer: 1,
+  },
+  {
+    question: "¿Cuál es el océano más grande?",
+    options: ["Atlántico", "Índico", "Pacífico"],
+    correctAnswer: 2,
+  },
+  {
+    question: "¿Qué gas respiramos?",
+    options: ["Oxígeno", "Helio", "Hidrógeno"],
+    correctAnswer: 0,
+  },
+  {
+    question: "¿Cuántos días tiene un año bisiesto?",
+    options: ["365", "366", "364"],
+    correctAnswer: 1,
+  },
+  {
+    question: "¿Qué animal ladra?",
+    options: ["Gato", "Perro", "Loro"],
+    correctAnswer: 1,
+  },
+  {
+    question: "¿De qué color es el sol?",
+    options: ["Azul", "Amarillo", "Verde"],
+    correctAnswer: 1,
+  },
+  {
+    question: "¿Cuánto es 3 x 4?",
+    options: ["7", "12", "9", "14"],
     correctAnswer: 1,
   },
 ];

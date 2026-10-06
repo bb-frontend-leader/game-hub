@@ -34,8 +34,8 @@ export class Main extends Phaser.Scene {
   private timeLeft: number = 25; // 25 segundos por pregunta
   private timerEvent?: Phaser.Time.TimerEvent;
   private isAnswering: boolean = false;
-  private lives: number = 3; // Sistema de vidas (cada vida vale 5 puntos)
-  public score: number = 15; // Puntaje: 3 vidas x 5 pts. +10 acierto / -5 fallo-timeout
+  private lives: number = 3; // Sistema de vidas (cada vida vale 5 pts de bonus al final)
+  public score: number = 0; // Puntaje durante el juego: solo +10 por acierto. Bonus de vidas se suma al final.
   private static readonly POINTS_PER_CORRECT = 10;
   private static readonly POINTS_PER_LIFE = 5;
   private static readonly INITIAL_LIVES = 3;
@@ -80,12 +80,13 @@ export class Main extends Phaser.Scene {
   }
 
   init() {
-    // Obtener datos del registry
-    this.questions = this.registry.get("questionsData") || [];
+    // Obtener datos del registry y elegir 5 al azar en cada partida
+    const allQuestions: WhackQuestion[] = this.registry.get("questionsData") || [];
+    this.questions = this.pickRandomQuestions(allQuestions, 5);
     this.gameEvents = this.registry.get("gameEvents");
     this.currentQuestionIndex = 0;
     this.lives = Main.INITIAL_LIVES; // Inicializar vidas
-    this.score = Main.INITIAL_LIVES * Main.POINTS_PER_LIFE; // 3 x 5 = 15
+    this.score = 0; // Inicia en 0, el bonus por vidas se suma solo al finalizar
 
     // Limpiar estado anterior
     this.moles = [];
@@ -396,15 +397,35 @@ export class Main extends Phaser.Scene {
   }
 
   /**
-   * Sistema de puntaje: +10 acierto / -5 por vida perdida (fallo o timeout).
-   * Una vida siempre vale 5 puntos. Nunca baja de 0.
+   * Sistema de puntaje: +10 por acierto durante el juego.
+   * Fallo o timeout solo resta vidas, sin multa inmediata al puntaje.
+   * El bonus por vidas restantes (5 pts c/u) se suma solo al finalizar.
    */
   private updateScore(correct: boolean) {
     if (correct) {
       this.score += Main.POINTS_PER_CORRECT;
-    } else {
-      this.score = Math.max(0, this.score - Main.POINTS_PER_LIFE);
     }
+  }
+
+  /**
+   * Puntaje final: aciertos acumulados + bonus por vidas restantes.
+   */
+  private getFinalScore(): number {
+    return this.score + this.lives * Main.POINTS_PER_LIFE;
+  }
+
+  /**
+   * Elige N preguntas al azar (Fisher-Yates) para cada partida.
+   * Si hay menos de las pedidas, devuelve todas mezcladas.
+   */
+  private pickRandomQuestions(all: WhackQuestion[], count: number): WhackQuestion[] {
+    if (!all || all.length === 0) return [];
+    const shuffled = [...all];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
+    }
+    return shuffled.slice(0, Math.min(count, shuffled.length));
   }
 
   private createPauseButton() {
@@ -815,7 +836,7 @@ export class Main extends Phaser.Scene {
     const question = this.questions[this.currentQuestionIndex];
     const isCorrect = mole.correctAnswer;
 
-    // Sistema de puntaje: +10 acierto / -5 por vida perdida
+    // Sistema de puntaje: solo suma +10 en acierto, sin multa inmediata
     this.updateScore(isCorrect);
 
     // Mostrar feedback visual de texto
@@ -828,15 +849,18 @@ export class Main extends Phaser.Scene {
         // Ocultar modal de feedback
         this.hideFeedback();
 
+        const isGameFinished = this.currentQuestionIndex >= this.questions.length - 1;
+        // Si es la última pregunta, incluir el bonus por vidas restantes
+        const scoreToEmit = isGameFinished ? this.getFinalScore() : this.score;
+
         this.gameEvents.emit("question-answered", {
           isCorrect: true,
           questionIndex: this.currentQuestionIndex,
           selectedAnswer: mole.getAnswerText(),
           correctAnswer: question.options[question.correctAnswer],
           question: question.question,
-          score: this.score,
-          isGameFinished:
-            this.currentQuestionIndex >= this.questions.length - 1,
+          score: scoreToEmit,
+          isGameFinished,
         });
 
         // Ocultar topos antes de siguiente pregunta
@@ -1017,10 +1041,10 @@ export class Main extends Phaser.Scene {
 
         const question = this.questions[this.currentQuestionIndex];
 
-        // Restar vida por timeout (vale 5 puntos)
+        // Restar vida por timeout, sin multa inmediata al puntaje
+        // El bonus por vidas restantes se suma solo al finalizar
         this.lives--;
         this.updateLivesDisplay();
-        this.updateScore(false);
 
         this.showFeedback(false);
 
@@ -1156,14 +1180,17 @@ export class Main extends Phaser.Scene {
       mole.forceDown();
     });
 
+    // Puntaje final: aciertos + bonus por vidas restantes (0 si se quedó sin vidas)
+    const finalScore = this.getFinalScore();
+
     // Puntaje final visible en EndGameScene
-    this.registry.set("finalScore", this.score);
+    this.registry.set("finalScore", finalScore);
 
     // Emitir evento de fin de juego
     this.gameEvents.emit("game-over", {
       reason: "no-lives",
       questionsAnswered: this.currentQuestionIndex,
-      score: this.score,
+      score: finalScore,
     });
 
     // Ir a la escena de fin con parámetro de derrota
@@ -1181,7 +1208,7 @@ export class Main extends Phaser.Scene {
       // Fade out antes de cambiar de escena
       this.cameras.main.fadeOut(200, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("endGameScene", { won: false, score: this.score });
+        this.scene.start("endGameScene", { won: false, score: finalScore });
       });
     });
   }
@@ -1193,13 +1220,16 @@ export class Main extends Phaser.Scene {
     }
     this.stopAllMoleTimers();
 
+    // Puntaje final: aciertos + bonus por vidas restantes
+    const finalScore = this.getFinalScore();
+
     // Puntaje final visible en EndGameScene
-    this.registry.set("finalScore", this.score);
+    this.registry.set("finalScore", finalScore);
 
     // Emitir evento de victoria
     this.gameEvents.emit("game-completed", {
       questionsAnswered: this.currentQuestionIndex,
-      score: this.score,
+      score: finalScore,
     });
 
     // Ir a la escena de fin con parámetro de victoria
@@ -1217,7 +1247,7 @@ export class Main extends Phaser.Scene {
       // Fade out antes de cambiar de escena
       this.cameras.main.fadeOut(200, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("endGameScene", { won: true, score: this.score });
+        this.scene.start("endGameScene", { won: true, score: finalScore });
       });
     });
   }

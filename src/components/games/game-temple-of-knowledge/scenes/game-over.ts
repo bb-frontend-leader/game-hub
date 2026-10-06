@@ -18,8 +18,6 @@ export class GameOver extends Phaser.Scene {
     super("GameOver");
   }
 
-  preload() {}
-
   init(data: GameOverData) {
     // ✅ fallback por si entras sin data
     this.dataRun = {
@@ -30,6 +28,8 @@ export class GameOver extends Phaser.Scene {
       questionsAnswered: data?.questionsAnswered ?? 0,
       totalQuestions: data?.totalQuestions ?? 0,
       attempts: data?.attempts ?? 0,
+      score: data?.score ?? 0,
+      lifeBonus: data?.lifeBonus ?? 0,
     };
   }
 
@@ -135,6 +135,9 @@ export class GameOver extends Phaser.Scene {
     plate.setDepth(10);
     title.setDepth(20);
     trophy.setDepth(20);
+
+    // 7) 🆕 Placa de puntaje debajo de "¡GANASTE!"
+    this.renderScore(centerX, y + plateH / 2 + 18, theme);
   }
 
   renderAnimation(width: number) {
@@ -215,7 +218,7 @@ export class GameOver extends Phaser.Scene {
 
       const ticks = bar.querySelector('[data-role="ticks"]') as HTMLDivElement;
       ticks.innerHTML = new Array(safeSteps)
-        ["fill"](0)
+        .fill(0)
         .map(() => `<span></span>`)
         .join("");
 
@@ -230,10 +233,12 @@ export class GameOver extends Phaser.Scene {
 
     announce(
       `¡GANASTE! ` +
-        `Vidas restantes: ${d.hpLeft} de ${d.maxLives}. ` +
-        `Intentos: ${d.attempts}. ` +
-        `Enemigos derrotados: ${d.enemiesDefeated}. ` +
-        `Presiona "Volver al inicio" para volver al inicio.`,
+      `Puntaje final: ${d.score}` +
+      (d.lifeBonus ? `, incluye ${d.lifeBonus} puntos por vidas restantes. ` : ". ") +
+      `Vidas restantes: ${d.hpLeft} de ${d.maxLives}. ` +
+      `Intentos: ${d.attempts}. ` +
+      `Enemigos derrotados: ${d.enemiesDefeated}. ` +
+      `Presiona "Volver al inicio" para volver al inicio.`,
     );
 
     if (btn) {
@@ -262,6 +267,124 @@ export class GameOver extends Phaser.Scene {
     initBar(root.querySelector('[data-name="enemies"]') as HTMLElement, enemiesSteps, enemiesValue);
 
     return dom;
+  }
+
+  // ---------------------------
+  // Puntaje
+  // ---------------------------
+
+  private renderScore(centerX: number, top: number, theme: ThemeType) {
+    const { score = 0 } = this.dataRun;
+
+    const bg = this.hexToInt(theme.colors.background);
+    const primary = this.hexToInt(theme.colors.primary);
+    const secondary = this.hexToInt(theme.colors.secondary);
+
+    const plateW = 240;
+    const plateH = 100;
+
+    const box = this.add.container(centerX, top + plateH / 2).setDepth(20);
+
+    // --- Placa (mismo estilo que la del título) ---
+    const plate = this.add.graphics();
+    plate.fillStyle(bg, 0.6).fillRoundedRect(-plateW / 2, -plateH / 2, plateW, plateH, 14);
+    plate
+      .lineStyle(3, primary, 0.7)
+      .strokeRoundedRect(-plateW / 2, -plateH / 2, plateW, plateH, 14);
+    plate
+      .lineStyle(1.5, secondary, 0.5)
+      .strokeRoundedRect(-plateW / 2 + 5, -plateH / 2 + 5, plateW - 10, plateH - 10, 10);
+    box.add(plate);
+
+    // --- Etiqueta ---
+    const label = this.add
+      .text(0, -plateH / 2 + 18, "P U N T A J E", {
+        fontFamily: '"PixelFont", Arial',
+        fontSize: "13px",
+        color: theme.colors.secondary,
+      })
+      .setOrigin(0.5);
+    box.add(label);
+
+    // --- Número grande con degradado dorado ---
+    const scoreText = this.add
+      .text(0, 12, "0", {
+        fontFamily: '"PixelFont", Arial',
+        fontSize: "54px",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setStroke("#3a2400", 6)
+      .setShadow(0, 4, "#000000", 0, true, true);
+
+    const grad = scoreText.context.createLinearGradient(0, 0, 0, scoreText.height);
+    grad.addColorStop(0, "#fff6c2");
+    grad.addColorStop(0.5, "#ffd54a");
+    grad.addColorStop(1, "#ff9f1a");
+    scoreText.setFill(grad);
+    box.add(scoreText);
+
+    // --- Entrada de la placa ---
+    box.setAlpha(0);
+    box.y += 16;
+    this.tweens.add({
+      targets: box,
+      alpha: 1,
+      y: box.y - 16,
+      duration: 350,
+      delay: 250,
+      ease: "Cubic.easeOut",
+    });
+
+    // --- Conteo 0 → score + pop + chispas ---
+    this.tweens.addCounter({
+      from: 0,
+      to: score,
+      duration: Math.min(1400, 400 + score * 12),
+      delay: 600,
+      ease: "Cubic.easeOut",
+      onUpdate: (tw) => scoreText.setText(String(Math.round(tw.getValue() ?? 0))),
+      onComplete: () => {
+        scoreText.setText(String(score));
+
+        this.tweens.add({
+          targets: scoreText,
+          scale: 1.18,
+          duration: 140,
+          yoyo: true,
+          ease: "Quad.easeOut",
+        });
+
+        this.burstSparkles(box.x, box.y + 12);
+      },
+    });
+
+    return box;
+  }
+
+  private burstSparkles(x: number, y: number) {
+    const colors = [0xfff6c2, 0xffd54a, 0xff9f1a, 0xffffff];
+    const count = 14;
+
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count + Phaser.Math.FloatBetween(-0.2, 0.2);
+      const dist = Phaser.Math.Between(70, 120);
+      const color = colors[i % colors.length] ?? 0xffd54a;
+
+      const spark = this.add.graphics({ x, y }).setDepth(30);
+      spark.fillStyle(color, 1).fillCircle(0, 0, Phaser.Math.Between(2, 4));
+
+      this.tweens.add({
+        targets: spark,
+        x: x + Math.cos(angle) * dist,
+        y: y + Math.sin(angle) * dist * 0.6,
+        alpha: 0,
+        scale: 0.2,
+        duration: Phaser.Math.Between(550, 800),
+        ease: "Cubic.easeOut",
+        onComplete: () => spark.destroy(),
+      });
+    }
   }
 
   // ---------------------------
