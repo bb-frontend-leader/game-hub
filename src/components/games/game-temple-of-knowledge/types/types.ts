@@ -20,6 +20,8 @@ export type GameOverData = {
   questionsAnswered?: number;
   totalQuestions?: number;
   attempts?: number;
+  score?: number;
+  lifeBonus?: number;
 };
 
 export type MusicSound = Phaser.Sound.BaseSound & {
