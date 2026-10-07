@@ -76,53 +76,63 @@ export const TEMPLE_OF_KNOWLEDGE_QUESTIONS: Question[] = [
 
 export const dataGameWhackAQuestion: WhackQuestion[] = [
   {
-    question: "¿Cuál es la capital de Francia?",
-    options: ["París", "Londres", "Berlín", "Madrid"],
-    correctAnswer: 0,
-  },
-  {
-    question: "¿Qué significa CSS?",
-    options: ["Estilos", "Sonido", "Redes"],
-    correctAnswer: 0,
-  },
-  {
-    question: "¿Cuánto es 7 + 5?",
-    options: ["12", "10", "13", "11"],
-    correctAnswer: 0,
-  },
-  {
-    question: "¿Qué planeta es rojo?",
-    options: ["Venus", "Marte", "Júpiter"],
+    question: "¿Cuál es el propósito central de una convención de líderes educativos?",
+    options: ["A. Sustituir los sistemas educativos nacionales", "B. Facilitar el diálogo y el intercambio de experiencias", "C. Unificar todos los currículos", "D. Eliminar la autonomía institucional"],
     correctAnswer: 1,
   },
   {
-    question: "¿Cuál es el océano más grande?",
-    options: ["Atlántico", "Índico", "Pacífico"],
+    question: "¿Qué permite el intercambio de experiencias entre instituciones?",
+    options: ["A. Evitar toda adaptación local", "B. Compartir aprendizajes y prácticas", "C. Sustituir la gestión institucional", "D. Eliminar la evaluación"],
+    correctAnswer: 1,
+  },
+  {
+    question: "¿Qué dimensión debe considerarse al hablar de transformación educativa?",
+    options: ["A. Solo infraestructura", "B. Solo herramientas digitales", "C. Personas, procesos, cultura y tecnología", "D. Exclusivamente presupuesto"],
     correctAnswer: 2,
   },
   {
-    question: "¿Qué gas respiramos?",
-    options: ["Oxígeno", "Helio", "Hidrógeno"],
+    question: "Verdadero o falso: La innovación educativa puede incluir cambios pedagógicos y organizacionales.",
+    options: ["Verdadero", "Falso"],
     correctAnswer: 0,
   },
   {
-    question: "¿Cuántos días tiene un año bisiesto?",
-    options: ["365", "366", "364"],
+    question: "¿Qué componentes deberían considerarse al diseñar una hoja de ruta de transformación?",
+    options: ["A. Fases e hitos", "B. Responsables y dependencias", "C. Indicadores y riesgos", "D. Todos las anteriores"],
+    correctAnswer: 3,
+  },
+  {
+    question: "Verdadero o falso: Las microcredenciales pueden servir para reconocer aprendizajes y competencias específicas.",
+    options: ["Verdadero", "Falso"],
+    correctAnswer: 0,
+  },
+  {
+    question: "¿Qué aspecto debe evaluarse al implementar una iniciativa de IA?",
+    options: ["A. Solo el costo inicial", "B. Utilidad, riesgos, adopción y resultados", "C. Únicamente la novedad de la herramienta ", "D. Solo la velocidad de implementación"],
     correctAnswer: 1,
   },
   {
-    question: "¿Qué animal ladra?",
-    options: ["Gato", "Perro", "Loro"],
-    correctAnswer: 1,
+    question: "Verdadero o falso: La gestión del cambio debe considerar barreras culturales y necesidades de formación.",
+    options: ["Verdadero", "Falso"],
+    correctAnswer: 0,
   },
   {
-    question: "¿De qué color es el sol?",
-    options: ["Azul", "Amarillo", "Verde"],
-    correctAnswer: 1,
+    question: "¿En qué año Medellín se convirtió en capital de Antioquia?",
+    options: ["A. 1616", "B. 1675", "C. 1826", "D. 1907"],
+    correctAnswer: 2,
   },
   {
-    question: "¿Cuánto es 3 x 4?",
-    options: ["7", "12", "9", "14"],
-    correctAnswer: 1,
+    question: "¿En qué fecha se estableció la Villa de Nuestra Señora de la Candelaria de Medellín?",
+    options: ["A. 2 de noviembre de 1675", "B. 22 de noviembre de 1674", "C. 20 de julio de 1810", "D. 1 de enero de 1826"],
+    correctAnswer: 0,
   },
+  {
+    question: "¿Cuál de estas iniciativas surgió en Medellín como parte de su apuesta por la innovación y el conocimiento?",
+    options: ["A. Ruta N", "B. Banco de la República", "C. Canal del Dique", "D. Parque Tayrona"],
+    correctAnswer: 0,
+  },
+  {
+    question: "Verdadero o falso: La temperatura promedio de Medellín indicada por la Alcaldía es de 24 °C.",
+    options: ["Verdadero", "Falso"],
+    correctAnswer: 0,
+  }
 ];
