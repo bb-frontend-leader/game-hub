@@ -100,16 +100,40 @@
 }
 
 .card-text-scroll {
-  width: 100%;
-  height: 100%;
-  grid-area: 2;
+  /* 🔧 Ajusta estos 4 valores hasta que la caja calce con el panel oscuro del marco */
+  --panel-top: 0.35rem;
+  --panel-right: 0.6rem;
+  --panel-bottom: 1.1rem;
+  --panel-left: 0.6rem;
+
+  grid-row: 2;
+  align-self: stretch;
+  min-height: 0; /* necesario para que el scroll funcione dentro del grid */
+
+  /* margin achica el área de scroll y padding solo separa el texto del borde */
+  margin: var(--panel-top) var(--panel-right) var(--panel-bottom) var(--panel-left);
+  padding: 0.15rem 0.2rem;
+  box-sizing: border-box;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable; /* el texto no se mueve cuando aparece la barra */
+
   font-family: "PixelFont", Arial, sans-serif;
   font-size: 0.9rem;
-  line-height: normal;
+  line-height: 1.1;
   text-align: center;
   color: white;
-  padding: 0.5rem 1rem;
-  box-sizing: border-box;
+  overflow-wrap: anywhere; /* evita que palabras largas se salgan */
+
+  /* desvanece el texto en los bordes en vez de cortarlo en seco */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 6px,
+    #000 calc(100% - 6px),
+    transparent 100%
+  );
 }
 
 .card-text-scroll,
@@ -417,7 +441,9 @@
 .gameAttack_container {
   position: relative;
   width: 100%;
-  height: 70vh; /* ya lo tenías */
+  /* Misma proporción que el canvas de Phaser (768x672, Scale.FIT): el alto sigue
+     al ancho en vez de quedar fijo, así el juego crece al ensanchar el contenedor. */
+  aspect-ratio: 768 / 672;
   min-height: 52rem; /* ✅ evita shrink/resize visual */
   margin: 0 auto;
   overflow: hidden;

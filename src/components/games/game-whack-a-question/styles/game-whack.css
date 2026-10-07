@@ -33,7 +33,10 @@
 .game-whack-a-question_container {
   position: relative;
   width: 100%;
-  height: 50vh;
+  /* Misma proporción que el canvas de Phaser (800x580, Scale.FIT): el alto sigue
+     al ancho en vez de quedar fijo, así el juego crece al ensanchar el contenedor. */
+  aspect-ratio: 800 / 580;
+  max-height: 80vh;
   min-height: 33.5rem;
   margin: 0 auto;
   overflow: hidden;
@@ -215,14 +218,14 @@
   border-image-repeat: stretch stretch;
   border-image-source: url("/assets/game-whack-a-question/images/cartel-pregunta.png");
   border-style: solid;
-  width: 28.5rem;
-  height: 9.5rem;
+  width: 40rem;
+  height: 12rem;
 }
 
 .game-whack_question-background {
-  width: 92%;
-  height: 60%;
-  padding: 2px 58px 0px 62px;
+  width: 94%;
+  height: 70%;
+  padding: 2px 34px 0px 30px;
   text-align: center;
   overflow-y: auto;
   margin-top: 28px;
@@ -340,7 +343,7 @@
   overflow-wrap: break-word;
   pointer-events: none !important;
   user-select: none;
-    top: -0.5rem;
+  top: -0.5rem;
 }
 
 /* Respuestas medianas (17-28 caracteres): caben en 1 línea */
@@ -351,9 +354,10 @@
 
 /* Respuestas muy largas (+28 caracteres): caben en máximo 2 líneas */
 .mole-answer-text.mole-answer-xlong {
-  font-size: 0.7rem;
-  left: -0.5rem;
-
+  font-size: 0.8rem;
+  left: -3rem;
+  top: -1.2rem;
+  text-wrap: pretty;
 }
 
 /* Colita hacia el topo: borde exterior */
@@ -497,11 +501,11 @@
 }
 
 .game-whack_feedback-score.correct {
-color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .game-whack_feedback-score.incorrect {
- color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 /* Contador regresivo */

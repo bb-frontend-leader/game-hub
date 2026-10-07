@@ -919,10 +919,10 @@ export class GameMain extends Scene {
 
     announce(
       `Seleccionaste la opción ${opt.id}: ${opt.text}. ` +
-      (opt.correct ? "Correcto." : "Incorrecto.") +
-      (isGameFinished ? ` Bono por vidas: ${this.lifeBonus}.` : "") +
-      ` Puntaje: ${this.score}.` +
-      ` Pregunta ${this.qIndex + 1} de ${questions.length}.`,
+        (opt.correct ? "Correcto." : "Incorrecto.") +
+        (isGameFinished ? ` Bono por vidas: ${this.lifeBonus}.` : "") +
+        ` Puntaje: ${this.score}.` +
+        ` Pregunta ${this.qIndex + 1} de ${questions.length}.`,
     );
 
     this.emitResult({
