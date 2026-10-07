@@ -233,12 +233,12 @@ export class GameOver extends Phaser.Scene {
 
     announce(
       `¡GANASTE! ` +
-      `Puntaje final: ${d.score}` +
-      (d.lifeBonus ? `, incluye ${d.lifeBonus} puntos por vidas restantes. ` : ". ") +
-      `Vidas restantes: ${d.hpLeft} de ${d.maxLives}. ` +
-      `Intentos: ${d.attempts}. ` +
-      `Enemigos derrotados: ${d.enemiesDefeated}. ` +
-      `Presiona "Volver al inicio" para volver al inicio.`,
+        `Puntaje final: ${d.score}` +
+        (d.lifeBonus ? `, incluye ${d.lifeBonus} puntos por vidas restantes. ` : ". ") +
+        `Vidas restantes: ${d.hpLeft} de ${d.maxLives}. ` +
+        `Intentos: ${d.attempts}. ` +
+        `Enemigos derrotados: ${d.enemiesDefeated}. ` +
+        `Presiona "Volver al inicio" para volver al inicio.`,
     );
 
     if (btn) {
