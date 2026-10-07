@@ -441,7 +441,9 @@
 .gameAttack_container {
   position: relative;
   width: 100%;
-  height: 70vh; /* ya lo tenías */
+  /* Misma proporción que el canvas de Phaser (768x672, Scale.FIT): el alto sigue
+     al ancho en vez de quedar fijo, así el juego crece al ensanchar el contenedor. */
+  aspect-ratio: 768 / 672;
   min-height: 52rem; /* ✅ evita shrink/resize visual */
   margin: 0 auto;
   overflow: hidden;

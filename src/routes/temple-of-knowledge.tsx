@@ -50,7 +50,7 @@ function TempleOfKnowledge() {
     <GameShell
       title="Temple of Knowledge"
       accent="red"
-      className="max-w-4xl"
+      className="max-w-5xl"
       score={savedPoints ?? score}
     >
       <AttackGame questions={TEMPLE_OF_KNOWLEDGE_QUESTIONS} onResult={handleResult} />

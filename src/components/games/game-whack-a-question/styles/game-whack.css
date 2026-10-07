@@ -33,7 +33,10 @@
 .game-whack-a-question_container {
   position: relative;
   width: 100%;
-  height: 50vh;
+  /* Misma proporción que el canvas de Phaser (800x580, Scale.FIT): el alto sigue
+     al ancho en vez de quedar fijo, así el juego crece al ensanchar el contenedor. */
+  aspect-ratio: 800 / 580;
+  max-height: 80vh;
   min-height: 33.5rem;
   margin: 0 auto;
   overflow: hidden;

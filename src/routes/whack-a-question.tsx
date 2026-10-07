@@ -49,7 +49,7 @@ function WhackAQuestion() {
     <GameShell
       title="Whack a game"
       accent="blue"
-      className="max-w-3xl"
+      className="max-w-6xl"
       score={savedPoints ?? score}
     >
       <GameWhackAQuestion data={dataGameWhackAQuestion} onResult={handleResult} />
